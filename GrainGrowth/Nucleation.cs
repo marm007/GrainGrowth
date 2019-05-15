@@ -313,7 +313,6 @@ public class Nucleation
             {
                 if (tab[i,j] != 0 || grainGrowth.Tab[i, j] != 0)
                 {
-                    Console.WriteLine(tab[i, j]);
                     continue;
                 }
 

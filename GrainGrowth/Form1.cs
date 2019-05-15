@@ -53,8 +53,8 @@ namespace GrainGrowth
             stop_button.Enabled = false;
             clear_button.Enabled = false;
 
-            toolTip1.SetToolTip(rowUpDown, "Set max number of rows");
-            toolTip1.SetToolTip(colUpDown, "Set max number of cols");
+            toolTip1.SetToolTip(rowUpDown, "Set number of rows");
+            toolTip1.SetToolTip(colUpDown, "Set number of columns");
             toolTip1.SetToolTip(radiusUpDown, "Set radius");
             toolTip1.SetToolTip(numberRadialUpDown, "Set max number of elements");
             toolTip1.SetToolTip(numberRandomUpDown, "Set max number of random elements");

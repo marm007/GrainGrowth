@@ -26,264 +26,11 @@ public class Grid
 	{
         this.sizeX = pictureBox.Width / CELL_SIZE;
         this.sizeY = pictureBox.Height / CELL_SIZE;
-        Console.WriteLine(this.sizeX);
-
     }
 
-    public void Draw(PictureBox pictureBox, System.Drawing.Graphics gg, Simulation simulation,
-        int sizeX, int sizeY, bool drawX, bool drawY)
-    {
-        if (GRID_STATE == GridState.Disable)
-            return;
-
-        Console.WriteLine("DRAWING...");
-        System.Drawing.Graphics g = pictureBox.CreateGraphics();
-
-        int maxSizeX = pictureBox.Width / CELL_SIZE;
-        int maxSizeY = pictureBox.Height / CELL_SIZE;
-
-        if (!drawX)
-            maxSizeX = sizeX;
-
-        if (!drawY)
-            maxSizeY = sizeY;
-
-        Console.WriteLine(maxSizeX);
-        Console.WriteLine(sizeX);
-
-        if (maxSizeX == sizeX)
-        {
-            // zmienia sie Y
-
-            if (maxSizeY > sizeY && drawY)
-            {
-
-                for (int i = 0; i < sizeX; i++)
-                {
-                    for (int j = sizeY; j < maxSizeY; j++)
-                    {
-                        g.DrawRectangle(circuitPen, i * CELL_SIZE, j * CELL_SIZE,
-                            CELL_SIZE, CELL_SIZE);
-                    }
-                }
-            }
-            else if (maxSizeY < sizeY && drawY)
-            {
-                for (int i = 0; i < sizeX; i++)
-                {
-                    for (int j = maxSizeY; j < sizeY; j++)
-                    {
-                        simulation.Display(g, i, j, 0);
-
-                        g.DrawRectangle(circuitPenClear, i * CELL_SIZE, j * CELL_SIZE + 1,
-                            CELL_SIZE, CELL_SIZE);
-                    }
-                }
-            }
-
-
-
-        }
-        else if (maxSizeX < sizeX)
-        {
-
-            if (maxSizeY > sizeY)
-            {
-                if (drawX)
-                {
-                    for (int i = maxSizeX; i < sizeX; i++)
-                    {
-                        for (int j = 0; j < maxSizeY; j++)
-                        {
-
-                            if (sizeY < maxSizeY)
-                                simulation.Display(g, i, j, 0);
-
-                            g.DrawRectangle(circuitPenClear, i * CELL_SIZE + 1, j * CELL_SIZE,
-                                CELL_SIZE, CELL_SIZE);
-                        }
-                    }
-                }
-
-                if (drawY)
-                {
-                    for (int i = 0; i < maxSizeX; i++)
-                    {
-                        for (int j = sizeY; j < maxSizeY; j++)
-                        {
-
-                            g.DrawRectangle(circuitPen, i * CELL_SIZE, j * CELL_SIZE,
-                                CELL_SIZE, CELL_SIZE);
-                        }
-                    }
-                }
-
-            }
-            else if (maxSizeY < sizeY)
-            {
-                if (drawX)
-                {
-                    for (int i = maxSizeX; i < sizeX; i++)
-                    {
-                        for (int j = 0; j < sizeY; j++)
-                        {
-
-                            if (maxSizeY < sizeY)
-                                simulation.Display(g, i, j, 0);
-
-                            g.DrawRectangle(circuitPenClear, i * CELL_SIZE + 1, j * CELL_SIZE,
-                                CELL_SIZE, CELL_SIZE);
-                        }
-                    }
-                }
-
-                if (drawY)
-                {
-                    for (int i = 0; i < maxSizeX; i++)
-                    {
-                        for (int j = maxSizeY; j < sizeY; j++)
-                        {
-
-                            simulation.Display(g, i, j, 0);
-
-                            g.DrawRectangle(circuitPenClear, i * CELL_SIZE, j * CELL_SIZE + 1,
-                                CELL_SIZE, CELL_SIZE);
-                        }
-                    }
-                }
-            }
-            else
-            {
-                if (drawX)
-                {
-                    for (int i = maxSizeX; i < sizeX; i++)
-                    {
-                        for (int j = 0; j < maxSizeY; j++)
-                        {
-
-                            simulation.Display(g, i, j, 0);
-
-                            g.DrawRectangle(circuitPenClear, i * CELL_SIZE + 1, j * CELL_SIZE,
-                                CELL_SIZE, CELL_SIZE);
-                        }
-                    }
-                }
-            }
-
-        }
-        else
-        {
-           
-            if (maxSizeY > sizeY)
-            {
-                if (drawX)
-                {
-                    for (int i = sizeX; i < maxSizeX; i++)
-                    {
-                        for (int j = 0; j < maxSizeY; j++)
-                        {
-
-                            g.DrawRectangle(circuitPen, i * CELL_SIZE, j * CELL_SIZE,
-                                CELL_SIZE, CELL_SIZE);
-                        }
-                    }
-                }
-
-
-
-
-                if (drawY)
-                {
-                    for (int i = 0; i < maxSizeX; i++)
-                    {
-                        for (int j = sizeY; j < maxSizeY; j++)
-                        {
-                            g.DrawRectangle(circuitPen, i * CELL_SIZE, j * CELL_SIZE,
-                                CELL_SIZE, CELL_SIZE);
-                        }
-                    }
-                }
-            }
-            else if (maxSizeY < sizeY)
-            {
-
-                if (drawY)
-                {
-                    for (int i = 0; i < maxSizeX; i++)
-                    {
-                        for (int j = maxSizeY; j < sizeY; j++)
-                        {
-
-                            simulation.Display(g, i, j, 0);
-
-                            g.DrawRectangle(circuitPenClear, i * CELL_SIZE, j * CELL_SIZE + 1,
-                                CELL_SIZE, CELL_SIZE);
-                        }
-                    }
-                }
-
-
-                if (drawX)
-                {
-                    for (int i = sizeX; i < maxSizeX; i++)
-                    {
-                        for (int j = 0; j < maxSizeY; j++)
-                        {
-
-                            g.DrawRectangle(circuitPen, i * CELL_SIZE, j * CELL_SIZE,
-                            CELL_SIZE, CELL_SIZE);
-                        }
-                    }
-                }
-
-
-            }
-            else
-            {
-                if (drawX)
-                {
-                    for (int i = sizeX; i < maxSizeX; i++)
-                    {
-                        for (int j = 0; j < maxSizeY; j++)
-                        {
-                            g.DrawRectangle(circuitPen, i * CELL_SIZE, j * CELL_SIZE,
-                                CELL_SIZE, CELL_SIZE);
-                        }
-                    }
-                }
-
-            }
-        }
-    }
-
-    public void Draw(PaintEventArgs e)
-    {
-        Console.WriteLine("DRAWING1...");
-
-        if (GRID_STATE == GridState.Enable)
-        {
-
-
-            System.Drawing.Graphics g = e.Graphics;
-
-
-            for (int i = 0; i <= sizeY; i++)
-            {
-                g.DrawLine(circuitPen, 0, i * CELL_SIZE, sizeX * CELL_SIZE, i * CELL_SIZE);
-
-            }
-
-            for (int j = 0; j <= sizeX; j++)
-            {
-                g.DrawLine(circuitPen, j * CELL_SIZE, 0, j * CELL_SIZE, sizeY * CELL_SIZE);
-
-            }
-        }
-    }
 
     public void Draw(PictureBox pictureBox)
     {
-        Console.WriteLine("DRAWING2...");
 
         if (GRID_STATE == GridState.Enable)
         {
@@ -314,8 +61,6 @@ public class Grid
     {
        
 
-        bool drawX = false;
-        bool drawY = false;
 
         int[,] tabTmp = simulation.Tab;
 
@@ -338,29 +83,23 @@ public class Grid
        
         if (this.sizeX == previousSizeX)
         {
-            drawX = true;
             this.sizeX = maxSizeX;
         }
 
         if (this.sizeY == previousSizeY)
         {
-            drawY = true;
             this.sizeY = maxSizeY;
         }
 
         if (maxSizeX < this.sizeX)
         {
-            drawX = true;
             this.sizeX = maxSizeX;
         }
 
         if (maxSizeY < this.sizeY)
         {
-            drawY = true;
             this.sizeY = maxSizeY;
         }
-
-
 
 
         simulation.Tab = new int[sizeY, sizeX];
@@ -383,9 +122,6 @@ public class Grid
         }
 
         Draw(pictureBox);
-
-       // Draw(pictureBox, g, simulation, startSizeX, startSizeY, drawX, drawY);
-
 
         return true;
     }
