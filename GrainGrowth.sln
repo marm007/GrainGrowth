@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2041
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GrainGrowth", "GrainGrowth\GrainGrowth.csproj", "{4A570882-209C-4086-AA5A-C93966D364E4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4A570882-209C-4086-AA5A-C93966D364E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A570882-209C-4086-AA5A-C93966D364E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A570882-209C-4086-AA5A-C93966D364E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A570882-209C-4086-AA5A-C93966D364E4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8C014BAD-6809-4434-AC40-D46F6C0B55B1}
+	EndGlobalSection
+EndGlobal
