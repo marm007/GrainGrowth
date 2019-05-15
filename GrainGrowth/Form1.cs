@@ -81,9 +81,8 @@ namespace GrainGrowth
 
                 if (backgroundWorker != null && !flagStop)
                 {
-                    isPlayling = true;
-
-                    Simulate();
+                    if (isPlayling)
+                        Simulate();
                 }
                 return;
             }
@@ -97,14 +96,11 @@ namespace GrainGrowth
             if (flagResize && !flagStop)
             {
                 flagResize = false;
-                isPlayling = true;
 
-                Simulate();
+                if(isPlayling)
+                    Simulate();
             }
-            else
-            {
-                flagResize = false;
-            }
+          
         }
 
         private void Form1_ResizeBegin(object sender, EventArgs e)
