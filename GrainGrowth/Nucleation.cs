@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using static Colors;
+using static Config;
 
 public class Nucleation
 {
@@ -13,9 +14,9 @@ public class Nucleation
     {
         Random rnd = new Random();
 
-        for (int i = 0; i < grid.SizeY; i++)
+        for (int i = 0; i < SIZE_Y; i++)
         {
-            for (int j = 0; j < grid.SizeX; j++)
+            for (int j = 0; j < SIZE_X; j++)
             {
                 if (i % row == 0 && j % col == 0 && grainGrowth.Tab[i, j] == 0)
                 {
@@ -28,14 +29,14 @@ public class Nucleation
 
     public static int[,] Homogeneus(Grid grid, Simulation grainGrowth, int row, int col)
     {
-        int sizeX = grid.SizeX;
-        int sizeY = grid.SizeY;
+        int sizeX = SIZE_X;
+        int sizeY = SIZE_Y;
 
         int [,] tab = new int[sizeY, sizeX];
-        for (int i = 0; i < grid.SizeY; i++)
+        for (int i = 0; i < SIZE_Y; i++)
         {
 
-            for (int j = 0; j < grid.SizeX; j++)
+            for (int j = 0; j < SIZE_X; j++)
             {
                 tab[i, j] = 0;
             }
@@ -43,9 +44,9 @@ public class Nucleation
 
         Random rnd = new Random();
 
-        for (int i = 0; i < grid.SizeY; i++)
+        for (int i = 0; i < SIZE_Y; i++)
         {
-            for (int j = 0; j < grid.SizeX; j++)
+            for (int j = 0; j < SIZE_X; j++)
             {
                 if (i % row == 0 && j % col == 0 && grainGrowth.Tab[i, j] == 0)
                 {
@@ -67,9 +68,9 @@ public class Nucleation
         List<int> listX = new List<int>();
         List<int> listY = new List<int>();
 
-        for (int i = 0; i < grid.SizeY; i++)
+        for (int i = 0; i < SIZE_Y; i++)
         {
-            for (int j = 0; j < grid.SizeX; j++)
+            for (int j = 0; j < SIZE_X; j++)
             {
                 if (grainGrowth.Tab[i, j] == 0)
                 {
@@ -102,14 +103,14 @@ public class Nucleation
     {
         Random rnd = new Random();
 
-        int sizeX = grid.SizeX;
-        int sizeY = grid.SizeY;
+        int sizeX = SIZE_X;
+        int sizeY = SIZE_Y;
 
         int[,] tab = new int[sizeY, sizeX];
-        for (int i = 0; i < grid.SizeY; i++)
+        for (int i = 0; i < SIZE_Y; i++)
         {
 
-            for (int j = 0; j < grid.SizeX; j++)
+            for (int j = 0; j < SIZE_X; j++)
             {
                 tab[i, j] = 0;
             }
@@ -118,9 +119,9 @@ public class Nucleation
         List<int> listX = new List<int>();
         List<int> listY = new List<int>();
 
-        for (int i = 0; i < grid.SizeY; i++)
+        for (int i = 0; i < SIZE_Y; i++)
         {
-            for (int j = 0; j < grid.SizeX; j++)
+            for (int j = 0; j < SIZE_X; j++)
             {
                 if (grainGrowth.Tab[i, j] == 0)
                 {
@@ -158,15 +159,15 @@ public class Nucleation
 
         int n = 0;
 
-        for (int i = 0; i < grid.SizeY; i++)
+        for (int i = 0; i < SIZE_Y; i++)
         {
-            for (int j = 0; j < grid.SizeX; j++)
+            for (int j = 0; j < SIZE_X; j++)
             {
                 if (grainGrowth.Tab[i, j] != 0)
                     continue;
 
-                int maxY = i + r >= grid.SizeY ? grid.SizeY - 1  : i + r;
-                int maxX = j + r >= grid.SizeX ? grid.SizeX - 1 : j + r;
+                int maxY = i + r >= SIZE_Y ? SIZE_Y - 1  : i + r;
+                int maxX = j + r >= SIZE_X ? SIZE_X - 1 : j + r;
                 int minY = i - r < 0 ? 0 : i - r;
                 int minX = j - r < 0 ? 0 : j - r;
 
@@ -183,7 +184,7 @@ public class Nucleation
                         }
                     }
 
-                    if(j + r - iterator < grid.SizeX )
+                    if(j + r - iterator < SIZE_X )
                     {
                         index--;
                     }
@@ -259,7 +260,7 @@ public class Nucleation
                         }
                     }
 
-                    if (j + r - iterator < grid.SizeX)
+                    if (j + r - iterator < SIZE_X)
                     {
                         index--;
                     }
@@ -290,14 +291,14 @@ public class Nucleation
 
     public static int[,] Radial(Grid grid, Simulation grainGrowth, int r, int number)
     {
-        int sizeX = grid.SizeX;
-        int sizeY = grid.SizeY;
+        int sizeX = SIZE_X;
+        int sizeY = SIZE_Y;
 
         int[,] tab = new int[sizeY, sizeX];
-        for (int i = 0; i < grid.SizeY; i++)
+        for (int i = 0; i < SIZE_Y; i++)
         {
 
-            for (int j = 0; j < grid.SizeX; j++)
+            for (int j = 0; j < SIZE_X; j++)
             {
                 tab[i, j] = 0;
             }
@@ -307,17 +308,17 @@ public class Nucleation
 
         int n = 0;
 
-        for (int i = 0; i < grid.SizeY; i++)
+        for (int i = 0; i < SIZE_Y; i++)
         {
-            for (int j = 0; j < grid.SizeX; j++)
+            for (int j = 0; j < SIZE_X; j++)
             {
                 if (tab[i,j] != 0 || grainGrowth.Tab[i, j] != 0)
                 {
                     continue;
                 }
 
-                int maxY = i + r >= grid.SizeY ? grid.SizeY - 1 : i + r;
-                int maxX = j + r >= grid.SizeX ? grid.SizeX - 1 : j + r;
+                int maxY = i + r >= SIZE_Y ? SIZE_Y - 1 : i + r;
+                int maxX = j + r >= SIZE_X ? SIZE_X - 1 : j + r;
                 int minY = i - r < 0 ? 0 : i - r;
                 int minX = j - r < 0 ? 0 : j - r;
 
@@ -334,7 +335,7 @@ public class Nucleation
                         }
                     }
 
-                    if (j + r - iterator < grid.SizeX)
+                    if (j + r - iterator < SIZE_X)
                     {
                         index--;
                     }
@@ -410,7 +411,7 @@ public class Nucleation
                         }
                     }
 
-                    if (j + r - iterator < grid.SizeX)
+                    if (j + r - iterator < SIZE_X)
                     {
                         index--;
                     }

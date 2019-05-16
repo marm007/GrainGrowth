@@ -24,7 +24,7 @@ namespace GrainGrowth
 
         bool flagStop = false;
         bool flagResize = false;
-        bool isPlayling = false;
+        bool isPlaying = false;
 
         bool clickedButton = false;
 
@@ -64,11 +64,17 @@ namespace GrainGrowth
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            grid = new Grid(pictureBox1);
-            grainGrowth = new Simulation(grid.SizeX, grid.SizeY);
+            // setting new sizes
 
-            widthBox.Text = grid.SizeX.ToString();
-            heightBox.Text = grid.SizeY.ToString();
+            SET_SIZES(pictureBox1.Width / CELL_SIZE, pictureBox1.Height / CELL_SIZE);
+
+            // --------
+
+            grid = new Grid();
+            grainGrowth = new Simulation();
+
+            widthBox.Text = SIZE_X.ToString();
+            heightBox.Text = SIZE_Y.ToString();
         }
 
         private void Form1_ResizeEnd(object sender, System.EventArgs e)
@@ -81,7 +87,7 @@ namespace GrainGrowth
 
                 if (backgroundWorker != null && !flagStop)
                 {
-                    if (isPlayling)
+                    if (isPlaying)
                         Simulate();
                 }
                 return;
@@ -90,14 +96,14 @@ namespace GrainGrowth
             grainGrowth.Display(pictureBox1.CreateGraphics());
 
 
-            widthBox.Text = grid.SizeX.ToString();
-            heightBox.Text = grid.SizeY.ToString();
+            widthBox.Text = SIZE_X.ToString();
+            heightBox.Text = SIZE_Y.ToString();
 
             if (flagResize && !flagStop)
             {
                 flagResize = false;
 
-                if(isPlayling)
+                if(isPlaying)
                     Simulate();
             }
           
@@ -132,22 +138,50 @@ namespace GrainGrowth
             int x = coordinates.X / CELL_SIZE;
             int y = coordinates.Y / CELL_SIZE;
 
-            if (x >= grid.SizeX || y >= grid.SizeY)
+            if (x >= SIZE_X || y >= SIZE_Y)
                 return;
 
-            if (grainGrowth.Tab[y, x] == 0)
+            if (!isPlaying)
             {
+                if (grainGrowth.Tab[y, x] == 0)
+                {
 
-                grainGrowth.Tab[y, x] = Colors.RandomColor();
+                    grainGrowth.Tab[y, x] = Colors.RandomColor();
 
-                grainGrowth.Display(pictureBox1.CreateGraphics(), x, y, grainGrowth.Tab[y, x]);
-                
+                    grainGrowth.Display(pictureBox1.CreateGraphics(), x, y, grainGrowth.Tab[y, x]);
+
+                }
+                else
+                {
+                    grainGrowth.Tab[y, x] = 0;
+                    grainGrowth.Display(pictureBox1.CreateGraphics(), x, y, grainGrowth.Tab[y, x]);
+                }
             }
             else
             {
-                grainGrowth.Tab[y, x] = 0;
-                grainGrowth.Display(pictureBox1.CreateGraphics(), x, y, grainGrowth.Tab[y, x]);
+                this.tab = new int[SIZE_Y, SIZE_X];
+
+                for (int i = 0; i < SIZE_Y; i++)
+                {
+                    for (int j = 0; j < SIZE_X; j++)
+                    {
+                        this.tab[i, j] = 0;
+                    }
+                }
+
+                if (grainGrowth.Tab[y, x] == 0)
+                {
+                    Console.WriteLine("XAD");
+                    this.tab[y, x] = Colors.RandomColor();
+                }
+                else
+                {
+                    this.tab[y, x] = 0;
+                }
+
+                clickedButton = true;
             }
+          
         }
 
 
@@ -158,7 +192,7 @@ namespace GrainGrowth
                 flagStop = false;
             }
 
-            isPlayling = true;
+            isPlaying = true;
 
             backgroundWorker = new BackgroundWorker();
             backgroundWorker.WorkerSupportsCancellation = true;
@@ -176,7 +210,7 @@ namespace GrainGrowth
 
         private void stop_button_Click(object sender, EventArgs e)
         {
-            isPlayling = false;
+            isPlaying = false;
             flagStop = true;
             backgroundWorker.CancelAsync();
 
@@ -191,15 +225,15 @@ namespace GrainGrowth
 
         private void clear_button_Click(object sender, EventArgs e)
         {
-            Colors.Initialize();
 
-            int sizeX = grid.SizeX;
-            int sizeY = grid.SizeY;
 
             if(backgroundWorker != null)
                 backgroundWorker.CancelAsync();
 
             pictureBox1.Refresh();
+            g = pictureBox1.CreateGraphics();
+
+            g.FillRectangle(cellBrushClear, 0, 0, SIZE_X * CELL_SIZE + 1, SIZE_Y * CELL_SIZE + 1);
 
             flagStop = false;
 
@@ -207,13 +241,15 @@ namespace GrainGrowth
             stop_button.Enabled = false;
             clear_button.Enabled = false;
 
-            for (int i = 0; i < sizeY; i++)
+            for (int i = 0; i < SIZE_Y; i++)
             {
-                for (int j = 0; j < sizeX; j++)
+                for (int j = 0; j < SIZE_X; j++)
                 {
                     grainGrowth.Tab[i, j] = 0;
                 }
             }
+
+            Colors.Initialize();
         }
 
         private void step_button_Click(object sender, EventArgs e)
@@ -262,14 +298,14 @@ namespace GrainGrowth
             int maxSizeX = pictureBox1.Width / CELL_SIZE;
             int maxSizeY = pictureBox1.Height / CELL_SIZE;
 
-            int startSizeX = grid.SizeX;
-            int startSizeY = grid.SizeY;
+            int startSizeX = SIZE_X;
+            int startSizeY = SIZE_Y;
 
-            int sizeX = grid.SizeX;
-            int sizeY = grid.SizeY;
 
             int[,] tabTmp = grainGrowth.Tab;
 
+            int sizeX = SIZE_X;
+            int sizeY = SIZE_Y;
 
 
             bool success = Int32.TryParse(this.widthBox.Text, out sizeX);
@@ -298,13 +334,16 @@ namespace GrainGrowth
                 heightBox.Text = sizeY.ToString();
             }
 
-            grid.SizeX = sizeX;
-            grid.SizeY = sizeY;
+            // setting new sizes
 
-            grainGrowth.Tab = new int[sizeY, sizeX];
+            SET_SIZES(sizeX, sizeY);
 
-            int y = sizeY < startSizeY ? sizeY : startSizeY;
-            int x = sizeX < startSizeX ? sizeX : startSizeX;
+            // --------
+
+            grainGrowth.Tab = new int[SIZE_Y, SIZE_X];
+
+            int y = SIZE_Y < startSizeY ? SIZE_Y : startSizeY;
+            int x = SIZE_X < startSizeX ? SIZE_X : startSizeX;
 
 
             for (int i = 0; i < y; i++)
@@ -338,14 +377,14 @@ namespace GrainGrowth
             CELL_SIZE = 4 * cellSizeTracBar.Value;
             grid.SetNewCellSizeAndDraw(pictureBox1.CreateGraphics(), pictureBox1, grainGrowth);
 
-            widthBox.Text = grid.SizeX.ToString();
-            heightBox.Text = grid.SizeY.ToString();
+            widthBox.Text = SIZE_X.ToString();
+            heightBox.Text = SIZE_Y.ToString();
         }
 
         private void cellSizeTrackBar_MouseUp(object sender, MouseEventArgs e)
         {
 
-            if (backgroundWorker != null && isPlayling)
+            if (backgroundWorker != null && isPlaying)
             {
                 Simulate();
             }
@@ -365,7 +404,7 @@ namespace GrainGrowth
             int row = Decimal.ToInt32(rowUpDown.Value);
             int col = Decimal.ToInt32(colUpDown.Value);
 
-            if (!isPlayling)
+            if (!isPlaying)
             {
                 Nucleation.Homogeneus(grid, grainGrowth, pictureBox1, row, col);
             }
@@ -383,7 +422,7 @@ namespace GrainGrowth
             int r = Decimal.ToInt32(radiusUpDown.Value);
             int number = Decimal.ToInt32(numberRadialUpDown.Value);
 
-            if(!isPlayling)
+            if(!isPlaying)
             {
                 Nucleation.Radial(grid, grainGrowth, r, number, pictureBox1); 
             }
@@ -399,7 +438,7 @@ namespace GrainGrowth
         {
             int number = Decimal.ToInt32(numberRandomUpDown.Value);
 
-            if (!isPlayling)
+            if (!isPlaying)
             {
                 Nucleation.Random(grid, grainGrowth, number, pictureBox1);    
             }
@@ -432,9 +471,9 @@ namespace GrainGrowth
                     {
                         if (clickedButton)
                         {
-                            for (int i = 0; i < grid.SizeY; i++)
+                            for (int i = 0; i < SIZE_Y; i++)
                             {
-                                for (int j = 0; j < grid.SizeX; j++)
+                                for (int j = 0; j < SIZE_X; j++)
                                 {
                                     if (grainGrowth.Tab[i, j] == 0 && this.tab[i, j] != 0)
                                     {
@@ -472,6 +511,12 @@ namespace GrainGrowth
 
             renderWroker.RunWorkerAsync();
 
+        }
+
+        private void Picturebox1_Paint(object sender, PaintEventArgs e)
+        {
+            grid.Draw(e.Graphics);
+            grainGrowth.Display(e.Graphics);
         }
     }
 }

@@ -10,24 +10,33 @@ public class Grid
     private System.Drawing.Pen circuitPenClear = new System.Drawing.Pen(SystemColors.Control, 1);
     private System.Drawing.SolidBrush cellBrushClear = new System.Drawing.SolidBrush(SystemColors.Control);
 
-    private int sizeX;
-    private int sizeY;
 
-    public int SizeX { get => sizeX; set => sizeX = value; }
-    public int SizeY { get => sizeY; set => sizeY = value; }
+   
 
-    public Grid(int sizeX, int sizeY)
+    public Grid()
 	{
-        this.sizeX = sizeX;
-        this.sizeY = sizeY;
-	}
-
-    public Grid(PictureBox pictureBox)
-	{
-        this.sizeX = pictureBox.Width / CELL_SIZE;
-        this.sizeY = pictureBox.Height / CELL_SIZE;
     }
 
+    public void Draw(Graphics g)
+    {
+
+        if (GRID_STATE == GridState.Enable)
+        {
+            g.FillRectangle(cellBrushClear, 0, 0, SIZE_X * CELL_SIZE + 1, SIZE_Y * CELL_SIZE + 1);
+
+            for (int i = 0; i <= SIZE_Y; i++)
+            {
+                g.DrawLine(circuitPen, 0, i * CELL_SIZE, SIZE_X * CELL_SIZE, i * CELL_SIZE);
+
+            }
+
+            for (int j = 0; j <= SIZE_X; j++)
+            {
+                g.DrawLine(circuitPen, j * CELL_SIZE, 0, j * CELL_SIZE, SIZE_Y * CELL_SIZE);
+
+            }
+        }
+    }
 
     public void Draw(PictureBox pictureBox)
     {
@@ -42,15 +51,15 @@ public class Grid
 
             g.FillRectangle(cellBrushClear, 0, 0, maxSizeX * CELL_SIZE + 1, maxSizeY * CELL_SIZE + 1);
 
-            for (int i = 0; i <= sizeY; i++)
+            for (int i = 0; i <= SIZE_Y; i++)
             {
-                g.DrawLine(circuitPen, 0, i * CELL_SIZE, sizeX * CELL_SIZE, i * CELL_SIZE);
+                g.DrawLine(circuitPen, 0, i * CELL_SIZE, SIZE_X * CELL_SIZE, i * CELL_SIZE);
 
             }
 
-            for (int j = 0; j <= sizeX; j++)
+            for (int j = 0; j <= SIZE_X; j++)
             {
-                g.DrawLine(circuitPen, j * CELL_SIZE, 0, j * CELL_SIZE, sizeY * CELL_SIZE);
+                g.DrawLine(circuitPen, j * CELL_SIZE, 0, j * CELL_SIZE, SIZE_Y * CELL_SIZE);
 
             }
         }
@@ -60,12 +69,10 @@ public class Grid
         Simulation simulation, Graphics g)
     {
        
-
-
         int[,] tabTmp = simulation.Tab;
 
-        int startSizeX = this.sizeX;
-        int startSizeY = this.sizeY;
+        int startSizeX = SIZE_X;
+        int startSizeY = SIZE_Y;
 
         int previousSizeX = pPictureBox.Width / CELL_SIZE;
         int previousSizeY = pPictureBox.Height / CELL_SIZE;
@@ -73,45 +80,50 @@ public class Grid
         int maxSizeX = pictureBox.Width / CELL_SIZE;
         int maxSizeY = pictureBox.Height / CELL_SIZE;
 
+        int sizeX = SIZE_X;
+        int sizeY = SIZE_Y;
 
         if (maxSizeX == previousSizeX && maxSizeY == previousSizeY)
         {
-            previousSizeX = maxSizeX;
-            previousSizeY = maxSizeY;
             return false;
         }
        
-        if (this.sizeX == previousSizeX)
+        if (SIZE_X == previousSizeX)
         {
-            this.sizeX = maxSizeX;
+            sizeX = maxSizeX;
         }
 
-        if (this.sizeY == previousSizeY)
+        if (SIZE_Y == previousSizeY)
         {
-            this.sizeY = maxSizeY;
+            sizeY = maxSizeY;
         }
 
-        if (maxSizeX < this.sizeX)
+        if (maxSizeX < SIZE_X)
         {
-            this.sizeX = maxSizeX;
+            sizeX = maxSizeX;
         }
 
-        if (maxSizeY < this.sizeY)
+        if (maxSizeY < SIZE_Y)
         {
-            this.sizeY = maxSizeY;
+            sizeY = maxSizeY;
         }
 
+        // setting new sizes
 
-        simulation.Tab = new int[sizeY, sizeX];
-        for (int i = 0; i < sizeY; i++)
+        SET_SIZES(sizeX, sizeY);
+
+        // --------
+
+        simulation.Tab = new int[SIZE_Y, SIZE_X];
+        for (int i = 0; i < SIZE_Y; i++)
         {
-            for (int j = 0; j < sizeX; j++)
+            for (int j = 0; j < SIZE_X; j++)
             {
                 simulation.Tab[i, j] = 0;
             }
         }
-        int y = sizeY < startSizeY ? sizeY : startSizeY;
-        int x = sizeX < startSizeX ? sizeX : startSizeX;
+        int y = SIZE_Y < startSizeY ? SIZE_Y : startSizeY;
+        int x = SIZE_X < startSizeX ? SIZE_X : startSizeX;
 
         for (int i = 0; i < y; i++)
         {
@@ -139,15 +151,15 @@ public class Grid
 
         if (GRID_STATE == GridState.Enable)
         {
-            for (int i = 0; i <= sizeY; i++)
+            for (int i = 0; i <= SIZE_Y; i++)
             {
-               g.DrawLine(circuitPen, 0, i * CELL_SIZE, sizeX * CELL_SIZE, i * CELL_SIZE);
+               g.DrawLine(circuitPen, 0, i * CELL_SIZE, SIZE_X * CELL_SIZE, i * CELL_SIZE);
 
             }
 
-            for (int j = 0; j <= sizeX; j++)
+            for (int j = 0; j <= SIZE_X; j++)
             {
-                g.DrawLine(circuitPen, j * CELL_SIZE, 0, j * CELL_SIZE, sizeY * CELL_SIZE);
+                g.DrawLine(circuitPen, j * CELL_SIZE, 0, j * CELL_SIZE, SIZE_Y * CELL_SIZE);
 
             }
         }
@@ -163,25 +175,29 @@ public class Grid
 
         int[,] tabTmp = simulation.Tab;
 
-        int startSizeX = this.sizeX;
-        int startSizeY = this.sizeY;
+        int startSizeX = SIZE_X;
+        int startSizeY = SIZE_Y;
 
 
-        this.sizeX = pictureBox.Width / CELL_SIZE;
-        this.sizeY = pictureBox.Height / CELL_SIZE;
+        // setting new sizes
 
-        simulation.Tab = new int[sizeY, sizeX];
+        SET_SIZES(pictureBox.Width / CELL_SIZE, pictureBox.Height / CELL_SIZE);
 
-        for (int i = 0; i < sizeY; i++)
+        // --------
+
+
+        simulation.Tab = new int[SIZE_Y, SIZE_X];
+
+        for (int i = 0; i < SIZE_Y; i++)
         {
-            for (int j = 0; j < sizeX; j++)
+            for (int j = 0; j < SIZE_X; j++)
             {
                 simulation.Tab[i, j] = 0;
             }
         }
 
-        int y = sizeY < startSizeY ? sizeY : startSizeY;
-        int x = sizeX < startSizeX ? sizeX : startSizeX;
+        int y = SIZE_Y < startSizeY ? SIZE_Y : startSizeY;
+        int x = SIZE_X < startSizeX ? SIZE_X : startSizeX;
 
         for (int i = 0; i < y; i++)
         {

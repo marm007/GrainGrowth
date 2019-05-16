@@ -36,8 +36,6 @@
             this.stop_button = new System.Windows.Forms.Button();
             this.start_button = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.probability_up_down = new System.Windows.Forms.NumericUpDown();
             this.moore_button = new System.Windows.Forms.RadioButton();
             this.neumann_button = new System.Windows.Forms.RadioButton();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
@@ -75,7 +73,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.probability_up_down)).BeginInit();
             this.groupBox3.SuspendLayout();
             this.groupBox4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numberRandomUpDown)).BeginInit();
@@ -102,6 +99,7 @@
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
             this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);
+            this.pictureBox1.Paint += new System.Windows.Forms.PaintEventHandler(this.Picturebox1_Paint);
             // 
             // groupBox1
             // 
@@ -160,8 +158,6 @@
             // groupBox2
             // 
             this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox2.Controls.Add(this.label1);
-            this.groupBox2.Controls.Add(this.probability_up_down);
             this.groupBox2.Controls.Add(this.moore_button);
             this.groupBox2.Controls.Add(this.neumann_button);
             this.groupBox2.Location = new System.Drawing.Point(3, 112);
@@ -170,23 +166,6 @@
             this.groupBox2.TabIndex = 2;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Neighbourhood";
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(98, 72);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(55, 13);
-            this.label1.TabIndex = 5;
-            this.label1.Text = "Probability";
-            // 
-            // probability_up_down
-            // 
-            this.probability_up_down.Location = new System.Drawing.Point(98, 45);
-            this.probability_up_down.Name = "probability_up_down";
-            this.probability_up_down.Size = new System.Drawing.Size(43, 20);
-            this.probability_up_down.TabIndex = 4;
-            this.probability_up_down.ValueChanged += new System.EventHandler(this.probability_up_down_ValueChanged);
             // 
             // moore_button
             // 
@@ -599,7 +578,6 @@
             this.groupBox1.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.probability_up_down)).EndInit();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
             this.groupBox4.ResumeLayout(false);
@@ -629,8 +607,6 @@
         private System.Windows.Forms.Button stop_button;
         private System.Windows.Forms.Button start_button;
         private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.NumericUpDown probability_up_down;
         private System.Windows.Forms.RadioButton moore_button;
         private System.Windows.Forms.RadioButton neumann_button;
         private System.Windows.Forms.GroupBox groupBox3;

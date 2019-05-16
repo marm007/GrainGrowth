@@ -14,20 +14,20 @@ public class Simulation
 
     private int[,] tab;
 
-	public Simulation(int sizeX, int sizeY)
+	public Simulation()
 	{
-        this.tab = new int[sizeY, sizeX];
+        this.tab = new int[SIZE_Y, SIZE_X];
 
-        for (int i = 0; i < sizeY; i++)
+        for (int i = 0; i < SIZE_Y; i++)
         {
-            for (int j = 0; j < sizeX; j++)
+            for (int j = 0; j < SIZE_X; j++)
             {
                 this.tab[i, j] = 0;
             }
         }
     }
 
-    public int[,] Tab { get => tab; set => tab = value; }
+    public int[,] Tab { get { return tab; } set { tab = value; } }
 
     public void Display(Graphics g)
     {
@@ -70,42 +70,39 @@ public class Simulation
     {
         Graphics g = p.CreateGraphics();
 
-        int sizeX = this.tab.GetLength(1);
-        int sizeY = this.tab.GetLength(0);
-
-        int[,] tabTmp = new int[sizeY, sizeX];
+        int[,] tabTmp = new int[SIZE_Y, SIZE_X];
 
         if (NEIGHBOURHOOD == Neighbourhood.von_Neumann)
         {
            if(BOUNDARY_CONDITION == BoundaryCondition.Periodic)
             {
-                tabTmp = Periodic_vonNeumann(g, sizeX, sizeY, tabTmp);
+                tabTmp = Periodic_vonNeumann(g, tabTmp);
             }
             else if(BOUNDARY_CONDITION == BoundaryCondition.Nonperiodic)
             {
-                tabTmp = Nonperiodic_vonNeumann(g, sizeX, sizeY, tabTmp);
+                tabTmp = Nonperiodic_vonNeumann(g, tabTmp);
             }
         }
         else if(NEIGHBOURHOOD == Neighbourhood.Moore)
         {
             if (BOUNDARY_CONDITION == BoundaryCondition.Periodic)
             {
-                tabTmp = Periodic_Moore(g, sizeX, sizeY, tabTmp);
+                tabTmp = Periodic_Moore(g, tabTmp);
             }
             else if (BOUNDARY_CONDITION == BoundaryCondition.Nonperiodic)
             {
-                tabTmp = Nonperiodic_Moore(g, sizeX, sizeY, tabTmp);
+                tabTmp = Nonperiodic_Moore(g, tabTmp);
             }
         }
 
         this.tab = tabTmp;
     }
 
-    private int[,] Periodic_vonNeumann(Graphics g, int sizeX, int sizeY, int[,] tabTmp)
+    private int[,] Periodic_vonNeumann(Graphics g, int[,] tabTmp)
     {
-        for (int i = 0; i < sizeY; i++)
+        for (int i = 0; i < SIZE_Y; i++)
         {
-            for (int j = 0; j < sizeX; j++)
+            for (int j = 0; j < SIZE_X; j++)
             {
 
                 int s_l = -200;
@@ -118,10 +115,10 @@ public class Simulation
                 int cellBegin = this.tab[i, j];
                 int cellEnd = this.tab[i, j];
 
-                int x_l = j - 1 < 0 ? sizeX - 1 : j - 1;
-                int x_p = j + 1 >= sizeX ? 0 : j + 1;
-                int y_d = i + 1 >= sizeY ? 0 : i + 1;
-                int y_g = i - 1 < 0 ? sizeY - 1 : i - 1;
+                int x_l = j - 1 < 0 ? SIZE_X - 1 : j - 1;
+                int x_p = j + 1 >= SIZE_X ? 0 : j + 1;
+                int y_d = i + 1 >= SIZE_Y ? 0 : i + 1;
+                int y_g = i - 1 < 0 ? SIZE_Y - 1 : i - 1;
 
                 s_l = tab[i, x_l];
                 s_p = tab[i, x_p];
@@ -188,11 +185,11 @@ public class Simulation
         return tabTmp;
     }
 
-    private int[,] Periodic_Moore(Graphics g, int sizeX, int sizeY, int[,] tabTmp)
+    private int[,] Periodic_Moore(Graphics g, int[,] tabTmp)
     {
-        for (int i = 0; i < sizeY; i++)
+        for (int i = 0; i < SIZE_Y; i++)
         {
-            for (int j = 0; j < sizeX; j++)
+            for (int j = 0; j < SIZE_X; j++)
             {
 
 
@@ -211,10 +208,10 @@ public class Simulation
                 int cellBegin = this.tab[i, j];
                 int cellEnd = this.tab[i, j];
 
-                int x_l = j - 1 < 0 ? sizeX - 1 : j - 1;
-                int x_p = j + 1 >= sizeX ? 0 : j + 1;
-                int y_d = i + 1 >= sizeY ? 0 : i + 1;
-                int y_g = i - 1 < 0 ? sizeY - 1 : i - 1;
+                int x_l = j - 1 < 0 ? SIZE_X - 1 : j - 1;
+                int x_p = j + 1 >= SIZE_X ? 0 : j + 1;
+                int y_d = i + 1 >= SIZE_Y ? 0 : i + 1;
+                int y_g = i - 1 < 0 ? SIZE_Y - 1 : i - 1;
 
                 s_l = tab[i, x_l];
                 s_p = tab[i, x_p];
@@ -289,11 +286,11 @@ public class Simulation
 
 
 
-    private int[,] Nonperiodic_vonNeumann(Graphics g, int sizeX, int sizeY, int[,] tabTmp)
+    private int[,] Nonperiodic_vonNeumann(Graphics g, int[,] tabTmp)
     {
-        for (int i = 0; i < sizeY; i++)
+        for (int i = 0; i < SIZE_Y; i++)
         {
-            for (int j = 0; j < sizeX; j++)
+            for (int j = 0; j < SIZE_X; j++)
             {
 
 
@@ -308,8 +305,8 @@ public class Simulation
                 int cellEnd = this.tab[i, j];
 
                 int x_l = j - 1 < 0 ? j : j - 1;
-                int x_p = j + 1 >= sizeX ? j : j + 1;
-                int y_d = i + 1 >= sizeY ? i : i + 1;
+                int x_p = j + 1 >= SIZE_X ? j : j + 1;
+                int y_d = i + 1 >= SIZE_Y ? i : i + 1;
                 int y_g = i - 1 < 0 ? i : i - 1;
 
                 s_l = tab[i, x_l];
@@ -379,11 +376,11 @@ public class Simulation
         return tabTmp;
     }
 
-    private int[,] Nonperiodic_Moore(Graphics g, int sizeX, int sizeY, int[,] tabTmp)
+    private int[,] Nonperiodic_Moore(Graphics g, int[,] tabTmp)
     {
-        for (int i = 0; i < sizeY; i++)
+        for (int i = 0; i < SIZE_Y; i++)
         {
-            for (int j = 0; j < sizeX; j++)
+            for (int j = 0; j < SIZE_X; j++)
             {
 
 
@@ -403,8 +400,8 @@ public class Simulation
                 int cellEnd = this.tab[i, j];
 
                 int x_l = j - 1 < 0 ? j : j - 1;
-                int x_p = j + 1 >= sizeX ? j : j + 1;
-                int y_d = i + 1 >= sizeY ? i : i + 1;
+                int x_p = j + 1 >= SIZE_X ? j : j + 1;
+                int y_d = i + 1 >= SIZE_Y ? i : i + 1;
                 int y_g = i - 1 < 0 ? i : i - 1;
 
                 s_l = tab[i, x_l];
