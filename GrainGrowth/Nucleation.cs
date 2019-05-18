@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -10,24 +11,36 @@ using static Config;
 
 public class Nucleation
 {
-    public static void Homogeneus(Grid grid, Simulation grainGrowth, PictureBox pictureBox, int row, int col)
+
+    public static void Homogeneus(Grid grid, Simulation grainGrowth, PictureBox pictureBox, int numberInRow, int numberInCol)
     {
         Random rnd = new Random();
 
-        for (int i = 0; i < SIZE_Y; i++)
+        int rowSpace = SIZE_X / numberInRow;
+        int colSpace = SIZE_Y / numberInCol;
+
+        int offsetRow = (SIZE_X - rowSpace) / 2;
+        int offsetCol = (SIZE_Y - colSpace) / 2;
+
+
+        for (int i = 0; i < numberInCol; i++)
         {
-            for (int j = 0; j < SIZE_X; j++)
+            for (int j = 0; j < numberInRow; j++)
             {
-                if (i % row == 0 && j % col == 0 && grainGrowth.Tab[i, j] == 0)
-                {
-                    grainGrowth.Tab[i, j] = Colors.RandomColor();
-                    grainGrowth.Display(pictureBox.CreateGraphics(), j, i, grainGrowth.Tab[i, j]);
-                }
+                int y = i * colSpace ;
+                int x = j * rowSpace ;
+
+                if (grainGrowth.Tab[y, x] != 0)
+                    return;
+
+
+                grainGrowth.Tab[y,x] = Colors.RandomColor();
+                grainGrowth.Display(pictureBox.CreateGraphics(), x, y, grainGrowth.Tab[y, x]);
             }
         }
     }
 
-    public static int[,] Homogeneus(Grid grid, Simulation grainGrowth, int row, int col)
+    public static int[,] Homogeneus(Grid grid, Simulation grainGrowth, int numberInRow, int numberInCol)
     {
         int sizeX = SIZE_X;
         int sizeY = SIZE_Y;
@@ -44,16 +57,23 @@ public class Nucleation
 
         Random rnd = new Random();
 
-        for (int i = 0; i < SIZE_Y; i++)
+        int rowSpace = SIZE_X / numberInRow;
+        int colSpace = SIZE_Y / numberInCol;
+
+        int offsetRow = (SIZE_X - rowSpace) / 2;
+        int offsetCol = (SIZE_Y - colSpace) / 2;
+
+
+        for (int i = 0; i < numberInCol; i++)
         {
-            for (int j = 0; j < SIZE_X; j++)
+            for (int j = 0; j < numberInRow; j++)
             {
-                if (i % row == 0 && j % col == 0 && grainGrowth.Tab[i, j] == 0)
-                {
-                    tab[i, j] = Colors.RandomColor();
-                }
+                int y = i * colSpace + offsetCol;
+                int x = j * rowSpace + offsetRow;
+                tab[y, x] = Colors.RandomColor();
             }
         }
+
 
         return tab;
     }
@@ -152,144 +172,125 @@ public class Nucleation
     }
 
     
-    public static void Radial(Grid grid, Simulation grainGrowth, int r, int number, PictureBox pictureBox)
+    public static void Radial(Grid grid, Simulation grainGrowth, int r, int number, PictureBox pictureBox, TextBox alertTextBox, GrainGrowth.Form1 form)
     {
 
         Random rnd = new Random();
 
-        int n = 0;
+
+
+        List<int> listX = new List<int>();
+        List<int> listY = new List<int>();
 
         for (int i = 0; i < SIZE_Y; i++)
         {
             for (int j = 0; j < SIZE_X; j++)
             {
-                if (grainGrowth.Tab[i, j] != 0)
-                    continue;
-
-                int maxY = i + r >= SIZE_Y ? SIZE_Y - 1  : i + r;
-                int maxX = j + r >= SIZE_X ? SIZE_X - 1 : j + r;
-                int minY = i - r < 0 ? 0 : i - r;
-                int minX = j - r < 0 ? 0 : j - r;
-
-                bool isInRange = false;
-
-                for (int y = i, index = 0, iterator = 0; y <= maxY; y++)
+                if (grainGrowth.Tab[i, j] == 0)
                 {
-                    for(int x = j; x <= maxX + index; x++)
+                    listX.Add(j);
+                    listY.Add(i);
+                }
+            }
+        }
+
+        int n = 0;
+
+        while(n < number && listX.Count > 0)
+        {
+            int indexList = rnd.Next(listX.Count);
+
+            int j = listX.ElementAt(indexList);
+            int i = listY.ElementAt(indexList);
+
+            listX.RemoveAt(indexList);
+            listY.RemoveAt(indexList);
+
+            int maxY = i + r >= SIZE_Y ? SIZE_Y - 1 : i + r;
+            int maxX = j + r >= SIZE_X ? SIZE_X - 1 : j + r;
+            int minY = i - r < 0 ? 0 : i - r;
+            int minX = j - r < 0 ? 0 : j - r;
+         
+            bool isInRange = false;
+
+            if (grainGrowth.Tab[maxY, j] != 0)
+            {
+                isInRange = true;
+                continue;
+            }
+
+            if (grainGrowth.Tab[minY, j] != 0)
+            {
+                isInRange = true;
+                continue;
+            }
+
+            if (grainGrowth.Tab[i, maxX] != 0)
+            {
+                isInRange = true;
+                continue;
+            }
+
+            if (grainGrowth.Tab[i, minX] != 0)
+            {
+                isInRange = true;
+                continue;
+            }
+
+            maxY = i + r >= SIZE_Y ? SIZE_Y - 1 : i + r - 1;
+            maxX = j + r >= SIZE_X ? SIZE_X - 1 : j + r - 1;
+            minY = i - r < 0 ? 0 : i - r + 1;
+            minX = j - r < 0 ? 0 : j - r + 1;
+
+            for (int x = minX; x <= maxX; ++x)
+            {
+                for (int y = minY; y <= maxY; ++y)
+                {
+                    if (!(y == i && x == j) && grainGrowth.Tab[y, x] != 0)
                     {
-                        if (!(y == i && x == j) && grainGrowth.Tab[y, x] != 0)
-                        {
-                            isInRange = true;
-                            break;
-                        }
-                    }
-
-                    if(j + r - iterator < SIZE_X )
-                    {
-                        index--;
-                    }
-
-                    iterator++;
-
-                    if (isInRange)
+                        isInRange = true;
                         break;
+                    }
                 }
 
                 if (isInRange)
-                    continue;
-
-                for (int y = i, index = 0, iterator = 0; y >= minY; y--)
-                {
-                    for (int x = j; x >= minX + index; x--)
-                    {
-                        if (!(y == i && x == j) && grainGrowth.Tab[y, x] != 0)
-                        {
-                            isInRange = true;
-                            break;
-                        }
-                    }
-
-                    if (j - r + iterator >= 0)
-                    {
-                        index++;
-                    }
-
-                    iterator++;
-
-
-                    if (isInRange)
-                        break;
-                }
-
-                if (isInRange)
-                    continue;
-
-                for (int y = i, index = 0, iterator = 0; y <= maxY; y++)
-                {
-                    for (int x = j; x >= minX + index; x--)
-                    {
-                        if (!(y == i && x == j) && grainGrowth.Tab[y, x] != 0)
-                        {
-                            isInRange = true;
-                            break;
-                        }
-                    }
-
-                    if (j - r + iterator >= 0)
-                    {
-                        index++;
-                    }
-
-                    iterator++;
-
-                    if (isInRange)
-                        break;
-                }
-
-                if (isInRange)
-                    continue;
-
-                for (int y = i, index = 0, iterator = 0; y >= minY; y--)
-                {
-                    for (int x = j; x <= maxX + index; x++)
-                    {
-                        if (!(y == i && x == j) && grainGrowth.Tab[y, x] != 0)
-                        {
-                            isInRange = true;
-                            break;
-                        }
-                    }
-
-                    if (j + r - iterator < SIZE_X)
-                    {
-                        index--;
-                    }
-
-                    iterator++;
-
-                    if (isInRange)
-                        break;
-                }
-
-
-                if (isInRange)
-                    continue;
-
-
-                grainGrowth.Tab[i, j] = Colors.RandomColor();
-                grainGrowth.Display(pictureBox.CreateGraphics(), j, i, grainGrowth.Tab[i, j]);
-                n++;
-
-                if (n >= number)
                     break;
             }
 
-            if (n >= number)
-                break;
+            if (isInRange)
+                continue;
+
+
+            grainGrowth.Tab[i, j] = Colors.RandomColor();
+            grainGrowth.Display(pictureBox.CreateGraphics(), j, i, grainGrowth.Tab[i, j]);
+
+            n++;
         }
+
+        if(n < number)
+        {
+            BackgroundWorker backgroundWorker = new BackgroundWorker();
+            backgroundWorker.DoWork += new DoWorkEventHandler((state, args) =>
+            {
+                form.AlertTextBoxAction("Not added " + (number - n) + " grain/s", true);
+                
+                System.Threading.Thread.Sleep(3000);
+
+                form.AlertTextBoxAction("", false);
+
+            });
+
+            backgroundWorker.RunWorkerAsync();
+
+        }
+
+
+          
+
+       
     }
 
-    public static int[,] Radial(Grid grid, Simulation grainGrowth, int r, int number)
+    public static int[,] Radial(Grid grid, Simulation grainGrowth, int r, int number, TextBox alertTextBox, GrainGrowth.Form1 form)
     {
         int sizeX = SIZE_X;
         int sizeY = SIZE_Y;
@@ -306,139 +307,171 @@ public class Nucleation
 
         Random rnd = new Random();
 
-        int n = 0;
+
+
+        List<int> listX = new List<int>();
+        List<int> listY = new List<int>();
 
         for (int i = 0; i < SIZE_Y; i++)
         {
             for (int j = 0; j < SIZE_X; j++)
             {
-                if (tab[i,j] != 0 || grainGrowth.Tab[i, j] != 0)
+                if (grainGrowth.Tab[i, j] == 0)
                 {
-                    continue;
+                    listX.Add(j);
+                    listY.Add(i);
                 }
+            }
+        }
 
-                int maxY = i + r >= SIZE_Y ? SIZE_Y - 1 : i + r;
-                int maxX = j + r >= SIZE_X ? SIZE_X - 1 : j + r;
-                int minY = i - r < 0 ? 0 : i - r;
-                int minX = j - r < 0 ? 0 : j - r;
+        int n = 0;
 
-                bool isInRange = false;
+        while (n < number && listX.Count > 0)
+        {
+            int indexList = rnd.Next(listX.Count);
 
-                for (int y = i, index = 0, iterator = 0; y <= maxY; y++)
+            int j = listX.ElementAt(indexList);
+            int i = listY.ElementAt(indexList);
+
+            listX.RemoveAt(indexList);
+            listY.RemoveAt(indexList);
+
+
+            int maxY = i + r >= SIZE_Y ? SIZE_Y - 1 : i + r;
+            int maxX = j + r >= SIZE_X ? SIZE_X - 1 : j + r;
+            int minY = i - r < 0 ? 0 : i - r;
+            int minX = j - r < 0 ? 0 : j - r;
+
+            bool isInRange = false;
+
+            for (int y = i, index = 0, iterator = 0; y <= maxY; y++)
+            {
+                for (int x = j; x <= maxX + index; x++)
                 {
-                    for (int x = j; x <= maxX + index; x++)
+                    if (!(y == i && x == j) && grainGrowth.Tab[y, x] != 0)
                     {
-                        if (!(y == i && x == j) && (tab[y, x] != 0 ||  grainGrowth.Tab[y, x] != 0))
-                        {
-                            isInRange = true;
-                            break;
-                        }
-                    }
-
-                    if (j + r - iterator < SIZE_X)
-                    {
-                        index--;
-                    }
-
-                    iterator++;
-
-                    if (isInRange)
+                        isInRange = true;
                         break;
+                    }
                 }
+
+                if (j + r - iterator < SIZE_X)
+                {
+                    index--;
+                }
+
+                iterator++;
 
                 if (isInRange)
-                    continue;
-
-                for (int y = i, index = 0, iterator = 0; y >= minY; y--)
-                {
-                    for (int x = j; x >= minX + index; x--)
-                    {
-                        if (!(y == i && x == j) && (tab[y, x] != 0 ||  grainGrowth.Tab[y, x] != 0))
-                        {
-                            isInRange = true;
-                            break;
-                        }
-                    }
-
-                    if (j - r + iterator >= 0)
-                    {
-                        index++;
-                    }
-
-                    iterator++;
-
-
-                    if (isInRange)
-                        break;
-                }
-
-                if (isInRange)
-                    continue;
-
-                for (int y = i, index = 0, iterator = 0; y <= maxY; y++)
-                {
-                    for (int x = j; x >= minX + index; x--)
-                    {
-                        if (!(y == i && x == j) && (tab[y, x] != 0 ||  grainGrowth.Tab[y, x] != 0))
-                        {
-                            isInRange = true;
-                            break;
-                        }
-                    }
-
-                    if (j - r + iterator >= 0)
-                    {
-                        index++;
-                    }
-
-                    iterator++;
-
-                    if (isInRange)
-                        break;
-                }
-
-                if (isInRange)
-                    continue;
-
-                for (int y = i, index = 0, iterator = 0; y >= minY; y--)
-                {
-                    for (int x = j; x <= maxX + index; x++)
-                    {
-                        if (!(y == i && x == j) && (tab[y, x] != 0 ||  grainGrowth.Tab[y, x] != 0))
-                        {
-                            isInRange = true;
-                            break;
-                        }
-                    }
-
-                    if (j + r - iterator < SIZE_X)
-                    {
-                        index--;
-                    }
-
-                    iterator++;
-
-                    if (isInRange)
-                        break;
-                }
-
-
-                if (isInRange)
-                    continue;
-
-                tab[i, j] = Colors.RandomColor();
-
-                n++;
-
-                if (n >= number)
                     break;
             }
 
-            if (n >= number)
-                break;
+            if (isInRange)
+                continue;
+
+            for (int y = i, index = 0, iterator = 0; y >= minY; y--)
+            {
+                for (int x = j; x >= minX + index; x--)
+                {
+                    if (!(y == i && x == j) && grainGrowth.Tab[y, x] != 0)
+                    {
+                        isInRange = true;
+                        break;
+                    }
+                }
+
+                if (j - r + iterator >= 0)
+                {
+                    index++;
+                }
+
+                iterator++;
+
+
+                if (isInRange)
+                    break;
+            }
+
+            if (isInRange)
+                continue;
+
+            for (int y = i, index = 0, iterator = 0; y <= maxY; y++)
+            {
+                for (int x = j; x >= minX + index; x--)
+                {
+                    if (!(y == i && x == j) && grainGrowth.Tab[y, x] != 0)
+                    {
+                        isInRange = true;
+                        break;
+                    }
+                }
+
+                if (j - r + iterator >= 0)
+                {
+                    index++;
+                }
+
+                iterator++;
+
+                if (isInRange)
+                    break;
+            }
+
+            if (isInRange)
+                continue;
+
+            for (int y = i, index = 0, iterator = 0; y >= minY; y--)
+            {
+                for (int x = j; x <= maxX + index; x++)
+                {
+                    if (!(y == i && x == j) && grainGrowth.Tab[y, x] != 0)
+                    {
+                        isInRange = true;
+                        break;
+                    }
+                }
+
+                if (j + r - iterator < SIZE_X)
+                {
+                    index--;
+                }
+
+                iterator++;
+
+                if (isInRange)
+                    break;
+            }
+
+
+            if (isInRange)
+                continue;
+
+
+            tab[i, j] = Colors.RandomColor();
+            n++;
+
+        }
+
+        if (n < number)
+        {
+            BackgroundWorker backgroundWorker = new BackgroundWorker();
+            backgroundWorker.DoWork += new DoWorkEventHandler((state, args) =>
+            {
+                form.AlertTextBoxAction("Not added " + (number - n) + " grain/s", true);
+
+                System.Threading.Thread.Sleep(3000);
+
+                form.AlertTextBoxAction("", false);
+
+
+            });
+
+            backgroundWorker.RunWorkerAsync();
+            
         }
 
         return tab;
     }
+
 }
 

@@ -70,6 +70,7 @@
             this.widthBox = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
+            this.alertTextBox = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -232,6 +233,7 @@
             // groupBox4
             // 
             this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox4.Controls.Add(this.alertTextBox);
             this.groupBox4.Controls.Add(this.random_button);
             this.groupBox4.Controls.Add(this.radial_button);
             this.groupBox4.Controls.Add(this.homogeneus_button);
@@ -247,7 +249,7 @@
             this.groupBox4.Controls.Add(this.rowUpDown);
             this.groupBox4.Location = new System.Drawing.Point(3, 299);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(186, 178);
+            this.groupBox4.Size = new System.Drawing.Size(186, 210);
             this.groupBox4.TabIndex = 4;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Nucleation";
@@ -561,6 +563,16 @@
             this.label10.TabIndex = 0;
             this.label10.Text = "Height";
             // 
+            // alertTextBox
+            // 
+            this.alertTextBox.BackColor = System.Drawing.SystemColors.Control;
+            this.alertTextBox.Location = new System.Drawing.Point(3, 184);
+            this.alertTextBox.Name = "alertTextBox";
+            this.alertTextBox.Size = new System.Drawing.Size(180, 20);
+            this.alertTextBox.TabIndex = 15;
+            this.alertTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.alertTextBox.Visible = false;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -641,6 +653,7 @@
         private System.Windows.Forms.Button radial_button;
         private System.Windows.Forms.Button random_button;
         private System.Windows.Forms.CheckBox gridCheckBox;
+        private System.Windows.Forms.TextBox alertTextBox;
     }
 }
 

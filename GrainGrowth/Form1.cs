@@ -171,7 +171,6 @@ namespace GrainGrowth
 
                 if (grainGrowth.Tab[y, x] == 0)
                 {
-                    Console.WriteLine("XAD");
                     this.tab[y, x] = Colors.RandomColor();
                 }
                 else
@@ -424,11 +423,11 @@ namespace GrainGrowth
 
             if(!isPlaying)
             {
-                Nucleation.Radial(grid, grainGrowth, r, number, pictureBox1); 
+                Nucleation.Radial(grid, grainGrowth, r, number, pictureBox1, alertTextBox, this); 
             }
             else
             {
-                this.tab = Nucleation.Radial(grid, grainGrowth, r, number);
+                this.tab = Nucleation.Radial(grid, grainGrowth, r, number, alertTextBox, this);
                 clickedButton = true;
 
             }
@@ -517,6 +516,17 @@ namespace GrainGrowth
         {
             grid.Draw(e.Graphics);
             grainGrowth.Display(e.Graphics);
+        }
+
+        public void AlertTextBoxAction(string value, bool visibility)
+        {
+            if (InvokeRequired)
+            {
+                this.Invoke(new Action<string, bool>(AlertTextBoxAction), new object[] { value, visibility });
+                return;
+            }
+            alertTextBox.Text = value;
+            alertTextBox.Visible = visibility;
         }
     }
 }
