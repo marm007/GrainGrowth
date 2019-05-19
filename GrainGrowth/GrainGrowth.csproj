@@ -54,6 +54,7 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="GrainEnergy.cs" />
     <Compile Include="Nucleation.cs" />
     <Compile Include="Simulation.cs" />
     <Compile Include="Grid.cs" />

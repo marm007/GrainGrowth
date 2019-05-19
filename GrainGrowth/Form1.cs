@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -34,6 +35,8 @@ namespace GrainGrowth
 
         Simulation grainGrowth = null;
 
+        GrainEnergy grainEnergy = null;
+
         PictureBox pPictureBox = null;
 
         private BackgroundWorker backgroundWorker = null;
@@ -58,9 +61,18 @@ namespace GrainGrowth
             toolTip1.SetToolTip(radiusUpDown, "Set radius");
             toolTip1.SetToolTip(numberRadialUpDown, "Set max number of elements");
             toolTip1.SetToolTip(numberRandomUpDown, "Set max number of random elements");
+
+            hexagonalComboBox.Items.Add(HexagonalNeighbourhood.Left);
+            hexagonalComboBox.Items.Add(HexagonalNeighbourhood.Right);
+            hexagonalComboBox.Items.Add(HexagonalNeighbourhood.Random);
+
+            hexagonalComboBox.SelectedItem = HexagonalNeighbourhood.Left;
+
+
+
         }
 
-       
+
 
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -72,6 +84,7 @@ namespace GrainGrowth
 
             grid = new Grid();
             grainGrowth = new Simulation();
+            grainEnergy = new GrainEnergy();
 
             widthBox.Text = SIZE_X.ToString();
             heightBox.Text = SIZE_Y.ToString();
@@ -147,7 +160,6 @@ namespace GrainGrowth
                 {
 
                     grainGrowth.Tab[y, x] = Colors.RandomColor();
-
                     grainGrowth.Display(pictureBox1.CreateGraphics(), x, y, grainGrowth.Tab[y, x]);
 
                 }
@@ -180,6 +192,8 @@ namespace GrainGrowth
 
                 clickedButton = true;
             }
+
+            grainEnergy.Display(pictureBox1.CreateGraphics(), x, y);
           
         }
 
@@ -239,6 +253,7 @@ namespace GrainGrowth
             start_button.Enabled = true;
             stop_button.Enabled = false;
             clear_button.Enabled = false;
+            grid.Draw(pictureBox1.CreateGraphics());
 
             for (int i = 0; i < SIZE_Y; i++)
             {
@@ -248,23 +263,53 @@ namespace GrainGrowth
                 }
             }
 
+            grainEnergy.Display(pictureBox1.CreateGraphics());
+
             Colors.Initialize();
         }
 
         private void step_button_Click(object sender, EventArgs e)
         {
-            grainGrowth.Simulate(pictureBox1);
+            grainGrowth.Simulate(pictureBox1, grainEnergy);
             clear_button.Enabled = true;
         }
 
         private void neumann_button_CheckedChanged(object sender, EventArgs e)
         {
-            NEIGHBOURHOOD = Neighbourhood.von_Neumann;
+            if (neumann_button.Checked)
+                NEIGHBOURHOOD = Neighbourhood.von_Neumann;
         }
 
         private void moore_button_CheckedChanged(object sender, EventArgs e)
         {
-            NEIGHBOURHOOD = Neighbourhood.Moore;
+            if (moore_button.Checked)
+                NEIGHBOURHOOD = Neighbourhood.Moore;
+        }
+
+
+        private void pentagonalRadioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            if (pentagonalRadioButton.Checked)
+            {
+                pentagonalLabel.Visible = true;
+            }
+            else
+            {
+                pentagonalLabel.Text = "";
+                pentagonalLabel.Visible = false;
+            }
+
+        }
+
+        private void hexagonalRadioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            if (hexagonalRadioButton.Checked)
+            {
+                hexagonalComboBox.Enabled = true;
+
+                HEXAGONAL_NEIGHBOURHOOD = (HexagonalNeighbourhood) hexagonalComboBox.SelectedItem;
+                NEIGHBOURHOOD = Neighbourhood.Hexagonal;
+            }
         }
 
         private void probability_up_down_ValueChanged(object sender, EventArgs e)
@@ -273,13 +318,15 @@ namespace GrainGrowth
 
         private void nonperiodic_button_CheckedChanged(object sender, EventArgs e)
         {
-            BOUNDARY_CONDITION = BoundaryCondition.Nonperiodic;
+            if(nonperiodic_button.Checked)
+                BOUNDARY_CONDITION = BoundaryCondition.Nonperiodic;
 
         }
 
         private void periodic_button_CheckedChanged(object sender, EventArgs e)
         {
-            BOUNDARY_CONDITION = BoundaryCondition.Periodic;
+            if(periodic_button.Checked)
+                BOUNDARY_CONDITION = BoundaryCondition.Periodic;
         }
 
 
@@ -374,10 +421,17 @@ namespace GrainGrowth
         private void cellSizeTracBar_Scroll(object sender, EventArgs e)
         {
             CELL_SIZE = 4 * cellSizeTracBar.Value;
+
             grid.SetNewCellSizeAndDraw(pictureBox1.CreateGraphics(), pictureBox1, grainGrowth);
+
+            grainEnergy = new GrainEnergy();
+            grainEnergy.Display(pictureBox1.CreateGraphics());
+
 
             widthBox.Text = SIZE_X.ToString();
             heightBox.Text = SIZE_Y.ToString();
+
+
         }
 
         private void cellSizeTrackBar_MouseUp(object sender, MouseEventArgs e)
@@ -462,7 +516,14 @@ namespace GrainGrowth
                         break;
                     }
 
-                    grainGrowth.Simulate(pictureBox1);
+                    grainGrowth.Simulate(pictureBox1, grainEnergy);
+                    if (grainGrowth.SimulationEnded())
+                    {
+
+                        SimulationEndedAction("finish");
+                        break;
+
+                    }
 
                     int time = 0;
 
@@ -506,6 +567,7 @@ namespace GrainGrowth
             {
                 grid.RenderGridAndRefresh(pictureBox1.CreateGraphics(), pictureBox1);
                 grainGrowth.Display(pictureBox1.CreateGraphics());
+                grainEnergy.Display(pictureBox1.CreateGraphics());
             });
 
             renderWroker.RunWorkerAsync();
@@ -516,6 +578,8 @@ namespace GrainGrowth
         {
             grid.Draw(e.Graphics);
             grainGrowth.Display(e.Graphics);
+            grainEnergy.Display(e.Graphics);
+
         }
 
         public void AlertTextBoxAction(string value, bool visibility)
@@ -528,5 +592,77 @@ namespace GrainGrowth
             alertTextBox.Text = value;
             alertTextBox.Visible = visibility;
         }
+
+        public void SimulationEndedAction(string value)
+        {
+            if (InvokeRequired)
+            {
+                this.Invoke(new Action<string>(SimulationEndedAction), new object[] { value });
+                return;
+            }
+            isPlaying = false;
+            flagStop = true;
+
+            cellSizeTracBar.Enabled = true;
+            gridCheckBox.Enabled = true;
+
+            start_button.Enabled = true;
+            stop_button.Enabled = false;
+            clear_button.Enabled = true;
+            step_button.Enabled = true;
+        }
+
+        private void hexagonalComboBox_SelectedItemChanged(object sender, EventArgs e)
+        {
+            if (hexagonalComboBox.Enabled)
+            {
+                HEXAGONAL_NEIGHBOURHOOD = (HexagonalNeighbourhood)hexagonalComboBox.SelectedItem;
+                NEIGHBOURHOOD = Neighbourhood.Hexagonal;
+            }
+        }
+
+        private void pentagonalRadioButton_Click(object sender, EventArgs e)
+        {
+            Array values = Enum.GetValues(typeof(PentagonalNeighbourhood));
+            PENTAGONAL_NEIGHBOURHOOD = (PentagonalNeighbourhood)values.GetValue(rnd.Next(values.Length));
+            pentagonalLabel.Text = PENTAGONAL_NEIGHBOURHOOD.ToString();
+            NEIGHBOURHOOD = Neighbourhood.Pentagonal;
+        }
+
+        private void energyCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            ENERGY_STATE = ENERGY_STATE == EnergyState.Enable ? EnergyState.Disable : EnergyState.Enable;
+            BackgroundWorker renderWroker = new BackgroundWorker();
+
+            renderWroker.DoWork += new DoWorkEventHandler((state, args) =>
+            {
+                grid.RenderGridAndRefresh(pictureBox1.CreateGraphics(), pictureBox1);
+                grainGrowth.Display(pictureBox1.CreateGraphics());
+                grainEnergy.Display(pictureBox1.CreateGraphics());
+            });
+
+            renderWroker.RunWorkerAsync();
+        }
+
+        private void radialNeighbourhood_RadioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radialNeighbourhood_RadioButton.Checked)
+            {
+                NEIGHBOURHOOD = Neighbourhood.Radial;
+                radialNeighbourhood_UpDown.Enabled = true;
+                RADIUS = (float) radialNeighbourhood_UpDown.Value;
+
+            }
+            else
+            {
+                radialNeighbourhood_UpDown.Enabled = false;
+            }
+        }
+
+        private void radialNegihbourhoodUpDown_ValueChanged(object sender, EventArgs e)
+        {
+            RADIUS = (float)radialNeighbourhood_UpDown.Value;
+        }
+
     }
 }

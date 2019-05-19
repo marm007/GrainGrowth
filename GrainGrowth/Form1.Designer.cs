@@ -36,12 +36,19 @@
             this.stop_button = new System.Windows.Forms.Button();
             this.start_button = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.radialNeighbourhood_UpDown = new System.Windows.Forms.NumericUpDown();
+            this.radialNeighbourhood_RadioButton = new System.Windows.Forms.RadioButton();
+            this.pentagonalLabel = new System.Windows.Forms.Label();
+            this.hexagonalComboBox = new System.Windows.Forms.ComboBox();
+            this.pentagonalRadioButton = new System.Windows.Forms.RadioButton();
+            this.hexagonalRadioButton = new System.Windows.Forms.RadioButton();
             this.moore_button = new System.Windows.Forms.RadioButton();
             this.neumann_button = new System.Windows.Forms.RadioButton();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.periodic_button = new System.Windows.Forms.RadioButton();
             this.nonperiodic_button = new System.Windows.Forms.RadioButton();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.alertTextBox = new System.Windows.Forms.TextBox();
             this.random_button = new System.Windows.Forms.Button();
             this.radial_button = new System.Windows.Forms.Button();
             this.homogeneus_button = new System.Windows.Forms.Button();
@@ -60,6 +67,7 @@
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.energyCheckBox = new System.Windows.Forms.CheckBox();
             this.gridCheckBox = new System.Windows.Forms.CheckBox();
             this.speedTracBar = new System.Windows.Forms.TrackBar();
             this.label7 = new System.Windows.Forms.Label();
@@ -70,10 +78,15 @@
             this.widthBox = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
-            this.alertTextBox = new System.Windows.Forms.TextBox();
+            this.hexagonalToolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.button1 = new System.Windows.Forms.Button();
+            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
+            this.label1 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.radialNeighbourhood_UpDown)).BeginInit();
             this.groupBox3.SuspendLayout();
             this.groupBox4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numberRandomUpDown)).BeginInit();
@@ -87,6 +100,8 @@
             this.groupBox5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.speedTracBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.cellSizeTracBar)).BeginInit();
+            this.groupBox6.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.SuspendLayout();
             // 
             // pictureBox1
@@ -96,7 +111,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.pictureBox1.Location = new System.Drawing.Point(12, 12);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(720, 541);
+            this.pictureBox1.Size = new System.Drawing.Size(720, 481);
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
             this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);
@@ -159,19 +174,102 @@
             // groupBox2
             // 
             this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox2.Controls.Add(this.radialNeighbourhood_UpDown);
+            this.groupBox2.Controls.Add(this.radialNeighbourhood_RadioButton);
+            this.groupBox2.Controls.Add(this.pentagonalLabel);
+            this.groupBox2.Controls.Add(this.hexagonalComboBox);
+            this.groupBox2.Controls.Add(this.pentagonalRadioButton);
+            this.groupBox2.Controls.Add(this.hexagonalRadioButton);
             this.groupBox2.Controls.Add(this.moore_button);
             this.groupBox2.Controls.Add(this.neumann_button);
             this.groupBox2.Location = new System.Drawing.Point(3, 112);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(186, 100);
+            this.groupBox2.Size = new System.Drawing.Size(186, 149);
             this.groupBox2.TabIndex = 2;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Neighbourhood";
             // 
+            // radialNeighbourhood_UpDown
+            // 
+            this.radialNeighbourhood_UpDown.DecimalPlaces = 1;
+            this.radialNeighbourhood_UpDown.Enabled = false;
+            this.radialNeighbourhood_UpDown.Location = new System.Drawing.Point(107, 106);
+            this.radialNeighbourhood_UpDown.Minimum = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
+            this.radialNeighbourhood_UpDown.Name = "radialNeighbourhood_UpDown";
+            this.radialNeighbourhood_UpDown.Size = new System.Drawing.Size(64, 20);
+            this.radialNeighbourhood_UpDown.TabIndex = 10;
+            this.radialNeighbourhood_UpDown.Value = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
+            this.radialNeighbourhood_UpDown.ValueChanged += new System.EventHandler(this.radialNegihbourhoodUpDown_ValueChanged);
+            // 
+            // radialNeighbourhood_RadioButton
+            // 
+            this.radialNeighbourhood_RadioButton.AutoSize = true;
+            this.radialNeighbourhood_RadioButton.Location = new System.Drawing.Point(6, 109);
+            this.radialNeighbourhood_RadioButton.Name = "radialNeighbourhood_RadioButton";
+            this.radialNeighbourhood_RadioButton.Size = new System.Drawing.Size(55, 17);
+            this.radialNeighbourhood_RadioButton.TabIndex = 9;
+            this.radialNeighbourhood_RadioButton.TabStop = true;
+            this.radialNeighbourhood_RadioButton.Text = "Radial";
+            this.radialNeighbourhood_RadioButton.UseVisualStyleBackColor = true;
+            this.radialNeighbourhood_RadioButton.CheckedChanged += new System.EventHandler(this.radialNeighbourhood_RadioButton_CheckedChanged);
+            // 
+            // pentagonalLabel
+            // 
+            this.pentagonalLabel.AutoSize = true;
+            this.pentagonalLabel.Location = new System.Drawing.Point(24, 68);
+            this.pentagonalLabel.Name = "pentagonalLabel";
+            this.pentagonalLabel.Size = new System.Drawing.Size(0, 13);
+            this.pentagonalLabel.TabIndex = 7;
+            this.pentagonalLabel.Visible = false;
+            // 
+            // hexagonalComboBox
+            // 
+            this.hexagonalComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.hexagonalComboBox.Enabled = false;
+            this.hexagonalComboBox.FormattingEnabled = true;
+            this.hexagonalComboBox.Location = new System.Drawing.Point(107, 68);
+            this.hexagonalComboBox.Name = "hexagonalComboBox";
+            this.hexagonalComboBox.Size = new System.Drawing.Size(72, 21);
+            this.hexagonalComboBox.TabIndex = 6;
+            this.hexagonalComboBox.SelectedIndexChanged += new System.EventHandler(this.hexagonalComboBox_SelectedItemChanged);
+            // 
+            // pentagonalRadioButton
+            // 
+            this.pentagonalRadioButton.AutoSize = true;
+            this.pentagonalRadioButton.Location = new System.Drawing.Point(7, 45);
+            this.pentagonalRadioButton.Name = "pentagonalRadioButton";
+            this.pentagonalRadioButton.Size = new System.Drawing.Size(79, 17);
+            this.pentagonalRadioButton.TabIndex = 5;
+            this.pentagonalRadioButton.TabStop = true;
+            this.pentagonalRadioButton.Text = "Pentagonal";
+            this.pentagonalRadioButton.UseVisualStyleBackColor = true;
+            this.pentagonalRadioButton.CheckedChanged += new System.EventHandler(this.pentagonalRadioButton_CheckedChanged);
+            this.pentagonalRadioButton.Click += new System.EventHandler(this.pentagonalRadioButton_Click);
+            // 
+            // hexagonalRadioButton
+            // 
+            this.hexagonalRadioButton.AutoSize = true;
+            this.hexagonalRadioButton.Location = new System.Drawing.Point(107, 45);
+            this.hexagonalRadioButton.Name = "hexagonalRadioButton";
+            this.hexagonalRadioButton.Size = new System.Drawing.Size(76, 17);
+            this.hexagonalRadioButton.TabIndex = 4;
+            this.hexagonalRadioButton.TabStop = true;
+            this.hexagonalRadioButton.Text = "Hexagonal";
+            this.hexagonalRadioButton.UseVisualStyleBackColor = true;
+            this.hexagonalRadioButton.CheckedChanged += new System.EventHandler(this.hexagonalRadioButton_CheckedChanged);
+            // 
             // moore_button
             // 
             this.moore_button.AutoSize = true;
-            this.moore_button.Location = new System.Drawing.Point(7, 45);
+            this.moore_button.Location = new System.Drawing.Point(107, 22);
             this.moore_button.Name = "moore_button";
             this.moore_button.Size = new System.Drawing.Size(55, 17);
             this.moore_button.TabIndex = 3;
@@ -198,7 +296,7 @@
             this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox3.Controls.Add(this.periodic_button);
             this.groupBox3.Controls.Add(this.nonperiodic_button);
-            this.groupBox3.Location = new System.Drawing.Point(3, 218);
+            this.groupBox3.Location = new System.Drawing.Point(3, 267);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(186, 75);
             this.groupBox3.TabIndex = 3;
@@ -247,12 +345,22 @@
             this.groupBox4.Controls.Add(this.label2);
             this.groupBox4.Controls.Add(this.colUpDown);
             this.groupBox4.Controls.Add(this.rowUpDown);
-            this.groupBox4.Location = new System.Drawing.Point(3, 299);
+            this.groupBox4.Location = new System.Drawing.Point(3, 348);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(186, 210);
             this.groupBox4.TabIndex = 4;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Nucleation";
+            // 
+            // alertTextBox
+            // 
+            this.alertTextBox.BackColor = System.Drawing.SystemColors.Control;
+            this.alertTextBox.Location = new System.Drawing.Point(3, 184);
+            this.alertTextBox.Name = "alertTextBox";
+            this.alertTextBox.Size = new System.Drawing.Size(180, 20);
+            this.alertTextBox.TabIndex = 15;
+            this.alertTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.alertTextBox.Visible = false;
             // 
             // random_button
             // 
@@ -423,7 +531,7 @@
             this.tabControl1.Location = new System.Drawing.Point(738, 12);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(200, 541);
+            this.tabControl1.Size = new System.Drawing.Size(200, 590);
             this.tabControl1.TabIndex = 6;
             // 
             // tabPage1
@@ -436,7 +544,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(192, 515);
+            this.tabPage1.Size = new System.Drawing.Size(192, 564);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Controls";
             // 
@@ -447,13 +555,14 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(192, 515);
+            this.tabPage2.Size = new System.Drawing.Size(192, 564);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Settings";
             // 
             // groupBox5
             // 
             this.groupBox5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox5.Controls.Add(this.energyCheckBox);
             this.groupBox5.Controls.Add(this.gridCheckBox);
             this.groupBox5.Controls.Add(this.speedTracBar);
             this.groupBox5.Controls.Add(this.label7);
@@ -466,10 +575,21 @@
             this.groupBox5.Controls.Add(this.label10);
             this.groupBox5.Location = new System.Drawing.Point(6, 6);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(180, 244);
+            this.groupBox5.Size = new System.Drawing.Size(180, 238);
             this.groupBox5.TabIndex = 3;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Data";
+            // 
+            // energyCheckBox
+            // 
+            this.energyCheckBox.AutoSize = true;
+            this.energyCheckBox.Location = new System.Drawing.Point(75, 212);
+            this.energyCheckBox.Name = "energyCheckBox";
+            this.energyCheckBox.Size = new System.Drawing.Size(59, 17);
+            this.energyCheckBox.TabIndex = 10;
+            this.energyCheckBox.Text = "Energy";
+            this.energyCheckBox.UseVisualStyleBackColor = true;
+            this.energyCheckBox.CheckedChanged += new System.EventHandler(this.energyCheckBox_CheckedChanged);
             // 
             // gridCheckBox
             // 
@@ -563,21 +683,53 @@
             this.label10.TabIndex = 0;
             this.label10.Text = "Height";
             // 
-            // alertTextBox
+            // groupBox6
             // 
-            this.alertTextBox.BackColor = System.Drawing.SystemColors.Control;
-            this.alertTextBox.Location = new System.Drawing.Point(3, 184);
-            this.alertTextBox.Name = "alertTextBox";
-            this.alertTextBox.Size = new System.Drawing.Size(180, 20);
-            this.alertTextBox.TabIndex = 15;
-            this.alertTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.alertTextBox.Visible = false;
+            this.groupBox6.Controls.Add(this.label1);
+            this.groupBox6.Controls.Add(this.numericUpDown1);
+            this.groupBox6.Controls.Add(this.button1);
+            this.groupBox6.Location = new System.Drawing.Point(12, 499);
+            this.groupBox6.Name = "groupBox6";
+            this.groupBox6.Size = new System.Drawing.Size(143, 103);
+            this.groupBox6.TabIndex = 7;
+            this.groupBox6.TabStop = false;
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(6, 12);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 0;
+            this.button1.Text = "MonteCarlo";
+            this.button1.UseVisualStyleBackColor = true;
+            // 
+            // numericUpDown1
+            // 
+            this.numericUpDown1.Location = new System.Drawing.Point(6, 44);
+            this.numericUpDown1.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
+            this.numericUpDown1.Name = "numericUpDown1";
+            this.numericUpDown1.Size = new System.Drawing.Size(75, 20);
+            this.numericUpDown1.TabIndex = 1;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(87, 46);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(49, 13);
+            this.label1.TabIndex = 2;
+            this.label1.Text = "iterations";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(950, 562);
+            this.ClientSize = new System.Drawing.Size(950, 611);
+            this.Controls.Add(this.groupBox6);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.pictureBox1);
             this.Name = "Form1";
@@ -590,6 +742,7 @@
             this.groupBox1.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.radialNeighbourhood_UpDown)).EndInit();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
             this.groupBox4.ResumeLayout(false);
@@ -606,6 +759,9 @@
             this.groupBox5.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.speedTracBar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.cellSizeTracBar)).EndInit();
+            this.groupBox6.ResumeLayout(false);
+            this.groupBox6.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -654,6 +810,18 @@
         private System.Windows.Forms.Button random_button;
         private System.Windows.Forms.CheckBox gridCheckBox;
         private System.Windows.Forms.TextBox alertTextBox;
+        private System.Windows.Forms.RadioButton pentagonalRadioButton;
+        private System.Windows.Forms.RadioButton hexagonalRadioButton;
+        private System.Windows.Forms.Label pentagonalLabel;
+        private System.Windows.Forms.ComboBox hexagonalComboBox;
+        private System.Windows.Forms.ToolTip hexagonalToolTip;
+        private System.Windows.Forms.CheckBox energyCheckBox;
+        private System.Windows.Forms.NumericUpDown radialNeighbourhood_UpDown;
+        private System.Windows.Forms.RadioButton radialNeighbourhood_RadioButton;
+        private System.Windows.Forms.GroupBox groupBox6;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.NumericUpDown numericUpDown1;
+        private System.Windows.Forms.Button button1;
     }
 }
 
