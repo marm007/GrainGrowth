@@ -16,7 +16,7 @@ public static class Config
     public static EnergyState ENERGY_STATE = EnergyState.Disable;
 
 
-    public static Neighbourhood NEIGHBOURHOOD = Neighbourhood.von_Neumann;
+    public static Neighbourhood NEIGHBOURHOOD = Neighbourhood.vonNeumann;
     public static Nucleation NUCLEATION = Nucleation.Homogeneus;
     public static BoundaryCondition BOUNDARY_CONDITION = BoundaryCondition.Periodic;
     public static PentagonalNeighbourhood PENTAGONAL_NEIGHBOURHOOD = PentagonalNeighbourhood.Left;
@@ -27,7 +27,7 @@ public static class Config
     public static int SIZE_Y { get { return sIZE_Y; } }
 
 
-    public enum Neighbourhood { von_Neumann, Moore, Pentagonal, Hexagonal, Radial };
+    public enum Neighbourhood { vonNeumann, Moore, Pentagonal, Hexagonal, Radial };
     public enum PentagonalNeighbourhood { Left, Right, Top, Bottom };
     public enum HexagonalNeighbourhood { Right, Left, Random };
     public enum Nucleation { Homogeneus, Radial, Random, Banned};

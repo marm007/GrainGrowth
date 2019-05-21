@@ -80,9 +80,9 @@
             this.label10 = new System.Windows.Forms.Label();
             this.hexagonalToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.groupBox6 = new System.Windows.Forms.GroupBox();
-            this.button1 = new System.Windows.Forms.Button();
-            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
+            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
+            this.button1 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -248,11 +248,10 @@
             this.pentagonalRadioButton.Name = "pentagonalRadioButton";
             this.pentagonalRadioButton.Size = new System.Drawing.Size(79, 17);
             this.pentagonalRadioButton.TabIndex = 5;
-            this.pentagonalRadioButton.TabStop = true;
             this.pentagonalRadioButton.Text = "Pentagonal";
             this.pentagonalRadioButton.UseVisualStyleBackColor = true;
             this.pentagonalRadioButton.CheckedChanged += new System.EventHandler(this.pentagonalRadioButton_CheckedChanged);
-            this.pentagonalRadioButton.Click += new System.EventHandler(this.pentagonalRadioButton_Click);
+            this.pentagonalRadioButton.MouseClick += new System.Windows.Forms.MouseEventHandler(this.pentagonalRadioButton_Click);
             // 
             // hexagonalRadioButton
             // 
@@ -685,6 +684,7 @@
             // 
             // groupBox6
             // 
+            this.groupBox6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.groupBox6.Controls.Add(this.label1);
             this.groupBox6.Controls.Add(this.numericUpDown1);
             this.groupBox6.Controls.Add(this.button1);
@@ -694,14 +694,14 @@
             this.groupBox6.TabIndex = 7;
             this.groupBox6.TabStop = false;
             // 
-            // button1
+            // label1
             // 
-            this.button1.Location = new System.Drawing.Point(6, 12);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 0;
-            this.button1.Text = "MonteCarlo";
-            this.button1.UseVisualStyleBackColor = true;
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(87, 46);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(49, 13);
+            this.label1.TabIndex = 2;
+            this.label1.Text = "iterations";
             // 
             // numericUpDown1
             // 
@@ -715,14 +715,14 @@
             this.numericUpDown1.Size = new System.Drawing.Size(75, 20);
             this.numericUpDown1.TabIndex = 1;
             // 
-            // label1
+            // button1
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(87, 46);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(49, 13);
-            this.label1.TabIndex = 2;
-            this.label1.Text = "iterations";
+            this.button1.Location = new System.Drawing.Point(6, 12);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 0;
+            this.button1.Text = "MonteCarlo";
+            this.button1.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 

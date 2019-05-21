@@ -69,7 +69,7 @@ public class Grid
         Simulation simulation, Graphics g)
     {
        
-        int[,] tabTmp = simulation.Tab;
+        Grain[,] tabTmp = simulation.Tab;
 
         int startSizeX = SIZE_X;
         int startSizeY = SIZE_Y;
@@ -114,12 +114,12 @@ public class Grid
 
         // --------
 
-        simulation.Tab = new int[SIZE_Y, SIZE_X];
+        simulation.Tab = new Grain[SIZE_Y, SIZE_X];
         for (int i = 0; i < SIZE_Y; i++)
         {
             for (int j = 0; j < SIZE_X; j++)
             {
-                simulation.Tab[i, j] = 0;
+                simulation.Tab[i, j] = new Grain(j, i, 0);
             }
         }
         int y = SIZE_Y < startSizeY ? SIZE_Y : startSizeY;
@@ -129,7 +129,7 @@ public class Grid
         {
             for (int j = 0; j < x; j++)
             {
-                simulation.Tab[i, j] = tabTmp[i, j];
+                simulation.Tab[i, j].State = tabTmp[i, j].State;
             }
         }
 
@@ -173,7 +173,7 @@ public class Grid
         int maxSizeY = pictureBox.Height / CELL_SIZE + 1;
         g.FillRectangle(cellBrushClear, 0, 0, maxSizeX * CELL_SIZE + 1, maxSizeY * CELL_SIZE + 1);
 
-        int[,] tabTmp = simulation.Tab;
+        Grain[,] tabTmp = simulation.Tab;
 
         int startSizeX = SIZE_X;
         int startSizeY = SIZE_Y;
@@ -186,13 +186,13 @@ public class Grid
         // --------
 
 
-        simulation.Tab = new int[SIZE_Y, SIZE_X];
+        simulation.Tab = new Grain[SIZE_Y, SIZE_X];
 
         for (int i = 0; i < SIZE_Y; i++)
         {
             for (int j = 0; j < SIZE_X; j++)
             {
-                simulation.Tab[i, j] = 0;
+                simulation.Tab[i, j] = new Grain(j, i, 0);
             }
         }
 
@@ -203,7 +203,7 @@ public class Grid
         {
             for (int j = 0; j < x; j++)
             {
-                simulation.Tab[i, j] = tabTmp[i, j];
+                simulation.Tab[i, j].State = tabTmp[i, j].State;
             }
         }
 

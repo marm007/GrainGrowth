@@ -30,28 +30,28 @@ public class Nucleation
                 int y = i * colSpace ;
                 int x = j * rowSpace ;
 
-                if (grainGrowth.Tab[y, x] != 0)
+                if (grainGrowth.Tab[y, x].State != 0)
                     return;
 
 
-                grainGrowth.Tab[y,x] = Colors.RandomColor();
-                grainGrowth.Display(pictureBox.CreateGraphics(), x, y, grainGrowth.Tab[y, x]);
+                grainGrowth.Tab[y,x].State = Colors.RandomColor();
+                grainGrowth.Tab[y, x].Display(pictureBox.CreateGraphics());
             }
         }
     }
 
-    public static int[,] Homogeneus(Grid grid, Simulation grainGrowth, int numberInRow, int numberInCol)
+    public static Grain[,] Homogeneus(Grid grid, Simulation grainGrowth, int numberInRow, int numberInCol)
     {
         int sizeX = SIZE_X;
         int sizeY = SIZE_Y;
 
-        int [,] tab = new int[sizeY, sizeX];
+        Grain[,] tab = new Grain[sizeY, sizeX];
         for (int i = 0; i < SIZE_Y; i++)
         {
 
             for (int j = 0; j < SIZE_X; j++)
             {
-                tab[i, j] = 0;
+                tab[i, j] = new Grain(j, i, 0);
             }
         }
 
@@ -70,7 +70,7 @@ public class Nucleation
             {
                 int y = i * colSpace + offsetCol;
                 int x = j * rowSpace + offsetRow;
-                tab[y, x] = Colors.RandomColor();
+                tab[y, x].State = Colors.RandomColor();
             }
         }
 
@@ -92,7 +92,7 @@ public class Nucleation
         {
             for (int j = 0; j < SIZE_X; j++)
             {
-                if (grainGrowth.Tab[i, j] == 0)
+                if (grainGrowth.Tab[i, j].State == 0)
                 {
                     listX.Add(j);
                     listY.Add(i);
@@ -112,27 +112,27 @@ public class Nucleation
                 listX.RemoveAt(index);
                 listY.RemoveAt(index);
 
-                grainGrowth.Tab[y, x] = Colors.RandomColor();
-                grainGrowth.Display(pictureBox.CreateGraphics(), x, y, grainGrowth.Tab[y, x]);
+                grainGrowth.Tab[y, x].State = Colors.RandomColor();
+                grainGrowth.Tab[y, x].Display(pictureBox.CreateGraphics());
             }
 
         }
     }
 
-    public static int[,] Random(Grid grid, Simulation grainGrowth, int number)
+    public static Grain[,] Random(Grid grid, Simulation grainGrowth, int number)
     {
         Random rnd = new Random();
 
         int sizeX = SIZE_X;
         int sizeY = SIZE_Y;
 
-        int[,] tab = new int[sizeY, sizeX];
+        Grain[,] tab = new Grain[sizeY, sizeX];
         for (int i = 0; i < SIZE_Y; i++)
         {
 
             for (int j = 0; j < SIZE_X; j++)
             {
-                tab[i, j] = 0;
+                tab[i, j] = new Grain(j, i, 0);
             }
         }
 
@@ -143,7 +143,7 @@ public class Nucleation
         {
             for (int j = 0; j < SIZE_X; j++)
             {
-                if (grainGrowth.Tab[i, j] == 0)
+                if (grainGrowth.Tab[i, j].State == 0)
                 {
                     listX.Add(j);
                     listY.Add(i);
@@ -164,7 +164,7 @@ public class Nucleation
                 listY.RemoveAt(index);
 
 
-                tab[y, x] = Colors.RandomColor();
+                tab[y, x].State = Colors.RandomColor();
             }
         }
 
@@ -186,7 +186,7 @@ public class Nucleation
         {
             for (int j = 0; j < SIZE_X; j++)
             {
-                if (grainGrowth.Tab[i, j] == 0)
+                if (grainGrowth.Tab[i, j].State == 0)
                 {
                     listX.Add(j);
                     listY.Add(i);
@@ -213,25 +213,25 @@ public class Nucleation
          
             bool isInRange = false;
 
-            if (grainGrowth.Tab[maxY, j] != 0)
+            if (grainGrowth.Tab[maxY, j].State != 0)
             {
                 isInRange = true;
                 continue;
             }
 
-            if (grainGrowth.Tab[minY, j] != 0)
+            if (grainGrowth.Tab[minY, j].State != 0)
             {
                 isInRange = true;
                 continue;
             }
 
-            if (grainGrowth.Tab[i, maxX] != 0)
+            if (grainGrowth.Tab[i, maxX].State != 0)
             {
                 isInRange = true;
                 continue;
             }
 
-            if (grainGrowth.Tab[i, minX] != 0)
+            if (grainGrowth.Tab[i, minX].State != 0)
             {
                 isInRange = true;
                 continue;
@@ -246,7 +246,7 @@ public class Nucleation
             {
                 for (int y = minY; y <= maxY; ++y)
                 {
-                    if (!(y == i && x == j) && grainGrowth.Tab[y, x] != 0)
+                    if (!(y == i && x == j) && grainGrowth.Tab[y, x].State != 0)
                     {
                         isInRange = true;
                         break;
@@ -261,8 +261,8 @@ public class Nucleation
                 continue;
 
 
-            grainGrowth.Tab[i, j] = Colors.RandomColor();
-            grainGrowth.Display(pictureBox.CreateGraphics(), j, i, grainGrowth.Tab[i, j]);
+            grainGrowth.Tab[i, j].State = Colors.RandomColor();
+            grainGrowth.Tab[i, j].Display(pictureBox.CreateGraphics());
 
             n++;
         }
@@ -290,18 +290,18 @@ public class Nucleation
        
     }
 
-    public static int[,] Radial(Grid grid, Simulation grainGrowth, int r, int number, TextBox alertTextBox, GrainGrowth.Form1 form)
+    public static Grain[,] Radial(Grid grid, Simulation grainGrowth, int r, int number, TextBox alertTextBox, GrainGrowth.Form1 form)
     {
         int sizeX = SIZE_X;
         int sizeY = SIZE_Y;
 
-        int[,] tab = new int[sizeY, sizeX];
+        Grain[,] tab = new Grain[sizeY, sizeX];
         for (int i = 0; i < SIZE_Y; i++)
         {
 
             for (int j = 0; j < SIZE_X; j++)
             {
-                tab[i, j] = 0;
+                tab[i, j] = new Grain(j, i, 0);
             }
         }
 
@@ -316,7 +316,7 @@ public class Nucleation
         {
             for (int j = 0; j < SIZE_X; j++)
             {
-                if (grainGrowth.Tab[i, j] == 0)
+                if (grainGrowth.Tab[i, j].State == 0)
                 {
                     listX.Add(j);
                     listY.Add(i);
@@ -348,7 +348,7 @@ public class Nucleation
             {
                 for (int x = j; x <= maxX + index; x++)
                 {
-                    if (!(y == i && x == j) && grainGrowth.Tab[y, x] != 0)
+                    if (!(y == i && x == j) && grainGrowth.Tab[y, x].State != 0)
                     {
                         isInRange = true;
                         break;
@@ -373,7 +373,7 @@ public class Nucleation
             {
                 for (int x = j; x >= minX + index; x--)
                 {
-                    if (!(y == i && x == j) && grainGrowth.Tab[y, x] != 0)
+                    if (!(y == i && x == j) && grainGrowth.Tab[y, x].State != 0)
                     {
                         isInRange = true;
                         break;
@@ -399,7 +399,7 @@ public class Nucleation
             {
                 for (int x = j; x >= minX + index; x--)
                 {
-                    if (!(y == i && x == j) && grainGrowth.Tab[y, x] != 0)
+                    if (!(y == i && x == j) && grainGrowth.Tab[y, x].State != 0)
                     {
                         isInRange = true;
                         break;
@@ -424,7 +424,7 @@ public class Nucleation
             {
                 for (int x = j; x <= maxX + index; x++)
                 {
-                    if (!(y == i && x == j) && grainGrowth.Tab[y, x] != 0)
+                    if (!(y == i && x == j) && grainGrowth.Tab[y, x].State != 0)
                     {
                         isInRange = true;
                         break;
@@ -447,7 +447,7 @@ public class Nucleation
                 continue;
 
 
-            tab[i, j] = Colors.RandomColor();
+            tab[i, j].State = Colors.RandomColor();
             n++;
 
         }

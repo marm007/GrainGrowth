@@ -54,7 +54,14 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="GrainEnergy.cs" />
+    <Compile Include="Grain.cs" />
+    <Compile Include="GrainEnergyCoords.cs" />
+    <Compile Include="Neighbourhood\NeighbourhoodFactory.cs" />
+    <Compile Include="Neighbourhood\Hexagonal.cs" />
+    <Compile Include="Neighbourhood\Pentagonal.cs" />
+    <Compile Include="Neighbourhood\vonNeumann.cs" />
+    <Compile Include="Neighbourhood\Moore.cs" />
+    <Compile Include="Neighbourhood\NeighbourhoodAbstract.cs" />
     <Compile Include="Nucleation.cs" />
     <Compile Include="Simulation.cs" />
     <Compile Include="Grid.cs" />

@@ -13,228 +13,116 @@ public class Simulation
     private System.Drawing.Pen circuitPen = new System.Drawing.Pen(Color.Black, 1);
     private System.Drawing.SolidBrush cellBrushClear = new System.Drawing.SolidBrush(SystemColors.Control);
 
-    private int[,] tab;
+    
+    private Grain[,] tab;
 
-	public Simulation()
+    internal Grain[,] Tab { get => tab; set => tab = value; }
+
+    public Simulation()
 	{
-        this.tab = new int[SIZE_Y, SIZE_X];
+        this.Tab = new Grain[SIZE_Y, SIZE_X];
 
         for (int i = 0; i < SIZE_Y; i++)
         {
             for (int j = 0; j < SIZE_X; j++)
             {
-                this.tab[i, j] = 0;
+                this.Tab[i, j] = new Grain(j, i, 0);
             }
         }
     }
 
-    public int[,] Tab { get { return tab; } set { tab = value; } }
 
     public void Display(Graphics g)
     {
 
-        for (int i = 0; i < this.tab.GetLength(0); i++)
+        for (int i = 0; i < this.Tab.GetLength(0); i++)
         {
-            for (int j = 0; j < this.tab.GetLength(1); j++)
+            for (int j = 0; j < this.Tab.GetLength(1); j++)
             {
 
-                if (this.tab[i, j] != 0)
+                if (this.Tab[i, j].State != 0)
                 {
-                    System.Drawing.SolidBrush cellBrush = new System.Drawing.SolidBrush(Colors.colors[this.tab[i, j]]);
-
-                    g.FillRectangle(cellBrush, j * CELL_SIZE + (int) GRID_STATE, i * CELL_SIZE + (int) GRID_STATE,
-                        CELL_SIZE - (int) GRID_STATE, CELL_SIZE - (int) GRID_STATE);
+                    this.Tab[i, j].Display(g);
                 }
             }
         }
     }
 
-    public void Display(Graphics g, int x, int y, int state)
+    public void DisplayEnergy(Graphics g)
     {
-        
-        System.Drawing.SolidBrush cellBrushClear = new System.Drawing.SolidBrush(SystemColors.Control);
-        
-          
-        if(state == 0)
-            g.FillRectangle(cellBrushClear, (x) * CELL_SIZE + (int) GRID_STATE, (y) * CELL_SIZE + (int) GRID_STATE,
-                CELL_SIZE - (int) GRID_STATE, CELL_SIZE - (int) GRID_STATE);
-        else
+        if (ENERGY_STATE == EnergyState.Disable)
+            return;
+
+        System.Drawing.Pen pen = new System.Drawing.Pen(Color.Red, 1);
+        System.Drawing.SolidBrush brush = new System.Drawing.SolidBrush(Color.Red);
+
+        for (int i = 0; i < SIZE_Y; i++)
         {
-            System.Drawing.SolidBrush cellBrush = new System.Drawing.SolidBrush(Colors.colors[state]);
-            g.FillRectangle(cellBrush, (x) * CELL_SIZE + (int) GRID_STATE, (y) * CELL_SIZE + (int) GRID_STATE,
-              CELL_SIZE - (int) GRID_STATE, CELL_SIZE - (int) GRID_STATE);
+            for (int j = 0; j < SIZE_X; j++)
+            {
+                g.FillEllipse(brush, this.tab[i, j].EnergyCoords.X - RADIUS / 2.0f, this.tab[i, j].EnergyCoords.Y - RADIUS / 2.0f, RADIUS, RADIUS);
+            }
         }
     }
 
-
-    public void Simulate(PictureBox p, GrainEnergy energy)
+    public void Simulate(PictureBox p)
     {
         Graphics g = p.CreateGraphics();
 
-        int[,] tabTmp = new int[SIZE_Y, SIZE_X];
-
-        Console.WriteLine(BOUNDARY_CONDITION);
-        Console.WriteLine(NEIGHBOURHOOD);
-
-        switch (BOUNDARY_CONDITION)
+        Grain[,] tabTmp = new Grain[SIZE_Y, SIZE_X];
+        for (int i = 0; i < SIZE_Y; i++)
         {
-            case BoundaryCondition.Nonperiodic:
+            for (int j = 0; j < SIZE_X; j++)
+            {
+                tabTmp[i, j] = new Grain(j, i, 0);
+            }
+        }
 
-                switch (NEIGHBOURHOOD)
+        // Console.WriteLine(BOUNDARY_CONDITION);
+        // Console.WriteLine(NEIGHBOURHOOD);
+
+        switch (NEIGHBOURHOOD)
+        {
+            case Neighbourhood.Radial:
+                switch (BOUNDARY_CONDITION)
                 {
-                    case Neighbourhood.von_Neumann:
-                        tabTmp = Nonperiodic_vonNeumann(g, tabTmp);
+                    case BoundaryCondition.Nonperiodic:
+
+                        tabTmp = Nonperiodic_Radial(g, tabTmp);
                         break;
 
-                    case Neighbourhood.Moore:
-                        tabTmp = Nonperiodic_Moore(g, tabTmp);
+                    case BoundaryCondition.Periodic:
+                        tabTmp = Periodic_Radial(g, tabTmp);
                         break;
-
-                    case Neighbourhood.Pentagonal:
-                        switch (PENTAGONAL_NEIGHBOURHOOD)
-                        {
-                            case PentagonalNeighbourhood.Bottom:
-                                tabTmp = Nonperiodic_PentagonalBottom(g, tabTmp);
-                                break;
-
-                            case PentagonalNeighbourhood.Top:
-                                tabTmp = Nonperiodic_PentagonalTop(g, tabTmp);
-                                break;
-
-                            case PentagonalNeighbourhood.Left:
-                                tabTmp = Nonperiodic_PentagonalLeft(g, tabTmp);
-                                break;
-
-                            case PentagonalNeighbourhood.Right:
-                                tabTmp = Nonperiodic_PentagonalRight(g, tabTmp);
-                                break;
-                        }
-                        break;
-
-                    case Neighbourhood.Hexagonal:
-                        switch (HEXAGONAL_NEIGHBOURHOOD)
-                        {
-                            case HexagonalNeighbourhood.Left:
-                                tabTmp = Nonperiodic_HexagonalLeft(g, tabTmp);
-                                break;
-
-                            case HexagonalNeighbourhood.Right:
-                                tabTmp = Nonperiodic_HexagonalRight(g, tabTmp);
-                                break;
-
-                            case HexagonalNeighbourhood.Random:
-
-                                break;
-                        }
-                        break;
-
-                    case Neighbourhood.Radial:
-                        tabTmp = Nonperiodic_Radial(g, tabTmp, energy);
-                        break;
-
                 }
-
                 break;
-
-            case BoundaryCondition.Periodic:
-
-                switch (NEIGHBOURHOOD)
-                {
-                    case Neighbourhood.von_Neumann:
-                        tabTmp = Periodic_vonNeumann(g, tabTmp);
-                        break;
-
-                    case Neighbourhood.Moore:
-                        tabTmp = Periodic_Moore(g, tabTmp);
-                        break;
-
-                    case Neighbourhood.Pentagonal:
-
-                        switch (PENTAGONAL_NEIGHBOURHOOD)
-                        {
-                            case PentagonalNeighbourhood.Bottom:
-                                tabTmp = Periodic_PentagonalBottom(g, tabTmp);
-                                break;
-
-                            case PentagonalNeighbourhood.Top:
-                                tabTmp = Periodic_PentagonalTop(g, tabTmp);
-                                break;
-
-                            case PentagonalNeighbourhood.Left:
-                                tabTmp = Periodic_PentagonalLeft(g, tabTmp);
-                                break;
-
-                            case PentagonalNeighbourhood.Right:
-                                tabTmp = Periodic_PentagonalRight(g, tabTmp);
-                                break;
-                        }
-
-                        break;
-
-                    case Neighbourhood.Hexagonal:
-                        switch (HEXAGONAL_NEIGHBOURHOOD)
-                        {
-                            case HexagonalNeighbourhood.Left:
-                                tabTmp = Periodic_HexagonalLeft(g, tabTmp);
-                                break;
-
-                            case HexagonalNeighbourhood.Right:
-                                tabTmp = Periodic_HexagonalRight(g, tabTmp);
-                                break;
-
-                            case HexagonalNeighbourhood.Random:
-
-                                break;
-                        }
-                        break;
-
-                    case Neighbourhood.Radial:
-                        tabTmp = Periodic_Radial(g, tabTmp, energy);
-                        break;
-
-                }
-
+            default:
+                tabTmp = Oblicz(g, tabTmp);
                 break;
         }
+       
 
-        this.tab = tabTmp;
+        this.Tab = tabTmp;
     }
 
 
-    private int[,] Periodic_vonNeumann(Graphics g, int[,] tabTmp)
+    private Grain[,] Oblicz(Graphics g, Grain[,] tabTmp)
     {
+        NeighbourhoodAbstract neighbourhood = NeighbourhoodFactory.Create();
+
         for (int i = 0; i < SIZE_Y; i++)
         {
             for (int j = 0; j < SIZE_X; j++)
             {
+                neighbourhood.SetNeighbours(this.Tab, j, i);
 
-                int s_l = -200;
-                int s_p = -200;
+                int cellBegin = this.Tab[i, j].State;
+                int cellEnd = this.Tab[i, j].State;
 
-                int s_d = -200;
-                int s_g = -200;
-
-
-                int cellBegin = this.tab[i, j];
-                int cellEnd = this.tab[i, j];
-
-                int x_l = j - 1 < 0 ? SIZE_X - 1 : j - 1;
-                int x_p = j + 1 >= SIZE_X ? 0 : j + 1;
-                int y_d = i + 1 >= SIZE_Y ? 0 : i + 1;
-                int y_g = i - 1 < 0 ? SIZE_Y - 1 : i - 1;
-
-                s_l = tab[i, x_l];
-                s_p = tab[i, x_p];
-                s_d = tab[y_d, j];
-                s_g = tab[y_g, j];
-
-
-                string[] neighbours = new string[] { s_l.ToString(), s_p.ToString(), s_d.ToString(),
-                    s_g.ToString() };
-
+              
                 var count = new Dictionary<string, int>();
 
-                foreach (string value in neighbours)
+                foreach (string value in neighbourhood.Neighbours)
                 {
                     if (value != DEAD.ToString())
                     {
@@ -276,110 +164,11 @@ public class Simulation
                     cellEnd = int.Parse(mostCommon[index]);
                 }
 
-                tabTmp[i, j] = cellEnd;
+                tabTmp[i, j].State = cellEnd;
 
                 if (cellEnd != cellBegin)
                 {
-                    Display(g, j, i, cellEnd);
-                }
-            }
-        }
-
-        return tabTmp;
-    }
-
-    private int[,] Periodic_Moore(Graphics g, int[,] tabTmp)
-    {
-        for (int i = 0; i < SIZE_Y; i++)
-        {
-            for (int j = 0; j < SIZE_X; j++)
-            {
-
-
-                int s_l = -200;
-                int s_p = -200;
-
-                int s_d = -200;
-                int s_g = -200;
-
-                int s_g_l = -200;
-                int s_g_p = -200;
-
-                int s_d_l = -200;
-                int s_d_p = -200;
-
-                int cellBegin = this.tab[i, j];
-                int cellEnd = this.tab[i, j];
-
-                int x_l = j - 1 < 0 ? SIZE_X - 1 : j - 1;
-                int x_p = j + 1 >= SIZE_X ? 0 : j + 1;
-                int y_d = i + 1 >= SIZE_Y ? 0 : i + 1;
-                int y_g = i - 1 < 0 ? SIZE_Y - 1 : i - 1;
-
-                s_l = tab[i, x_l];
-                s_p = tab[i, x_p];
-                s_d = tab[y_d, j];
-                s_g = tab[y_g, j];
-
-                s_d_l = tab[y_d, x_l];
-                s_d_p = tab[y_d, x_p];
-
-                s_g_l = tab[y_g, x_l];
-                s_g_p = tab[y_g, x_p];
-
-
-                string[] neighbours = new string[] { s_l.ToString(), s_p.ToString(), s_d.ToString(),
-                    s_g.ToString(), s_d_l.ToString(), s_d_p.ToString(), s_g_l.ToString(), s_g_p.ToString() };
-
-                var count = new Dictionary<string, int>();
-
-                foreach (string value in neighbours)
-                {
-                    if (value != DEAD.ToString())
-                    {
-                        if (count.ContainsKey(value))
-                        {
-                            count[value]++;
-                        }
-                        else
-                        {
-                            count.Add(value, 1);
-                        }
-                    }
-                }
-
-                int highestCount = 0;
-
-                List<string> mostCommon = new List<string>();
-
-                foreach (KeyValuePair<string, int> pair in count)
-                {
-                    if (pair.Value > highestCount)
-                    {
-                        mostCommon = new List<string>();
-                        mostCommon.Add(pair.Key);
-
-                        highestCount = pair.Value;
-                    }
-                    else if (pair.Value == highestCount)
-                    {
-                        mostCommon.Add(pair.Key);
-                    }
-                }
-
-                if (mostCommon.Count != 0 && cellBegin == DEAD)
-                {
-                    Random random = new Random();
-                    int index = random.Next(mostCommon.Count);
-
-                    cellEnd = int.Parse(mostCommon[index]);
-                }
-
-                tabTmp[i, j] = cellEnd;
-
-                if (cellEnd != cellBegin)
-                {
-                    Display(g, j, i, cellEnd);
+                    tabTmp[i, j].Display(g);
                 }
             }
         }
@@ -388,576 +177,19 @@ public class Simulation
     }
 
 
-    private int[,] Periodic_PentagonalRight(Graphics g, int[,] tabTmp)
+    private Grain[,] Periodic_Radial(Graphics g, Grain[,] tabTmp)
     {
         for (int i = 0; i < SIZE_Y; i++)
         {
             for (int j = 0; j < SIZE_X; j++)
             {
-
-
-                int s_l = -200;
-
-                int s_d = -200;
-                int s_g = -200;
-
-                int s_g_l = -200;
-
-                int s_d_l = -200;
-
-                int cellBegin = this.tab[i, j];
-                int cellEnd = this.tab[i, j];
-
-                int x_l = j - 1 < 0 ? SIZE_X - 1 : j - 1;
-                int y_d = i + 1 >= SIZE_Y ? 0 : i + 1;
-                int y_g = i - 1 < 0 ? SIZE_Y - 1 : i - 1;
-
-                s_l = tab[i, x_l];
-                s_d = tab[y_d, j];
-                s_g = tab[y_g, j];
-
-                s_d_l = tab[y_d, x_l];
-
-                s_g_l = tab[y_g, x_l];
-
-
-                string[] neighbours = new string[] { s_l.ToString(), s_d.ToString(),
-                    s_g.ToString(), s_d_l.ToString(), s_g_l.ToString() };
-
-                var count = new Dictionary<string, int>();
-
-                foreach (string value in neighbours)
-                {
-                    if (value != DEAD.ToString())
-                    {
-                        if (count.ContainsKey(value))
-                        {
-                            count[value]++;
-                        }
-                        else
-                        {
-                            count.Add(value, 1);
-                        }
-                    }
-                }
-
-                int highestCount = 0;
-
-                List<string> mostCommon = new List<string>();
-
-                foreach (KeyValuePair<string, int> pair in count)
-                {
-                    if (pair.Value > highestCount)
-                    {
-                        mostCommon = new List<string>();
-                        mostCommon.Add(pair.Key);
-
-                        highestCount = pair.Value;
-                    }
-                    else if (pair.Value == highestCount)
-                    {
-                        mostCommon.Add(pair.Key);
-                    }
-                }
-
-                if (mostCommon.Count != 0 && cellBegin == DEAD)
-                {
-                    Random random = new Random();
-                    int index = random.Next(mostCommon.Count);
-
-                    cellEnd = int.Parse(mostCommon[index]);
-                }
-
-                tabTmp[i, j] = cellEnd;
-
-                if (cellEnd != cellBegin)
-                {
-                    Display(g, j, i, cellEnd);
-                }
-            }
-        }
-
-        return tabTmp;
-    }
-
-    private int[,] Periodic_PentagonalLeft(Graphics g, int[,] tabTmp)
-    {
-        for (int i = 0; i < SIZE_Y; i++)
-        {
-            for (int j = 0; j < SIZE_X; j++)
-            {
-
-
-                int s_p = -200;
-
-                int s_d = -200;
-                int s_g = -200;
-
-                int s_g_p = -200;
-
-                int s_d_p = -200;
-
-                int cellBegin = this.tab[i, j];
-                int cellEnd = this.tab[i, j];
-
-                int x_p = j + 1 >= SIZE_X ? 0 : j + 1;
-                int y_d = i + 1 >= SIZE_Y ? 0 : i + 1;
-                int y_g = i - 1 < 0 ? SIZE_Y - 1 : i - 1;
-
-                s_p = tab[i, x_p];
-                s_d = tab[y_d, j];
-                s_g = tab[y_g, j];
-
-                s_d_p = tab[y_d, x_p];
-
-                s_g_p = tab[y_g, x_p];
-
-
-                string[] neighbours = new string[] { s_p.ToString(), s_d.ToString(),
-                    s_g.ToString(), s_d_p.ToString(), s_g_p.ToString() };
-
-                var count = new Dictionary<string, int>();
-
-                foreach (string value in neighbours)
-                {
-                    if (value != DEAD.ToString())
-                    {
-                        if (count.ContainsKey(value))
-                        {
-                            count[value]++;
-                        }
-                        else
-                        {
-                            count.Add(value, 1);
-                        }
-                    }
-                }
-
-                int highestCount = 0;
-
-                List<string> mostCommon = new List<string>();
-
-                foreach (KeyValuePair<string, int> pair in count)
-                {
-                    if (pair.Value > highestCount)
-                    {
-                        mostCommon = new List<string>();
-                        mostCommon.Add(pair.Key);
-
-                        highestCount = pair.Value;
-                    }
-                    else if (pair.Value == highestCount)
-                    {
-                        mostCommon.Add(pair.Key);
-                    }
-                }
-
-                if (mostCommon.Count != 0 && cellBegin == DEAD)
-                {
-                    Random random = new Random();
-                    int index = random.Next(mostCommon.Count);
-
-                    cellEnd = int.Parse(mostCommon[index]);
-                }
-
-                tabTmp[i, j] = cellEnd;
-
-                if (cellEnd != cellBegin)
-                {
-                    Display(g, j, i, cellEnd);
-                }
-            }
-        }
-
-        return tabTmp;
-    }
-
-    private int[,] Periodic_PentagonalBottom(Graphics g, int[,] tabTmp)
-    {
-        for (int i = 0; i < SIZE_Y; i++)
-        {
-            for (int j = 0; j < SIZE_X; j++)
-            {
-
-
-                int s_l = -200;
-                int s_p = -200;
-
-                int s_g = -200;
-
-                int s_g_l = -200;
-                int s_g_p = -200;
-
-                int cellBegin = this.tab[i, j];
-                int cellEnd = this.tab[i, j];
-
-                int x_l = j - 1 < 0 ? SIZE_X - 1 : j - 1;
-                int x_p = j + 1 >= SIZE_X ? 0 : j + 1;
-                int y_g = i - 1 < 0 ? SIZE_Y - 1 : i - 1;
-
-                s_l = tab[i, x_l];
-                s_p = tab[i, x_p];
-                s_g = tab[y_g, j];
-
-                s_g_l = tab[y_g, x_l];
-                s_g_p = tab[y_g, x_p];
-
-
-                string[] neighbours = new string[] { s_l.ToString(), s_p.ToString(),
-                    s_g.ToString(), s_g_l.ToString(), s_g_p.ToString() };
-
-                var count = new Dictionary<string, int>();
-
-                foreach (string value in neighbours)
-                {
-                    if (value != DEAD.ToString())
-                    {
-                        if (count.ContainsKey(value))
-                        {
-                            count[value]++;
-                        }
-                        else
-                        {
-                            count.Add(value, 1);
-                        }
-                    }
-                }
-
-                int highestCount = 0;
-
-                List<string> mostCommon = new List<string>();
-
-                foreach (KeyValuePair<string, int> pair in count)
-                {
-                    if (pair.Value > highestCount)
-                    {
-                        mostCommon = new List<string>();
-                        mostCommon.Add(pair.Key);
-
-                        highestCount = pair.Value;
-                    }
-                    else if (pair.Value == highestCount)
-                    {
-                        mostCommon.Add(pair.Key);
-                    }
-                }
-
-                if (mostCommon.Count != 0 && cellBegin == DEAD)
-                {
-                    Random random = new Random();
-                    int index = random.Next(mostCommon.Count);
-
-                    cellEnd = int.Parse(mostCommon[index]);
-                }
-
-                tabTmp[i, j] = cellEnd;
-
-                if (cellEnd != cellBegin)
-                {
-                    Display(g, j, i, cellEnd);
-                }
-            }
-        }
-
-        return tabTmp;
-    }
-
-    private int[,] Periodic_PentagonalTop(Graphics g, int[,] tabTmp)
-    {
-        for (int i = 0; i < SIZE_Y; i++)
-        {
-            for (int j = 0; j < SIZE_X; j++)
-            {
-
-
-                int s_l = -200;
-                int s_p = -200;
-
-                int s_d = -200;
-
-                int s_d_l = -200;
-                int s_d_p = -200;
-
-                int cellBegin = this.tab[i, j];
-                int cellEnd = this.tab[i, j];
-
-                int x_l = j - 1 < 0 ? SIZE_X - 1 : j - 1;
-                int x_p = j + 1 >= SIZE_X ? 0 : j + 1;
-                int y_d = i + 1 >= SIZE_Y ? 0 : i + 1;
-
-                s_l = tab[i, x_l];
-                s_p = tab[i, x_p];
-                s_d = tab[y_d, j];
-
-                s_d_l = tab[y_d, x_l];
-                s_d_p = tab[y_d, x_p];
-
-
-                string[] neighbours = new string[] { s_l.ToString(), s_p.ToString(), s_d.ToString(),
-                     s_d_l.ToString(), s_d_p.ToString() };
-
-                var count = new Dictionary<string, int>();
-
-                foreach (string value in neighbours)
-                {
-                    if (value != DEAD.ToString())
-                    {
-                        if (count.ContainsKey(value))
-                        {
-                            count[value]++;
-                        }
-                        else
-                        {
-                            count.Add(value, 1);
-                        }
-                    }
-                }
-
-                int highestCount = 0;
-
-                List<string> mostCommon = new List<string>();
-
-                foreach (KeyValuePair<string, int> pair in count)
-                {
-                    if (pair.Value > highestCount)
-                    {
-                        mostCommon = new List<string>();
-                        mostCommon.Add(pair.Key);
-
-                        highestCount = pair.Value;
-                    }
-                    else if (pair.Value == highestCount)
-                    {
-                        mostCommon.Add(pair.Key);
-                    }
-                }
-
-                if (mostCommon.Count != 0 && cellBegin == DEAD)
-                {
-                    Random random = new Random();
-                    int index = random.Next(mostCommon.Count);
-
-                    cellEnd = int.Parse(mostCommon[index]);
-                }
-
-                tabTmp[i, j] = cellEnd;
-
-                if (cellEnd != cellBegin)
-                {
-                    Display(g, j, i, cellEnd);
-                }
-            }
-        }
-
-        return tabTmp;
-    }
-
-
-
-    private int[,] Periodic_HexagonalRight(Graphics g, int[,] tabTmp)
-    {
-        for (int i = 0; i < SIZE_Y; i++)
-        {
-            for (int j = 0; j < SIZE_X; j++)
-            {
-
-
-                int s_l = -200;
-                int s_p = -200;
-
-                int s_d = -200;
-                int s_g = -200;
-
-                int s_g_p = -200;
-
-                int s_d_l = -200;
-
-                int cellBegin = this.tab[i, j];
-                int cellEnd = this.tab[i, j];
-
-                int x_l = j - 1 < 0 ? SIZE_X - 1 : j - 1;
-                int x_p = j + 1 >= SIZE_X ? 0 : j + 1;
-                int y_d = i + 1 >= SIZE_Y ? 0 : i + 1;
-                int y_g = i - 1 < 0 ? SIZE_Y - 1 : i - 1;
-
-                s_l = tab[i, x_l];
-                s_p = tab[i, x_p];
-                s_d = tab[y_d, j];
-                s_g = tab[y_g, j];
-
-                s_d_l = tab[y_d, x_l];
-
-                s_g_p = tab[y_g, x_p];
-
-
-                string[] neighbours = new string[] { s_l.ToString(), s_p.ToString(), s_d.ToString(),
-                    s_g.ToString(), s_d_l.ToString(), s_g_p.ToString() };
-
-                var count = new Dictionary<string, int>();
-
-                foreach (string value in neighbours)
-                {
-                    if (value != DEAD.ToString())
-                    {
-                        if (count.ContainsKey(value))
-                        {
-                            count[value]++;
-                        }
-                        else
-                        {
-                            count.Add(value, 1);
-                        }
-                    }
-                }
-
-                int highestCount = 0;
-
-                List<string> mostCommon = new List<string>();
-
-                foreach (KeyValuePair<string, int> pair in count)
-                {
-                    if (pair.Value > highestCount)
-                    {
-                        mostCommon = new List<string>();
-                        mostCommon.Add(pair.Key);
-
-                        highestCount = pair.Value;
-                    }
-                    else if (pair.Value == highestCount)
-                    {
-                        mostCommon.Add(pair.Key);
-                    }
-                }
-
-                if (mostCommon.Count != 0 && cellBegin == DEAD)
-                {
-                    Random random = new Random();
-                    int index = random.Next(mostCommon.Count);
-
-                    cellEnd = int.Parse(mostCommon[index]);
-                }
-
-                tabTmp[i, j] = cellEnd;
-
-                if (cellEnd != cellBegin)
-                {
-                    Display(g, j, i, cellEnd);
-                }
-            }
-        }
-
-        return tabTmp;
-    }
-
-    private int[,] Periodic_HexagonalLeft(Graphics g, int[,] tabTmp)
-    {
-        for (int i = 0; i < SIZE_Y; i++)
-        {
-            for (int j = 0; j < SIZE_X; j++)
-            {
-
-
-                int s_l = -200;
-                int s_p = -200;
-
-                int s_d = -200;
-                int s_g = -200;
-
-                int s_g_l = -200;
-
-                int s_d_p = -200;
-
-                int cellBegin = this.tab[i, j];
-                int cellEnd = this.tab[i, j];
-
-                int x_l = j - 1 < 0 ? SIZE_X - 1 : j - 1;
-                int x_p = j + 1 >= SIZE_X ? 0 : j + 1;
-                int y_d = i + 1 >= SIZE_Y ? 0 : i + 1;
-                int y_g = i - 1 < 0 ? SIZE_Y - 1 : i - 1;
-
-                s_l = tab[i, x_l];
-                s_p = tab[i, x_p];
-                s_d = tab[y_d, j];
-                s_g = tab[y_g, j];
-
-                s_d_p = tab[y_d, x_p];
-
-                s_g_l = tab[y_g, x_l];
-
-
-                string[] neighbours = new string[] { s_l.ToString(), s_p.ToString(), s_d.ToString(),
-                    s_g.ToString(), s_d_p.ToString(), s_g_l.ToString() };
-
-                var count = new Dictionary<string, int>();
-
-                foreach (string value in neighbours)
-                {
-                    if (value != DEAD.ToString())
-                    {
-                        if (count.ContainsKey(value))
-                        {
-                            count[value]++;
-                        }
-                        else
-                        {
-                            count.Add(value, 1);
-                        }
-                    }
-                }
-
-                int highestCount = 0;
-
-                List<string> mostCommon = new List<string>();
-
-                foreach (KeyValuePair<string, int> pair in count)
-                {
-                    if (pair.Value > highestCount)
-                    {
-                        mostCommon = new List<string>();
-                        mostCommon.Add(pair.Key);
-
-                        highestCount = pair.Value;
-                    }
-                    else if (pair.Value == highestCount)
-                    {
-                        mostCommon.Add(pair.Key);
-                    }
-                }
-
-                if (mostCommon.Count != 0 && cellBegin == DEAD)
-                {
-                    Random random = new Random();
-                    int index = random.Next(mostCommon.Count);
-
-                    cellEnd = int.Parse(mostCommon[index]);
-                }
-
-                tabTmp[i, j] = cellEnd;
-
-                if (cellEnd != cellBegin)
-                {
-                    Display(g, j, i, cellEnd);
-                }
-            }
-        }
-
-        return tabTmp;
-    }
-
-
-    private int[,] Periodic_Radial(Graphics g, int[,] tabTmp, GrainEnergy energy)
-    {
-        for (int i = 0; i < SIZE_Y; i++)
-        {
-            for (int j = 0; j < SIZE_X; j++)
-            {
-                if (this.tab[i, j] == 0)
+                if (this.Tab[i, j].State == 0)
                     continue;
 
-                tabTmp[i, j] = this.tab[i, j];
+                tabTmp[i, j] = this.Tab[i, j];
 
-                float x_sr = energy.Tab[i, j].x;
-                float y_sr = energy.Tab[i, j].y;
+                float x_sr = this.Tab[i, j].EnergyCoords.X;
+                float y_sr = this.Tab[i, j].EnergyCoords.Y;
 
                 int maxY = (int) Math.Ceiling((double)(i + RADIUS >= SIZE_Y ? SIZE_Y - 1 : i + RADIUS));
                 int maxX = (int) Math.Ceiling((double)(j + RADIUS >= SIZE_X ? SIZE_X - 1 : j + RADIUS));
@@ -973,14 +205,14 @@ public class Simulation
                         
                         bool isGreaterX = j + b >= SIZE_X;
                         bool isLowerX = j + b < 0;
-                        bool isGreaterY = i + b >= SIZE_X;
+                        bool isGreaterY = i + b >= SIZE_Y;
                         bool isLowerY = i + b < 0;
                         // Console.WriteLine("j = " + j + " b + " + b);
                         // Console.WriteLine(j+b>=SIZE_X);
                         // Console.WriteLine("x = " + x + " y = " + y);
 
-                        float x_r = energy.Tab[y, x].x;
-                        float y_r = energy.Tab[y, x].y;
+                        float x_r = this.Tab[y, x].EnergyCoords.X;
+                        float y_r = this.Tab[y, x].EnergyCoords.Y;
 
                         if (isGreaterX)
                         {
@@ -1004,18 +236,18 @@ public class Simulation
 
                         }
 
-                        // Console.WriteLine("x = " + x + " y = " + y);
-                       // Console.WriteLine("x_r = " + x_r + " y_r = " + y_r);
+                        //Console.WriteLine("x = " + x + " y = " + y);
+                        //Console.WriteLine("x_r = " + x_r + " y_r = " + y_r);
 
-                        if (this.tab[y, x] == 0 && tabTmp[y, x] == 0)
+                        if (this.Tab[y, x].State == 0 && tabTmp[y, x].State == 0)
                         {
                             if (Math.Sqrt(Math.Pow((double)(x_sr - x_r), 2) + Math.Pow((double)(y_sr - y_r), 2)) < RADIUS * CELL_SIZE)
                             {
-                                tabTmp[y, x] = this.tab[i, j];
+                                tabTmp[y, x].State = this.Tab[i, j].State;
 
-                                Display(g, x, y, tabTmp[y, x]);
+                                tabTmp[y, x].Display(g);
 
-                                energy.Display(g, x, y);
+                                this.Tab[i,j].DisplayEnergy(g);
                             }
                         }
                     }
@@ -1027,768 +259,19 @@ public class Simulation
     }
 
 
-    private int[,] Nonperiodic_vonNeumann(Graphics g, int[,] tabTmp)
+    private Grain[,] Nonperiodic_Radial(Graphics g, Grain[,] tabTmp)
     {
         for (int i = 0; i < SIZE_Y; i++)
         {
             for (int j = 0; j < SIZE_X; j++)
             {
-
-
-                int s_l = -200;
-                int s_p = -200;
-
-                int s_d = -200;
-                int s_g = -200;
-
-
-                int cellBegin = this.tab[i, j];
-                int cellEnd = this.tab[i, j];
-
-                int x_l = j - 1 < 0 ? j : j - 1;
-                int x_p = j + 1 >= SIZE_X ? j : j + 1;
-                int y_d = i + 1 >= SIZE_Y ? i : i + 1;
-                int y_g = i - 1 < 0 ? i : i - 1;
-
-                s_l = tab[i, x_l];
-                s_p = tab[i, x_p];
-                s_d = tab[y_d, j];
-                s_g = tab[y_g, j];
-
-
-
-
-                string[] neighbours = new string[] { s_l.ToString(), s_p.ToString(), s_d.ToString(),
-                    s_g.ToString() };
-
-                var count = new Dictionary<string, int>();
-
-                foreach (string value in neighbours)
-                {
-                    if (value != DEAD.ToString())
-                    {
-                        if (count.ContainsKey(value))
-                        {
-                            count[value]++;
-                        }
-                        else
-                        {
-                            count.Add(value, 1);
-                        }
-                    }
-                }
-
-                int highestCount = 0;
-
-                List<string> mostCommon = new List<string>();
-
-                foreach (KeyValuePair<string, int> pair in count)
-                {
-                    if (pair.Value > highestCount)
-                    {
-                        mostCommon = new List<string>();
-                        mostCommon.Add(pair.Key);
-
-                        highestCount = pair.Value;
-                    }
-                    else if (pair.Value == highestCount)
-                    {
-                        mostCommon.Add(pair.Key);
-                    }
-                }
-
-                if (mostCommon.Count != 0 && cellBegin == DEAD)
-                {
-                    Random random = new Random();
-                    int index = random.Next(mostCommon.Count);
-
-                    cellEnd = int.Parse(mostCommon[index]);
-                }
-
-                tabTmp[i, j] = cellEnd;
-
-                if (cellEnd != cellBegin)
-                {
-                    Display(g, j, i, cellEnd);
-                }
-            }
-        }
-
-        return tabTmp;
-    }
-
-    private int[,] Nonperiodic_Moore(Graphics g, int[,] tabTmp)
-    {
-        for (int i = 0; i < SIZE_Y; i++)
-        {
-            for (int j = 0; j < SIZE_X; j++)
-            {
-
-
-                int s_l = -200;
-                int s_p = -200;
-
-                int s_d = -200;
-                int s_g = -200;
-
-                int s_g_l = -200;
-                int s_g_p = -200;
-
-                int s_d_l = -200;
-                int s_d_p = -200;
-
-                int cellBegin = this.tab[i, j];
-                int cellEnd = this.tab[i, j];
-
-                int x_l = j - 1 < 0 ? j : j - 1;
-                int x_p = j + 1 >= SIZE_X ? j : j + 1;
-                int y_d = i + 1 >= SIZE_Y ? i : i + 1;
-                int y_g = i - 1 < 0 ? i : i - 1;
-
-                s_l = tab[i, x_l];
-                s_p = tab[i, x_p];
-                s_d = tab[y_d, j];
-                s_g = tab[y_g, j];
-
-                s_d_l = tab[y_d, x_l];
-                s_d_p = tab[y_d, x_p];
-
-                s_g_l = tab[y_g, x_l];
-                s_g_p = tab[y_g, x_p];
-
-
-                string[] neighbours = new string[] { s_l.ToString(), s_p.ToString(), s_d.ToString(),
-                    s_g.ToString(), s_d_l.ToString(), s_d_p.ToString(), s_g_l.ToString(), s_g_p.ToString() };
-
-                var count = new Dictionary<string, int>();
-
-                foreach (string value in neighbours)
-                {
-                    if (value != DEAD.ToString())
-                    {
-                        if (count.ContainsKey(value))
-                        {
-                            count[value]++;
-                        }
-                        else
-                        {
-                            count.Add(value, 1);
-                        }
-                    }
-                }
-
-                int highestCount = 0;
-
-                List<string> mostCommon = new List<string>();
-
-                foreach (KeyValuePair<string, int> pair in count)
-                {
-                    if (pair.Value > highestCount)
-                    {
-                        mostCommon = new List<string>();
-                        mostCommon.Add(pair.Key);
-
-                        highestCount = pair.Value;
-                    }
-                    else if (pair.Value == highestCount)
-                    {
-                        mostCommon.Add(pair.Key);
-                    }
-                }
-
-                if (mostCommon.Count != 0 && cellBegin == DEAD)
-                {
-                    Random random = new Random();
-                    int index = random.Next(mostCommon.Count);
-
-                    cellEnd = int.Parse(mostCommon[index]);
-                }
-
-                tabTmp[i, j] = cellEnd;
-
-                if (cellEnd != cellBegin)
-                {
-                    Display(g, j, i, cellEnd);
-                }
-            }
-        }
-
-        return tabTmp;
-    }
-
-
-
-    private int[,] Nonperiodic_PentagonalRight(Graphics g, int[,] tabTmp)
-    {
-        for (int i = 0; i < SIZE_Y; i++)
-        {
-            for (int j = 0; j < SIZE_X; j++)
-            {
-
-
-                int s_l = -200;
-
-                int s_d = -200;
-                int s_g = -200;
-
-                int s_g_l = -200;
-
-                int s_d_l = -200;
-
-                int cellBegin = this.tab[i, j];
-                int cellEnd = this.tab[i, j];
-
-                int x_l = j - 1 < 0 ? j : j - 1;
-                int y_d = i + 1 >= SIZE_Y ? i : i + 1;
-                int y_g = i - 1 < 0 ? i : i - 1;
-
-                s_l = tab[i, x_l];
-                s_d = tab[y_d, j];
-                s_g = tab[y_g, j];
-
-                s_d_l = tab[y_d, x_l];
-
-                s_g_l = tab[y_g, x_l];
-
-
-                string[] neighbours = new string[] { s_l.ToString(), s_d.ToString(),
-                    s_g.ToString(), s_d_l.ToString(), s_g_l.ToString() };
-
-                var count = new Dictionary<string, int>();
-
-                foreach (string value in neighbours)
-                {
-                    if (value != DEAD.ToString())
-                    {
-                        if (count.ContainsKey(value))
-                        {
-                            count[value]++;
-                        }
-                        else
-                        {
-                            count.Add(value, 1);
-                        }
-                    }
-                }
-
-                int highestCount = 0;
-
-                List<string> mostCommon = new List<string>();
-
-                foreach (KeyValuePair<string, int> pair in count)
-                {
-                    if (pair.Value > highestCount)
-                    {
-                        mostCommon = new List<string>();
-                        mostCommon.Add(pair.Key);
-
-                        highestCount = pair.Value;
-                    }
-                    else if (pair.Value == highestCount)
-                    {
-                        mostCommon.Add(pair.Key);
-                    }
-                }
-
-                if (mostCommon.Count != 0 && cellBegin == DEAD)
-                {
-                    Random random = new Random();
-                    int index = random.Next(mostCommon.Count);
-
-                    cellEnd = int.Parse(mostCommon[index]);
-                }
-
-                tabTmp[i, j] = cellEnd;
-
-                if (cellEnd != cellBegin)
-                {
-                    Display(g, j, i, cellEnd);
-                }
-            }
-        }
-
-        return tabTmp;
-    }
-
-    private int[,] Nonperiodic_PentagonalLeft(Graphics g, int[,] tabTmp)
-    {
-        for (int i = 0; i < SIZE_Y; i++)
-        {
-            for (int j = 0; j < SIZE_X; j++)
-            {
-
-
-                int s_p = -200;
-
-                int s_d = -200;
-                int s_g = -200;
-
-                int s_g_p = -200;
-
-                int s_d_p = -200;
-
-                int cellBegin = this.tab[i, j];
-                int cellEnd = this.tab[i, j];
-
-                int x_p = j + 1 >= SIZE_X ? j : j + 1;
-                int y_d = i + 1 >= SIZE_Y ? i : i + 1;
-                int y_g = i - 1 < 0 ? i : i - 1;
-
-                s_p = tab[i, x_p];
-                s_d = tab[y_d, j];
-                s_g = tab[y_g, j];
-
-                s_d_p = tab[y_d, x_p];
-
-                s_g_p = tab[y_g, x_p];
-
-
-                string[] neighbours = new string[] { s_p.ToString(), s_d.ToString(),
-                    s_g.ToString(), s_d_p.ToString(), s_g_p.ToString() };
-
-                var count = new Dictionary<string, int>();
-
-                foreach (string value in neighbours)
-                {
-                    if (value != DEAD.ToString())
-                    {
-                        if (count.ContainsKey(value))
-                        {
-                            count[value]++;
-                        }
-                        else
-                        {
-                            count.Add(value, 1);
-                        }
-                    }
-                }
-
-                int highestCount = 0;
-
-                List<string> mostCommon = new List<string>();
-
-                foreach (KeyValuePair<string, int> pair in count)
-                {
-                    if (pair.Value > highestCount)
-                    {
-                        mostCommon = new List<string>();
-                        mostCommon.Add(pair.Key);
-
-                        highestCount = pair.Value;
-                    }
-                    else if (pair.Value == highestCount)
-                    {
-                        mostCommon.Add(pair.Key);
-                    }
-                }
-
-                if (mostCommon.Count != 0 && cellBegin == DEAD)
-                {
-                    Random random = new Random();
-                    int index = random.Next(mostCommon.Count);
-
-                    cellEnd = int.Parse(mostCommon[index]);
-                }
-
-                tabTmp[i, j] = cellEnd;
-
-                if (cellEnd != cellBegin)
-                {
-                    Display(g, j, i, cellEnd);
-                }
-            }
-        }
-
-        return tabTmp;
-    }
-
-    private int[,] Nonperiodic_PentagonalBottom(Graphics g, int[,] tabTmp)
-    {
-        for (int i = 0; i < SIZE_Y; i++)
-        {
-            for (int j = 0; j < SIZE_X; j++)
-            {
-
-
-                int s_l = -200;
-                int s_p = -200;
-
-                int s_g = -200;
-
-                int s_g_l = -200;
-                int s_g_p = -200;
-
-                int cellBegin = this.tab[i, j];
-                int cellEnd = this.tab[i, j];
-
-                int x_l = j - 1 < 0 ? j : j - 1;
-                int x_p = j + 1 >= SIZE_X ? j : j + 1;
-                int y_g = i - 1 < 0 ? i : i - 1;
-
-                s_l = tab[i, x_l];
-                s_p = tab[i, x_p];
-                s_g = tab[y_g, j];
-
-                s_g_l = tab[y_g, x_l];
-                s_g_p = tab[y_g, x_p];
-
-
-                string[] neighbours = new string[] { s_l.ToString(), s_p.ToString(),
-                    s_g.ToString(), s_g_l.ToString(), s_g_p.ToString() };
-
-                var count = new Dictionary<string, int>();
-
-                foreach (string value in neighbours)
-                {
-                    if (value != DEAD.ToString())
-                    {
-                        if (count.ContainsKey(value))
-                        {
-                            count[value]++;
-                        }
-                        else
-                        {
-                            count.Add(value, 1);
-                        }
-                    }
-                }
-
-                int highestCount = 0;
-
-                List<string> mostCommon = new List<string>();
-
-                foreach (KeyValuePair<string, int> pair in count)
-                {
-                    if (pair.Value > highestCount)
-                    {
-                        mostCommon = new List<string>();
-                        mostCommon.Add(pair.Key);
-
-                        highestCount = pair.Value;
-                    }
-                    else if (pair.Value == highestCount)
-                    {
-                        mostCommon.Add(pair.Key);
-                    }
-                }
-
-                if (mostCommon.Count != 0 && cellBegin == DEAD)
-                {
-                    Random random = new Random();
-                    int index = random.Next(mostCommon.Count);
-
-                    cellEnd = int.Parse(mostCommon[index]);
-                }
-
-                tabTmp[i, j] = cellEnd;
-
-                if (cellEnd != cellBegin)
-                {
-                    Display(g, j, i, cellEnd);
-                }
-            }
-        }
-
-        return tabTmp;
-    }
-
-    private int[,] Nonperiodic_PentagonalTop(Graphics g, int[,] tabTmp)
-    {
-        for (int i = 0; i < SIZE_Y; i++)
-        {
-            for (int j = 0; j < SIZE_X; j++)
-            {
-
-
-                int s_l = -200;
-                int s_p = -200;
-
-                int s_d = -200;
-
-                int s_d_l = -200;
-                int s_d_p = -200;
-
-                int cellBegin = this.tab[i, j];
-                int cellEnd = this.tab[i, j];
-
-                int x_l = j - 1 < 0 ? j : j - 1;
-                int x_p = j + 1 >= SIZE_X ? j : j + 1;
-                int y_d = i + 1 >= SIZE_Y ? i : i + 1;
-
-                s_l = tab[i, x_l];
-                s_p = tab[i, x_p];
-                s_d = tab[y_d, j];
-
-                s_d_l = tab[y_d, x_l];
-                s_d_p = tab[y_d, x_p];
-
-
-                string[] neighbours = new string[] { s_l.ToString(), s_p.ToString(), s_d.ToString(),
-                     s_d_l.ToString(), s_d_p.ToString() };
-
-                var count = new Dictionary<string, int>();
-
-                foreach (string value in neighbours)
-                {
-                    if (value != DEAD.ToString())
-                    {
-                        if (count.ContainsKey(value))
-                        {
-                            count[value]++;
-                        }
-                        else
-                        {
-                            count.Add(value, 1);
-                        }
-                    }
-                }
-
-                int highestCount = 0;
-
-                List<string> mostCommon = new List<string>();
-
-                foreach (KeyValuePair<string, int> pair in count)
-                {
-                    if (pair.Value > highestCount)
-                    {
-                        mostCommon = new List<string>();
-                        mostCommon.Add(pair.Key);
-
-                        highestCount = pair.Value;
-                    }
-                    else if (pair.Value == highestCount)
-                    {
-                        mostCommon.Add(pair.Key);
-                    }
-                }
-
-                if (mostCommon.Count != 0 && cellBegin == DEAD)
-                {
-                    Random random = new Random();
-                    int index = random.Next(mostCommon.Count);
-
-                    cellEnd = int.Parse(mostCommon[index]);
-                }
-
-                tabTmp[i, j] = cellEnd;
-
-                if (cellEnd != cellBegin)
-                {
-                    Display(g, j, i, cellEnd);
-                }
-            }
-        }
-
-        return tabTmp;
-    }
-
-
-
-    private int[,] Nonperiodic_HexagonalRight(Graphics g, int[,] tabTmp)
-    {
-        for (int i = 0; i < SIZE_Y; i++)
-        {
-            for (int j = 0; j < SIZE_X; j++)
-            {
-
-
-                int s_l = -200;
-                int s_p = -200;
-
-                int s_d = -200;
-                int s_g = -200;
-
-                int s_g_p = -200;
-
-                int s_d_l = -200;
-
-                int cellBegin = this.tab[i, j];
-                int cellEnd = this.tab[i, j];
-
-                int x_l = j - 1 < 0 ? j : j - 1;
-                int x_p = j + 1 >= SIZE_X ? j : j + 1;
-                int y_d = i + 1 >= SIZE_Y ? i : i + 1;
-                int y_g = i - 1 < 0 ? i : i - 1;
-
-                s_l = tab[i, x_l];
-                s_p = tab[i, x_p];
-                s_d = tab[y_d, j];
-                s_g = tab[y_g, j];
-
-                s_d_l = tab[y_d, x_l];
-
-                s_g_p = tab[y_g, x_p];
-
-
-                string[] neighbours = new string[] { s_l.ToString(), s_p.ToString(), s_d.ToString(),
-                    s_g.ToString(), s_d_l.ToString(), s_g_p.ToString() };
-
-                var count = new Dictionary<string, int>();
-
-                foreach (string value in neighbours)
-                {
-                    if (value != DEAD.ToString())
-                    {
-                        if (count.ContainsKey(value))
-                        {
-                            count[value]++;
-                        }
-                        else
-                        {
-                            count.Add(value, 1);
-                        }
-                    }
-                }
-
-                int highestCount = 0;
-
-                List<string> mostCommon = new List<string>();
-
-                foreach (KeyValuePair<string, int> pair in count)
-                {
-                    if (pair.Value > highestCount)
-                    {
-                        mostCommon = new List<string>();
-                        mostCommon.Add(pair.Key);
-
-                        highestCount = pair.Value;
-                    }
-                    else if (pair.Value == highestCount)
-                    {
-                        mostCommon.Add(pair.Key);
-                    }
-                }
-
-                if (mostCommon.Count != 0 && cellBegin == DEAD)
-                {
-                    Random random = new Random();
-                    int index = random.Next(mostCommon.Count);
-
-                    cellEnd = int.Parse(mostCommon[index]);
-                }
-
-                tabTmp[i, j] = cellEnd;
-
-                if (cellEnd != cellBegin)
-                {
-                    Display(g, j, i, cellEnd);
-                }
-            }
-        }
-
-        return tabTmp;
-    }
-
-    private int[,] Nonperiodic_HexagonalLeft(Graphics g, int[,] tabTmp)
-    {
-        for (int i = 0; i < SIZE_Y; i++)
-        {
-            for (int j = 0; j < SIZE_X; j++)
-            {
-
-
-                int s_l = -200;
-                int s_p = -200;
-
-                int s_d = -200;
-                int s_g = -200;
-
-                int s_g_l = -200;
-
-                int s_d_p = -200;
-
-                int cellBegin = this.tab[i, j];
-                int cellEnd = this.tab[i, j];
-
-                int x_l = j - 1 < 0 ? j : j - 1;
-                int x_p = j + 1 >= SIZE_X ? j : j + 1;
-                int y_d = i + 1 >= SIZE_Y ? i : i + 1;
-                int y_g = i - 1 < 0 ? i : i - 1;
-
-                s_l = tab[i, x_l];
-                s_p = tab[i, x_p];
-                s_d = tab[y_d, j];
-                s_g = tab[y_g, j];
-
-                s_d_p = tab[y_d, x_p];
-
-                s_g_l = tab[y_g, x_l];
-
-
-                string[] neighbours = new string[] { s_l.ToString(), s_p.ToString(), s_d.ToString(),
-                    s_g.ToString(), s_d_p.ToString(), s_g_l.ToString() };
-
-                var count = new Dictionary<string, int>();
-
-                foreach (string value in neighbours)
-                {
-                    if (value != DEAD.ToString())
-                    {
-                        if (count.ContainsKey(value))
-                        {
-                            count[value]++;
-                        }
-                        else
-                        {
-                            count.Add(value, 1);
-                        }
-                    }
-                }
-
-                int highestCount = 0;
-
-                List<string> mostCommon = new List<string>();
-
-                foreach (KeyValuePair<string, int> pair in count)
-                {
-                    if (pair.Value > highestCount)
-                    {
-                        mostCommon = new List<string>();
-                        mostCommon.Add(pair.Key);
-
-                        highestCount = pair.Value;
-                    }
-                    else if (pair.Value == highestCount)
-                    {
-                        mostCommon.Add(pair.Key);
-                    }
-                }
-
-                if (mostCommon.Count != 0 && cellBegin == DEAD)
-                {
-                    Random random = new Random();
-                    int index = random.Next(mostCommon.Count);
-
-                    cellEnd = int.Parse(mostCommon[index]);
-                }
-
-                tabTmp[i, j] = cellEnd;
-
-                if (cellEnd != cellBegin)
-                {
-                    Display(g, j, i, cellEnd);
-                }
-            }
-        }
-
-        return tabTmp;
-    }
-
-
-
-    private int[,] Nonperiodic_Radial(Graphics g, int[,] tabTmp, GrainEnergy energy)
-    {
-        for (int i = 0; i < SIZE_Y; i++)
-        {
-            for (int j = 0; j < SIZE_X; j++)
-            {
-                if (this.tab[i, j] == 0)
+                if (this.Tab[i, j].State == 0)
                     continue;
 
-                tabTmp[i, j] = this.tab[i, j];
+                tabTmp[i, j] = this.Tab[i, j];
 
-                float x_sr = energy.Tab[i, j].x;
-                float y_sr = energy.Tab[i, j].y;
+                float x_sr = this.Tab[i, j].EnergyCoords.X;
+                float y_sr = this.Tab[i, j].EnergyCoords.Y;
 
                 int maxY = (int) Math.Ceiling((double) (i + RADIUS >= SIZE_Y ? SIZE_Y - 1 : i + RADIUS));
                 int maxX = (int) Math.Ceiling((double)(j + RADIUS >= SIZE_X ? SIZE_X - 1 : j + RADIUS));
@@ -1800,15 +283,15 @@ public class Simulation
                 {
                     for (int y = minY; y <= maxY; ++y)
                     {
-                        if (this.tab[y, x] == 0 && tabTmp[y, x] == 0)
+                        if (this.Tab[y, x].State == 0 && tabTmp[y, x].State == 0)
                         {
-                            if(Math.Sqrt( Math.Pow((double)(x_sr - energy.Tab[y, x].x ), 2) + Math.Pow((double)(y_sr - energy.Tab[y, x].y), 2)) < RADIUS * CELL_SIZE)
+                            if(Math.Sqrt( Math.Pow((double)(x_sr - this.Tab[y, x].EnergyCoords.X ), 2) + Math.Pow((double)(y_sr - this.Tab[y, x].EnergyCoords.Y), 2)) < RADIUS * CELL_SIZE)
                             {
-                                tabTmp[y, x] = this.tab[i, j];
+                                tabTmp[y, x].State = this.Tab[i, j].State;
 
-                                Display(g, x, y, tabTmp[y, x]);
+                                tabTmp[y, x].Display(g);
 
-                                energy.Display(g, x, y);
+                                this.Tab[i, j].DisplayEnergy(g);
                             }
                         }
                     }
@@ -1827,7 +310,7 @@ public class Simulation
         {
             for(int x = 0; x < SIZE_X; x++)
             {
-                if (tab[y, x] == 0)
+                if (Tab[y, x].State == 0)
                 {
                     simulationEnded = false;
                     break;

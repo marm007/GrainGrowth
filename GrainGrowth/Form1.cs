@@ -29,13 +29,11 @@ namespace GrainGrowth
 
         bool clickedButton = false;
 
-        private int[,] tab = null;
+        private Grain[,] tab = null;
 
         Grid grid = null;
 
         Simulation grainGrowth = null;
-
-        GrainEnergy grainEnergy = null;
 
         PictureBox pPictureBox = null;
 
@@ -84,7 +82,6 @@ namespace GrainGrowth
 
             grid = new Grid();
             grainGrowth = new Simulation();
-            grainEnergy = new GrainEnergy();
 
             widthBox.Text = SIZE_X.ToString();
             heightBox.Text = SIZE_Y.ToString();
@@ -156,44 +153,44 @@ namespace GrainGrowth
 
             if (!isPlaying)
             {
-                if (grainGrowth.Tab[y, x] == 0)
+                if (grainGrowth.Tab[y, x].State == 0)
                 {
 
-                    grainGrowth.Tab[y, x] = Colors.RandomColor();
-                    grainGrowth.Display(pictureBox1.CreateGraphics(), x, y, grainGrowth.Tab[y, x]);
+                    grainGrowth.Tab[y, x].State = Colors.RandomColor();
+                    grainGrowth.Tab[y, x].Display(pictureBox1.CreateGraphics());
 
                 }
                 else
                 {
-                    grainGrowth.Tab[y, x] = 0;
-                    grainGrowth.Display(pictureBox1.CreateGraphics(), x, y, grainGrowth.Tab[y, x]);
+                    grainGrowth.Tab[y, x].State = 0;
+                    grainGrowth.Tab[y, x].Display(pictureBox1.CreateGraphics());
                 }
             }
             else
             {
-                this.tab = new int[SIZE_Y, SIZE_X];
+                this.tab = new Grain[SIZE_Y, SIZE_X];
 
                 for (int i = 0; i < SIZE_Y; i++)
                 {
                     for (int j = 0; j < SIZE_X; j++)
                     {
-                        this.tab[i, j] = 0;
+                        this.tab[i, j] = new Grain(j, i, 0);
                     }
                 }
 
-                if (grainGrowth.Tab[y, x] == 0)
+                if (grainGrowth.Tab[y, x].State == 0)
                 {
-                    this.tab[y, x] = Colors.RandomColor();
+                    this.tab[y, x].State = Colors.RandomColor();
                 }
                 else
                 {
-                    this.tab[y, x] = 0;
+                    this.tab[y, x].State = 0;
                 }
 
                 clickedButton = true;
             }
 
-            grainEnergy.Display(pictureBox1.CreateGraphics(), x, y);
+            grainGrowth.Tab[y, x].DisplayEnergy(pictureBox1.CreateGraphics());
           
         }
 
@@ -259,25 +256,25 @@ namespace GrainGrowth
             {
                 for (int j = 0; j < SIZE_X; j++)
                 {
-                    grainGrowth.Tab[i, j] = 0;
+                    grainGrowth.Tab[i, j].State = 0;
                 }
             }
 
-            grainEnergy.Display(pictureBox1.CreateGraphics());
+            grainGrowth.DisplayEnergy(pictureBox1.CreateGraphics());
 
             Colors.Initialize();
         }
 
         private void step_button_Click(object sender, EventArgs e)
         {
-            grainGrowth.Simulate(pictureBox1, grainEnergy);
+            grainGrowth.Simulate(pictureBox1);
             clear_button.Enabled = true;
         }
 
         private void neumann_button_CheckedChanged(object sender, EventArgs e)
         {
             if (neumann_button.Checked)
-                NEIGHBOURHOOD = Neighbourhood.von_Neumann;
+                NEIGHBOURHOOD = Neighbourhood.vonNeumann;
         }
 
         private void moore_button_CheckedChanged(object sender, EventArgs e)
@@ -348,7 +345,7 @@ namespace GrainGrowth
             int startSizeY = SIZE_Y;
 
 
-            int[,] tabTmp = grainGrowth.Tab;
+            Grain[,] tabTmp = grainGrowth.Tab;
 
             int sizeX = SIZE_X;
             int sizeY = SIZE_Y;
@@ -386,7 +383,7 @@ namespace GrainGrowth
 
             // --------
 
-            grainGrowth.Tab = new int[SIZE_Y, SIZE_X];
+            grainGrowth.Tab = new Grain[SIZE_Y, SIZE_X];
 
             int y = SIZE_Y < startSizeY ? SIZE_Y : startSizeY;
             int x = SIZE_X < startSizeX ? SIZE_X : startSizeX;
@@ -424,8 +421,8 @@ namespace GrainGrowth
 
             grid.SetNewCellSizeAndDraw(pictureBox1.CreateGraphics(), pictureBox1, grainGrowth);
 
-            grainEnergy = new GrainEnergy();
-            grainEnergy.Display(pictureBox1.CreateGraphics());
+            grainGrowth.DisplayEnergy(pictureBox1.CreateGraphics());
+
 
 
             widthBox.Text = SIZE_X.ToString();
@@ -516,7 +513,7 @@ namespace GrainGrowth
                         break;
                     }
 
-                    grainGrowth.Simulate(pictureBox1, grainEnergy);
+                    grainGrowth.Simulate(pictureBox1);
                     if (grainGrowth.SimulationEnded())
                     {
 
@@ -535,10 +532,10 @@ namespace GrainGrowth
                             {
                                 for (int j = 0; j < SIZE_X; j++)
                                 {
-                                    if (grainGrowth.Tab[i, j] == 0 && this.tab[i, j] != 0)
+                                    if (grainGrowth.Tab[i, j].State == 0 && this.tab[i, j].State != 0)
                                     {
                                         grainGrowth.Tab[i, j] = this.tab[i, j];
-                                        grainGrowth.Display(pictureBox1.CreateGraphics(), j, i, this.tab[i, j]);
+                                        grainGrowth.Tab[i, j].Display(pictureBox1.CreateGraphics());
                                     }
                                 }
                             }
@@ -567,7 +564,7 @@ namespace GrainGrowth
             {
                 grid.RenderGridAndRefresh(pictureBox1.CreateGraphics(), pictureBox1);
                 grainGrowth.Display(pictureBox1.CreateGraphics());
-                grainEnergy.Display(pictureBox1.CreateGraphics());
+                grainGrowth.DisplayEnergy(pictureBox1.CreateGraphics());
             });
 
             renderWroker.RunWorkerAsync();
@@ -578,7 +575,7 @@ namespace GrainGrowth
         {
             grid.Draw(e.Graphics);
             grainGrowth.Display(e.Graphics);
-            grainEnergy.Display(e.Graphics);
+            grainGrowth.DisplayEnergy(e.Graphics);
 
         }
 
@@ -621,7 +618,7 @@ namespace GrainGrowth
             }
         }
 
-        private void pentagonalRadioButton_Click(object sender, EventArgs e)
+        private void pentagonalRadioButton_Click(object sender, MouseEventArgs e)
         {
             Array values = Enum.GetValues(typeof(PentagonalNeighbourhood));
             PENTAGONAL_NEIGHBOURHOOD = (PentagonalNeighbourhood)values.GetValue(rnd.Next(values.Length));
@@ -638,7 +635,7 @@ namespace GrainGrowth
             {
                 grid.RenderGridAndRefresh(pictureBox1.CreateGraphics(), pictureBox1);
                 grainGrowth.Display(pictureBox1.CreateGraphics());
-                grainEnergy.Display(pictureBox1.CreateGraphics());
+                grainGrowth.DisplayEnergy(pictureBox1.CreateGraphics());
             });
 
             renderWroker.RunWorkerAsync();
