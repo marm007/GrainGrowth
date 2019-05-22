@@ -80,9 +80,11 @@
             this.label10 = new System.Windows.Forms.Label();
             this.hexagonalToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.monteCarloStopButton = new System.Windows.Forms.Button();
+            this.monteCarloEnergyButton = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
-            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
-            this.button1 = new System.Windows.Forms.Button();
+            this.monteCarloIterationsUpDown = new System.Windows.Forms.NumericUpDown();
+            this.monteCarlo_Button = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -101,7 +103,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.speedTracBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.cellSizeTracBar)).BeginInit();
             this.groupBox6.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.monteCarloIterationsUpDown)).BeginInit();
             this.SuspendLayout();
             // 
             // pictureBox1
@@ -685,14 +687,36 @@
             // groupBox6
             // 
             this.groupBox6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.groupBox6.Controls.Add(this.monteCarloStopButton);
+            this.groupBox6.Controls.Add(this.monteCarloEnergyButton);
             this.groupBox6.Controls.Add(this.label1);
-            this.groupBox6.Controls.Add(this.numericUpDown1);
-            this.groupBox6.Controls.Add(this.button1);
+            this.groupBox6.Controls.Add(this.monteCarloIterationsUpDown);
+            this.groupBox6.Controls.Add(this.monteCarlo_Button);
             this.groupBox6.Location = new System.Drawing.Point(12, 499);
             this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(143, 103);
+            this.groupBox6.Size = new System.Drawing.Size(263, 104);
             this.groupBox6.TabIndex = 7;
             this.groupBox6.TabStop = false;
+            // 
+            // monteCarloStopButton
+            // 
+            this.monteCarloStopButton.Location = new System.Drawing.Point(87, 12);
+            this.monteCarloStopButton.Name = "monteCarloStopButton";
+            this.monteCarloStopButton.Size = new System.Drawing.Size(75, 23);
+            this.monteCarloStopButton.TabIndex = 5;
+            this.monteCarloStopButton.Text = "Stop";
+            this.monteCarloStopButton.UseVisualStyleBackColor = true;
+            this.monteCarloStopButton.Click += new System.EventHandler(this.monteCarloStopButton_Click);
+            // 
+            // monteCarloEnergyButton
+            // 
+            this.monteCarloEnergyButton.Location = new System.Drawing.Point(168, 12);
+            this.monteCarloEnergyButton.Name = "monteCarloEnergyButton";
+            this.monteCarloEnergyButton.Size = new System.Drawing.Size(89, 23);
+            this.monteCarloEnergyButton.TabIndex = 4;
+            this.monteCarloEnergyButton.Text = "Energy / ON";
+            this.monteCarloEnergyButton.UseVisualStyleBackColor = true;
+            this.monteCarloEnergyButton.Click += new System.EventHandler(this.monteCarloEnergyButton_Click);
             // 
             // label1
             // 
@@ -703,26 +727,37 @@
             this.label1.TabIndex = 2;
             this.label1.Text = "iterations";
             // 
-            // numericUpDown1
+            // monteCarloIterationsUpDown
             // 
-            this.numericUpDown1.Location = new System.Drawing.Point(6, 44);
-            this.numericUpDown1.Maximum = new decimal(new int[] {
+            this.monteCarloIterationsUpDown.Location = new System.Drawing.Point(6, 44);
+            this.monteCarloIterationsUpDown.Maximum = new decimal(new int[] {
             10000,
             0,
             0,
             0});
-            this.numericUpDown1.Name = "numericUpDown1";
-            this.numericUpDown1.Size = new System.Drawing.Size(75, 20);
-            this.numericUpDown1.TabIndex = 1;
+            this.monteCarloIterationsUpDown.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.monteCarloIterationsUpDown.Name = "monteCarloIterationsUpDown";
+            this.monteCarloIterationsUpDown.Size = new System.Drawing.Size(75, 20);
+            this.monteCarloIterationsUpDown.TabIndex = 1;
+            this.monteCarloIterationsUpDown.Value = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
             // 
-            // button1
+            // monteCarlo_Button
             // 
-            this.button1.Location = new System.Drawing.Point(6, 12);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 0;
-            this.button1.Text = "MonteCarlo";
-            this.button1.UseVisualStyleBackColor = true;
+            this.monteCarlo_Button.Location = new System.Drawing.Point(6, 12);
+            this.monteCarlo_Button.Name = "monteCarlo_Button";
+            this.monteCarlo_Button.Size = new System.Drawing.Size(75, 23);
+            this.monteCarlo_Button.TabIndex = 0;
+            this.monteCarlo_Button.Text = "MonteCarlo";
+            this.monteCarlo_Button.UseVisualStyleBackColor = true;
+            this.monteCarlo_Button.Click += new System.EventHandler(this.monteCarlo_Button_Click);
             // 
             // Form1
             // 
@@ -761,7 +796,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.cellSizeTracBar)).EndInit();
             this.groupBox6.ResumeLayout(false);
             this.groupBox6.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.monteCarloIterationsUpDown)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -820,8 +855,10 @@
         private System.Windows.Forms.RadioButton radialNeighbourhood_RadioButton;
         private System.Windows.Forms.GroupBox groupBox6;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.NumericUpDown numericUpDown1;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.NumericUpDown monteCarloIterationsUpDown;
+        private System.Windows.Forms.Button monteCarlo_Button;
+        private System.Windows.Forms.Button monteCarloStopButton;
+        private System.Windows.Forms.Button monteCarloEnergyButton;
     }
 }
 

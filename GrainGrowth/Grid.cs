@@ -66,7 +66,7 @@ public class Grid
     }
 
     public bool ComputeBounds(PictureBox pPictureBox, PictureBox pictureBox,
-        Simulation simulation, Graphics g)
+        Simulation simulation)
     {
        
         Grain[,] tabTmp = simulation.Tab;
@@ -138,7 +138,7 @@ public class Grid
         return true;
     }
 
-    public void RenderGridAndRefresh(Graphics g, PictureBox pictureBox)
+    public void RenderGridAndRefresh(PictureBox pictureBox, Bitmap bitmap)
     {
 
         int maxSizeX = pictureBox.Width / CELL_SIZE;
@@ -147,7 +147,10 @@ public class Grid
 
         System.Drawing.Pen circuitPen = new System.Drawing.Pen(Color.Black, 1);
 
-       g.FillRectangle(cellBrushClear, 0, 0, maxSizeX * CELL_SIZE + 1, maxSizeY * CELL_SIZE + 1 );
+
+        Graphics g = Graphics.FromImage(bitmap);
+
+        g.FillRectangle(cellBrushClear, 0, 0, maxSizeX * CELL_SIZE + 1, maxSizeY * CELL_SIZE + 1 );
 
         if (GRID_STATE == GridState.Enable)
         {
@@ -165,9 +168,10 @@ public class Grid
         }
     }
 
-    public void SetNewCellSizeAndDraw(Graphics gg, PictureBox pictureBox, Simulation simulation)
+    public void SetNewCellSizeAndDraw(PictureBox pictureBox, Bitmap bitmap, Simulation simulation)
     {
-        Graphics g = pictureBox.CreateGraphics();
+
+        Graphics g = Graphics.FromImage(bitmap);
 
         int maxSizeX = pictureBox.Width / CELL_SIZE + 1;
         int maxSizeY = pictureBox.Height / CELL_SIZE + 1;
@@ -212,7 +216,7 @@ public class Grid
             Draw(pictureBox);
         }
 
-        simulation.Display(g);
+        simulation.Display(bitmap);
     }
 
 }

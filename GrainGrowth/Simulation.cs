@@ -32,8 +32,9 @@ public class Simulation
     }
 
 
-    public void Display(Graphics g)
+    public void Display(Bitmap bitmap)
     {
+        Graphics g = Graphics.FromImage(bitmap);
 
         for (int i = 0; i < this.Tab.GetLength(0); i++)
         {
@@ -42,16 +43,19 @@ public class Simulation
 
                 if (this.Tab[i, j].State != 0)
                 {
-                    this.Tab[i, j].Display(g);
+                    this.Tab[i, j].Display(bitmap);
                 }
             }
         }
     }
 
-    public void DisplayEnergy(Graphics g)
+    public void DisplayEnergy(Bitmap bitmap)
     {
         if (ENERGY_STATE == EnergyState.Disable)
             return;
+
+
+        Graphics g = Graphics.FromImage(bitmap);
 
         System.Drawing.Pen pen = new System.Drawing.Pen(Color.Red, 1);
         System.Drawing.SolidBrush brush = new System.Drawing.SolidBrush(Color.Red);
@@ -65,10 +69,8 @@ public class Simulation
         }
     }
 
-    public void Simulate(PictureBox p)
+    public void Simulate(PictureBox pictureBox)
     {
-        Graphics g = p.CreateGraphics();
-
         Grain[,] tabTmp = new Grain[SIZE_Y, SIZE_X];
         for (int i = 0; i < SIZE_Y; i++)
         {
@@ -78,8 +80,8 @@ public class Simulation
             }
         }
 
-        // Console.WriteLine(BOUNDARY_CONDITION);
-        // Console.WriteLine(NEIGHBOURHOOD);
+        Bitmap bitmap = (Bitmap)pictureBox.Image;
+
 
         switch (NEIGHBOURHOOD)
         {
@@ -87,17 +89,17 @@ public class Simulation
                 switch (BOUNDARY_CONDITION)
                 {
                     case BoundaryCondition.Nonperiodic:
-
-                        tabTmp = Nonperiodic_Radial(g, tabTmp);
+                        tabTmp = Nonperiodic_Radial(bitmap, tabTmp);
                         break;
 
                     case BoundaryCondition.Periodic:
-                        tabTmp = Periodic_Radial(g, tabTmp);
+                        tabTmp = Periodic_Radial(bitmap, tabTmp);
                         break;
                 }
                 break;
             default:
-                tabTmp = Oblicz(g, tabTmp);
+                tabTmp = ChangeState(bitmap, tabTmp);
+                pictureBox.Image = bitmap;
                 break;
         }
        
@@ -106,9 +108,10 @@ public class Simulation
     }
 
 
-    private Grain[,] Oblicz(Graphics g, Grain[,] tabTmp)
+    private Grain[,] ChangeState(Bitmap bitmap, Grain[,] tabTmp)
     {
         NeighbourhoodAbstract neighbourhood = NeighbourhoodFactory.Create();
+        Graphics g = Graphics.FromImage(bitmap);
 
         for (int i = 0; i < SIZE_Y; i++)
         {
@@ -168,7 +171,7 @@ public class Simulation
 
                 if (cellEnd != cellBegin)
                 {
-                    tabTmp[i, j].Display(g);
+                    tabTmp[i, j].Display(bitmap);
                 }
             }
         }
@@ -177,7 +180,7 @@ public class Simulation
     }
 
 
-    private Grain[,] Periodic_Radial(Graphics g, Grain[,] tabTmp)
+    private Grain[,] Periodic_Radial(Bitmap bitmap, Grain[,] tabTmp)
     {
         for (int i = 0; i < SIZE_Y; i++)
         {
@@ -245,9 +248,9 @@ public class Simulation
                             {
                                 tabTmp[y, x].State = this.Tab[i, j].State;
 
-                                tabTmp[y, x].Display(g);
+                                tabTmp[y, x].Display(bitmap);
 
-                                this.Tab[i,j].DisplayEnergy(g);
+                                // this.Tab[i,j].DisplayEnergy(pictureBox);
                             }
                         }
                     }
@@ -259,7 +262,7 @@ public class Simulation
     }
 
 
-    private Grain[,] Nonperiodic_Radial(Graphics g, Grain[,] tabTmp)
+    private Grain[,] Nonperiodic_Radial(Bitmap bitmap, Grain[,] tabTmp)
     {
         for (int i = 0; i < SIZE_Y; i++)
         {
@@ -289,9 +292,9 @@ public class Simulation
                             {
                                 tabTmp[y, x].State = this.Tab[i, j].State;
 
-                                tabTmp[y, x].Display(g);
+                                tabTmp[y, x].Display(bitmap);
 
-                                this.Tab[i, j].DisplayEnergy(g);
+                                // this.Tab[i, j].DisplayEnergy(pictureBox);
                             }
                         }
                     }

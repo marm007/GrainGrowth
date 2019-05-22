@@ -12,5 +12,7 @@ public abstract class NeighbourhoodAbstract
     }
 
     public abstract void SetNeighbours(Grain[,] grains, int x, int y);
-    
+
+   
+
 }

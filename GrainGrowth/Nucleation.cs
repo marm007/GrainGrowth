@@ -12,7 +12,7 @@ using static Config;
 public class Nucleation
 {
 
-    public static void Homogeneus(Grid grid, Simulation grainGrowth, PictureBox pictureBox, int numberInRow, int numberInCol)
+    public static void Homogeneus(Grid grid, Simulation grainGrowth, Bitmap bitmap, int numberInRow, int numberInCol)
     {
         Random rnd = new Random();
 
@@ -35,7 +35,7 @@ public class Nucleation
 
 
                 grainGrowth.Tab[y,x].State = Colors.RandomColor();
-                grainGrowth.Tab[y, x].Display(pictureBox.CreateGraphics());
+                grainGrowth.Tab[y, x].Display(bitmap);
             }
         }
     }
@@ -79,7 +79,7 @@ public class Nucleation
     }
 
     
-    public static void Random(Grid grid, Simulation grainGrowth, int number, PictureBox pictureBox)
+    public static void Random(Grid grid, Simulation grainGrowth, int number, Bitmap bitmap)
     {
         Random rnd = new Random();
 
@@ -113,7 +113,7 @@ public class Nucleation
                 listY.RemoveAt(index);
 
                 grainGrowth.Tab[y, x].State = Colors.RandomColor();
-                grainGrowth.Tab[y, x].Display(pictureBox.CreateGraphics());
+                grainGrowth.Tab[y, x].Display(bitmap);
             }
 
         }
@@ -172,7 +172,7 @@ public class Nucleation
     }
 
     
-    public static void Radial(Grid grid, Simulation grainGrowth, int r, int number, PictureBox pictureBox, TextBox alertTextBox, GrainGrowth.Form1 form)
+    public static void Radial(Grid grid, Simulation grainGrowth, int r, int number, Bitmap bitmap, TextBox alertTextBox, GrainGrowth.Form1 form)
     {
 
         Random rnd = new Random();
@@ -262,7 +262,7 @@ public class Nucleation
 
 
             grainGrowth.Tab[i, j].State = Colors.RandomColor();
-            grainGrowth.Tab[i, j].Display(pictureBox.CreateGraphics());
+            grainGrowth.Tab[i, j].Display(bitmap);
 
             n++;
         }
