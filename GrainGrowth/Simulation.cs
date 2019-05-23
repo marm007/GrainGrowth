@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using static Config;
 
@@ -17,6 +18,7 @@ public class Simulation
     private Grain[,] tab;
 
     internal Grain[,] Tab { get => tab; set => tab = value; }
+
 
     public Simulation()
 	{
@@ -69,7 +71,8 @@ public class Simulation
         }
     }
 
-    public void Simulate(PictureBox pictureBox)
+
+    public void Simulate(Graphics g)
     {
         Grain[,] tabTmp = new Grain[SIZE_Y, SIZE_X];
         for (int i = 0; i < SIZE_Y; i++)
@@ -80,26 +83,14 @@ public class Simulation
             }
         }
 
-        Bitmap bitmap = (Bitmap)pictureBox.Image;
-
 
         switch (NEIGHBOURHOOD)
         {
             case Neighbourhood.Radial:
-                switch (BOUNDARY_CONDITION)
-                {
-                    case BoundaryCondition.Nonperiodic:
-                        tabTmp = Nonperiodic_Radial(bitmap, tabTmp);
-                        break;
-
-                    case BoundaryCondition.Periodic:
-                        tabTmp = Periodic_Radial(bitmap, tabTmp);
-                        break;
-                }
+                tabTmp = ChangeStateRadial(g, tabTmp);
                 break;
             default:
-                tabTmp = ChangeState(bitmap, tabTmp);
-                pictureBox.Image = bitmap;
+                tabTmp = ChangeState(g, tabTmp);
                 break;
         }
        
@@ -107,17 +98,48 @@ public class Simulation
         this.Tab = tabTmp;
     }
 
+    public async Task<Bitmap> Simulate(Bitmap bitmap)
+    {
+        Graphics g = Graphics.FromImage(bitmap);
 
-    private Grain[,] ChangeState(Bitmap bitmap, Grain[,] tabTmp)
+        return await Task.Run(() =>
+        {
+            Grain[,] tabTmp = new Grain[SIZE_Y, SIZE_X];
+            for (int i = 0; i < SIZE_Y; i++)
+            {
+                for (int j = 0; j < SIZE_X; j++)
+                {
+                    tabTmp[i, j] = new Grain(j, i, 0);
+                }
+            }
+
+
+            switch (NEIGHBOURHOOD)
+            {
+                case Neighbourhood.Radial:
+                    tabTmp = ChangeStateRadial(g, tabTmp);
+                    break;
+                default:
+                    tabTmp = ChangeState(g, tabTmp);
+                    break;
+            }
+
+            this.Tab = tabTmp;
+            return bitmap;
+        });
+
+    }
+
+
+    private Grain[,] ChangeState(Graphics g, Grain[,] tabTmp)
     {
         NeighbourhoodAbstract neighbourhood = NeighbourhoodFactory.Create();
-        Graphics g = Graphics.FromImage(bitmap);
 
         for (int i = 0; i < SIZE_Y; i++)
         {
             for (int j = 0; j < SIZE_X; j++)
             {
-                neighbourhood.SetNeighbours(this.Tab, j, i);
+                neighbourhood.GetNeighbours(this.Tab, j, i);
 
                 int cellBegin = this.Tab[i, j].State;
                 int cellEnd = this.Tab[i, j].State;
@@ -171,7 +193,7 @@ public class Simulation
 
                 if (cellEnd != cellBegin)
                 {
-                    tabTmp[i, j].Display(bitmap);
+                    tabTmp[i, j].Display(g);
                 }
             }
         }
@@ -179,9 +201,10 @@ public class Simulation
         return tabTmp;
     }
 
-
-    private Grain[,] Periodic_Radial(Bitmap bitmap, Grain[,] tabTmp)
+    private Grain[,] ChangeStateRadial(Graphics g, Grain[,] tabTmp)
     {
+        NeighbourhoodAbstract neighbourhood = NeighbourhoodFactory.Create();
+
         for (int i = 0; i < SIZE_Y; i++)
         {
             for (int j = 0; j < SIZE_X; j++)
@@ -189,71 +212,17 @@ public class Simulation
                 if (this.Tab[i, j].State == 0)
                     continue;
 
+
                 tabTmp[i, j] = this.Tab[i, j];
 
-                float x_sr = this.Tab[i, j].EnergyCoords.X;
-                float y_sr = this.Tab[i, j].EnergyCoords.Y;
 
-                int maxY = (int) Math.Ceiling((double)(i + RADIUS >= SIZE_Y ? SIZE_Y - 1 : i + RADIUS));
-                int maxX = (int) Math.Ceiling((double)(j + RADIUS >= SIZE_X ? SIZE_X - 1 : j + RADIUS));
-                int minY = (int) Math.Floor((double)(i - RADIUS < 0 ? 0 : i - RADIUS));
-                int minX = (int) Math.Floor((double)(j - RADIUS < 0 ? 0 : j - RADIUS));
+                neighbourhood.GetNeighbours(this.Tab, j, i);
 
-                for (int a = (int)(-RADIUS); a <= (int)(RADIUS); ++a) 
+                foreach (Grain grain in neighbourhood.NeighboursGrains)
                 {
-                    for (int b = (int)(-RADIUS); b <= (int)(RADIUS); ++b) 
-                    {
-                        int x = j + b >= SIZE_X ? (0 + (j + b) - SIZE_X) : (j + b < 0 ? (SIZE_X + (j + b)) : j + b);
-                        int y = i + a >= SIZE_Y ? (0 + (i + a) - SIZE_Y) : (i + a < 0 ? (SIZE_Y + (i + a)) : i + a);
-                        
-                        bool isGreaterX = j + b >= SIZE_X;
-                        bool isLowerX = j + b < 0;
-                        bool isGreaterY = i + b >= SIZE_Y;
-                        bool isLowerY = i + b < 0;
-                        // Console.WriteLine("j = " + j + " b + " + b);
-                        // Console.WriteLine(j+b>=SIZE_X);
-                        // Console.WriteLine("x = " + x + " y = " + y);
+                    tabTmp[grain.Y, grain.X].State = this.Tab[i, j].State;
 
-                        float x_r = this.Tab[y, x].EnergyCoords.X;
-                        float y_r = this.Tab[y, x].EnergyCoords.Y;
-
-                        if (isGreaterX)
-                        {
-                            x_r = x_r + CELL_SIZE * SIZE_X;
-                        }
-
-                        if (isGreaterY)
-                        {
-                            y_r = y_r + CELL_SIZE * SIZE_Y;
-                        }
-
-                        if (isLowerX)
-                        {
-                            x_r = x_r - CELL_SIZE * SIZE_X;
-
-                        }
-
-                        if (isLowerY)
-                        {
-                            y_r = y_r - CELL_SIZE * SIZE_Y;
-
-                        }
-
-                        //Console.WriteLine("x = " + x + " y = " + y);
-                        //Console.WriteLine("x_r = " + x_r + " y_r = " + y_r);
-
-                        if (this.Tab[y, x].State == 0 && tabTmp[y, x].State == 0)
-                        {
-                            if (Math.Sqrt(Math.Pow((double)(x_sr - x_r), 2) + Math.Pow((double)(y_sr - y_r), 2)) < RADIUS * CELL_SIZE)
-                            {
-                                tabTmp[y, x].State = this.Tab[i, j].State;
-
-                                tabTmp[y, x].Display(bitmap);
-
-                                // this.Tab[i,j].DisplayEnergy(pictureBox);
-                            }
-                        }
-                    }
+                    tabTmp[grain.Y, grain.X].Display(g);
                 }
             }
         }
@@ -261,49 +230,6 @@ public class Simulation
         return tabTmp;
     }
 
-
-    private Grain[,] Nonperiodic_Radial(Bitmap bitmap, Grain[,] tabTmp)
-    {
-        for (int i = 0; i < SIZE_Y; i++)
-        {
-            for (int j = 0; j < SIZE_X; j++)
-            {
-                if (this.Tab[i, j].State == 0)
-                    continue;
-
-                tabTmp[i, j] = this.Tab[i, j];
-
-                float x_sr = this.Tab[i, j].EnergyCoords.X;
-                float y_sr = this.Tab[i, j].EnergyCoords.Y;
-
-                int maxY = (int) Math.Ceiling((double) (i + RADIUS >= SIZE_Y ? SIZE_Y - 1 : i + RADIUS));
-                int maxX = (int) Math.Ceiling((double)(j + RADIUS >= SIZE_X ? SIZE_X - 1 : j + RADIUS));
-                int minY = (int) Math.Floor((double)(i - RADIUS < 0 ? 0 : i - RADIUS));
-                int minX = (int) Math.Floor((double)(j - RADIUS < 0 ? 0 : j - RADIUS));
-
-
-                for (int x = minX; x <= maxX; ++x)
-                {
-                    for (int y = minY; y <= maxY; ++y)
-                    {
-                        if (this.Tab[y, x].State == 0 && tabTmp[y, x].State == 0)
-                        {
-                            if(Math.Sqrt( Math.Pow((double)(x_sr - this.Tab[y, x].EnergyCoords.X ), 2) + Math.Pow((double)(y_sr - this.Tab[y, x].EnergyCoords.Y), 2)) < RADIUS * CELL_SIZE)
-                            {
-                                tabTmp[y, x].State = this.Tab[i, j].State;
-
-                                tabTmp[y, x].Display(bitmap);
-
-                                // this.Tab[i, j].DisplayEnergy(pictureBox);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        return tabTmp;
-    }
 
     public bool SimulationEnded()
     {

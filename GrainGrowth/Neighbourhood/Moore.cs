@@ -14,10 +14,12 @@ public class Moore : NeighbourhoodAbstract
 
     public override List<string> Neighbours { get { return _Neighbours; }  }
 
+    public override List<Grain> NeighboursGrains => throw new NotImplementedException();
+
     private List<string> _Neighbours;
 
 
-    public override void SetNeighbours(Grain[,] grains, int x, int y)
+    public override void GetNeighbours(Grain[,] grains, int x, int y)
     {
         _Neighbours = new List<string>();
 
@@ -59,5 +61,10 @@ public class Moore : NeighbourhoodAbstract
             _Neighbours.Add(grains[y_g, x_p].State.ToString()); // s_g_p
 
         }
+    }
+
+    public override void GetAllNeighbours(Grain[,] grains, int x, int y)
+    {
+        throw new NotImplementedException();
     }
 }

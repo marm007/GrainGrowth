@@ -7,6 +7,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using static Config;
@@ -43,6 +44,8 @@ namespace GrainGrowth
         Random rnd = new Random();
 
         private MonteCarlo monteCarlo = null;
+
+        private Bitmap previousBitmap = null;
 
 
         public Form1()
@@ -114,6 +117,7 @@ namespace GrainGrowth
                     if (isPlaying)
                         Simulate();
                 }
+
                 return;
             }
             Bitmap bitmapNew = new Bitmap(SIZE_X * CELL_SIZE, SIZE_Y * CELL_SIZE);
@@ -219,15 +223,14 @@ namespace GrainGrowth
 
         private void start_button_Click(object sender, EventArgs e)
         {
+            CheckEnergyButton();
+
             if (flagStop)
             {
                 flagStop = false;
             }
 
             isPlaying = true;
-
-            backgroundWorker = new BackgroundWorker();
-            backgroundWorker.WorkerSupportsCancellation = true;
 
             Simulate();
 
@@ -262,14 +265,12 @@ namespace GrainGrowth
 
         private void clear_button_Click(object sender, EventArgs e)
         {
-
-
-            if(backgroundWorker != null)
+            if (backgroundWorker != null)
                 backgroundWorker.CancelAsync();
 
+            Bitmap bitmap = new Bitmap(SIZE_X * CELL_SIZE, SIZE_Y * CELL_SIZE);
             pictureBox1.Refresh();
 
-            Bitmap bitmap = new Bitmap(SIZE_X * CELL_SIZE, SIZE_Y * CELL_SIZE);
 
             flagStop = false;
 
@@ -294,7 +295,14 @@ namespace GrainGrowth
 
         private void step_button_Click(object sender, EventArgs e)
         {
-            grainGrowth.Simulate(pictureBox1);
+            CheckEnergyButton();
+
+            Bitmap bitmap = (Bitmap)pictureBox1.Image;
+            Graphics g = Graphics.FromImage(bitmap);
+
+            grainGrowth.Simulate(g);
+
+            pictureBox1.Image = bitmap;
             clear_button.Enabled = true;
         }
 
@@ -451,10 +459,9 @@ namespace GrainGrowth
 
 
             Bitmap bitmap = (Bitmap)pictureBox1.Image;
-
             grid.SetNewCellSizeAndDraw(pictureBox1, bitmap, grainGrowth);
-
             grainGrowth.DisplayEnergy(bitmap);
+
             pictureBox1.Image = bitmap;
 
             widthBox.Text = SIZE_X.ToString();
@@ -544,31 +551,30 @@ namespace GrainGrowth
 
         private void Simulate()
         {
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
+          
 
             backgroundWorker = new BackgroundWorker();
             backgroundWorker.WorkerSupportsCancellation = true;
+         
 
-            backgroundWorker.DoWork += new DoWorkEventHandler((state, args) =>
+            backgroundWorker.DoWork += new DoWorkEventHandler(async (state, args) =>
             {
                 while (true)
                 {
                     if (backgroundWorker.CancellationPending)
                     {
-                        Console.WriteLine("CANCLEED");
                         break;
                     }
 
-                    grainGrowth.Simulate(pictureBox1);
-                    if (grainGrowth.SimulationEnded())
+
+                    Bitmap bitmap = (Bitmap)pictureBox1.Image;
+
+                    bitmap = await grainGrowth.Simulate(bitmap);
+
+                    await Task.Run(() =>
                     {
-                        sw.Stop();
-                        Console.WriteLine("Elapsed={0}", sw.Elapsed);
-                        SimulationEndedAction("finish");
-                        break;
-
-                    }
+                        pictureBox1.Image = bitmap;
+                    });
 
                     int time = 0;
 
@@ -583,7 +589,7 @@ namespace GrainGrowth
                                     if (grainGrowth.Tab[i, j].State == 0 && this.tab[i, j].State != 0)
                                     {
                                         grainGrowth.Tab[i, j] = this.tab[i, j];
-                                       // grainGrowth.Tab[i, j].Display(pictureBox1);
+                                        grainGrowth.Tab[i, j].Display(pictureBox1.CreateGraphics(), Graphics.FromImage(bitmap));
                                     }
                                 }
                             }
@@ -596,6 +602,17 @@ namespace GrainGrowth
 
                         System.Threading.Thread.Sleep(SLEEP_TIME_MIN);
                     }
+
+                  
+
+
+                    if (grainGrowth.SimulationEnded())
+                    {
+                        SimulationEndedAction("finish");
+                        break;
+
+                    }
+
                 }
             });
 
@@ -616,6 +633,11 @@ namespace GrainGrowth
                 grainGrowth.DisplayEnergy(bitmap);
             });
 
+            renderWroker.RunWorkerCompleted += new RunWorkerCompletedEventHandler((object ss, RunWorkerCompletedEventArgs ee) =>
+            {
+                pictureBox1.Image = bitmap;
+            });
+
             renderWroker.RunWorkerAsync();
 
         }
@@ -624,11 +646,6 @@ namespace GrainGrowth
         {
             if (pictureBox1.Image != null)
                 return;
-
-            //grid.Draw(e.Graphics);
-            //grainGrowth.Display(e.Graphics);
-            //grainGrowth.DisplayEnergy(e.Graphics);
-
         }
 
         public void AlertTextBoxAction(string value, bool visibility)
@@ -659,6 +676,11 @@ namespace GrainGrowth
             stop_button.Enabled = false;
             clear_button.Enabled = true;
             step_button.Enabled = true;
+
+            monteCarloIterationsUpDown.Enabled = true;
+            monteCarloStopButton.Enabled = false;
+            monteCarloEnergyButton.Enabled = true;
+            monteCarlo_Button.Enabled = true;
         }
 
         private void hexagonalComboBox_SelectedItemChanged(object sender, EventArgs e)
@@ -689,6 +711,12 @@ namespace GrainGrowth
                 grid.RenderGridAndRefresh(pictureBox1, bitmap);
                 grainGrowth.Display(bitmap);
                 grainGrowth.DisplayEnergy(bitmap);
+
+            });
+
+            renderWroker.RunWorkerCompleted += new RunWorkerCompletedEventHandler((object ss, RunWorkerCompletedEventArgs ee) =>
+            {
+                pictureBox1.Image = bitmap;
             });
 
             renderWroker.RunWorkerAsync();
@@ -716,6 +744,12 @@ namespace GrainGrowth
 
         private void monteCarlo_Button_Click(object sender, EventArgs e)
         {
+            CheckEnergyButton();
+
+            start_button.Enabled = false;
+            stop_button.Enabled = false;
+            clear_button.Enabled = false;
+            step_button.Enabled = false;
 
             monteCarloIterationsUpDown.Enabled = false;
             monteCarloStopButton.Enabled = true;
@@ -724,9 +758,8 @@ namespace GrainGrowth
 
             monteCarloWorker = new BackgroundWorker();
             monteCarloWorker.WorkerSupportsCancellation = true;
-            Bitmap bitmap = (Bitmap)pictureBox1.Image;
 
-            monteCarloWorker.DoWork += new DoWorkEventHandler((state, args) =>
+            monteCarloWorker.DoWork += new DoWorkEventHandler(async (state, args) =>
             {
                 int iteartions = 0;
                 while(iteartions < monteCarloIterationsUpDown.Value)
@@ -735,7 +768,18 @@ namespace GrainGrowth
                     {
                         break;
                     }
-                    monteCarlo.Simulate(grainGrowth, bitmap);
+
+                    Bitmap bitmap = (Bitmap)pictureBox1.Image;
+
+                    bitmap = await monteCarlo.Simulate(grainGrowth, bitmap, pictureBox1.CreateGraphics());
+
+                    await Task.Run(() =>
+                    {
+                        pictureBox1.Image = bitmap;
+                    });
+
+                    System.Threading.Thread.Sleep(SLEEP_TIME_MIN);
+
                     iteartions++;
                 }
 
@@ -751,6 +795,11 @@ namespace GrainGrowth
         {
             monteCarloWorker.CancelAsync();
 
+            start_button.Enabled = true;
+            stop_button.Enabled = false;
+            clear_button.Enabled = true;
+            step_button.Enabled = true;
+
             monteCarloIterationsUpDown.Enabled = true;
             monteCarloStopButton.Enabled = false;
             monteCarloEnergyButton.Enabled = true;
@@ -763,14 +812,14 @@ namespace GrainGrowth
             {
                 monteCarloEnergyButton.Text = "Energy / OFF";
                 monteCarlo.CalculateEnergy(grainGrowth);
-
+                previousBitmap = (Bitmap)pictureBox1.Image;
                 monteCarlo.DisplayEnergy(grainGrowth.Tab, pictureBox1);
             }
             else
             {
                 monteCarloEnergyButton.Text = "Energy / ON";
 
-                pictureBox1.Image = null;
+                pictureBox1.Image = previousBitmap;
 
             }
 
@@ -784,10 +833,30 @@ namespace GrainGrowth
                 this.Invoke(new Action<string>(MonteCarloEndedAction), new object[] { value });
                 return;
             }
+
+            start_button.Enabled = true;
+            stop_button.Enabled = false;
+            clear_button.Enabled = true;
+            step_button.Enabled = true;
+
+
             monteCarloIterationsUpDown.Enabled = true;
             monteCarloStopButton.Enabled = false;
             monteCarloEnergyButton.Enabled = true;
             monteCarlo_Button.Enabled = true;
         }
+
+        public void CheckEnergyButton()
+        {
+            if (monteCarloEnergyButton.Text == "Energy / OFF")
+            {
+                monteCarloEnergyButton.Text = "Energy / ON";
+
+                if (previousBitmap != null)
+                    pictureBox1.Image = previousBitmap;
+            }
+        }
     }
+
+   
 }

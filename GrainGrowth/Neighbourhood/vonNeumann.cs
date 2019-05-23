@@ -9,9 +9,11 @@ public class vonNeumann : NeighbourhoodAbstract
 {
     public override List<string> Neighbours { get { return _Neighbours; } }
 
+    public override List<Grain> NeighboursGrains => throw new NotImplementedException();
+
     private List<string> _Neighbours;
 
-    public override void SetNeighbours(Grain[,] grains, int x, int y)
+    public override void GetNeighbours(Grain[,] grains, int x, int y)
     {
         _Neighbours = new List<string>();
 
@@ -39,5 +41,10 @@ public class vonNeumann : NeighbourhoodAbstract
             _Neighbours.Add(grains[y_d, x].State.ToString()); // s_d
             _Neighbours.Add(grains[y_g, x].State.ToString()); // s_g
         }
+    }
+
+    public override void GetAllNeighbours(Grain[,] grains, int x, int y)
+    {
+        throw new NotImplementedException();
     }
 }

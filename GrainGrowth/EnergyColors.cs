@@ -28,4 +28,23 @@ public static class EnergyColors
             colors.Add(Color.FromArgb(red, green, blue));
         }
     }
+
+    public static void InitializeColors(int max)
+    {
+        maxNumberOfColors = max;
+
+        colors = new List<Color>();
+        int aR = 0; int aG = 0; int aB = 255;  
+        int bR = 255; int bG = 0; int bB = 0;    
+
+        for (int i = 0; i < maxNumberOfColors; i++)
+        {
+            float value = ((float) i / ((float) maxNumberOfColors));  
+            int red = (int) ((float)(bR - aR) * value + aR);      
+            int green = (int) ((float)(bG - aG) * value + aG);      
+            int blue = (int) ((float)(bB - aB) * value + aB);     
+
+            colors.Add(Color.FromArgb(red, green, blue));
+        }
+    }
 }

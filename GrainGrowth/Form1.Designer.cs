@@ -610,7 +610,6 @@
             this.speedTracBar.Name = "speedTracBar";
             this.speedTracBar.Size = new System.Drawing.Size(112, 45);
             this.speedTracBar.TabIndex = 8;
-            this.speedTracBar.Value = 10;
             this.speedTracBar.Scroll += new System.EventHandler(this.speedTracBar_Scroll);
             // 
             // label7

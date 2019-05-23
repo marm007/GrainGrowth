@@ -26,11 +26,11 @@ public class Grain
         this.y = y;
     }
 
-    public int State { get => state; set => state = value; }
-    public int X { get => x; }
-    public int Y { get => y; }
-    public int Q { get => q; set => q = value; }
-    internal GrainEnergyCoords EnergyCoords { get => energyCoords; }
+    public int State { get { return state; } set {  state = value; } }
+    public int X { get { return x; } }
+    public int Y { get { return y; } }
+    public int Q { get { return q; } set { q = value; } }
+    internal GrainEnergyCoords EnergyCoords { get { return energyCoords; } }
 
     public void Display(Bitmap bitmap)
     {
@@ -56,7 +56,6 @@ public class Grain
         
     }
 
-
     public void Display(Graphics g)
     {
 
@@ -77,6 +76,34 @@ public class Grain
         }
 
     }
+
+    public void Display(Graphics g, Graphics gB)
+    {
+
+        if (this.state == 0)
+        {
+            System.Drawing.SolidBrush cellBrushClear = new System.Drawing.SolidBrush(SystemColors.Control);
+
+            g.FillRectangle(cellBrushClear, (this.x) * CELL_SIZE + (int)GRID_STATE, (this.y) * CELL_SIZE + (int)GRID_STATE,
+                CELL_SIZE - (int)GRID_STATE, CELL_SIZE - (int)GRID_STATE);
+
+            gB.FillRectangle(cellBrushClear, (this.x) * CELL_SIZE + (int)GRID_STATE, (this.y) * CELL_SIZE + (int)GRID_STATE,
+                CELL_SIZE - (int)GRID_STATE, CELL_SIZE - (int)GRID_STATE);
+
+        }
+        else
+        {
+            System.Drawing.SolidBrush cellBrush = new System.Drawing.SolidBrush(Colors.colors[State]);
+
+            g.FillRectangle(cellBrush, (this.x) * CELL_SIZE + (int)GRID_STATE, (this.y) * CELL_SIZE + (int)GRID_STATE,
+                CELL_SIZE - (int)GRID_STATE, CELL_SIZE - (int)GRID_STATE);
+
+            gB.FillRectangle(cellBrush, (this.x) * CELL_SIZE + (int)GRID_STATE, (this.y) * CELL_SIZE + (int)GRID_STATE,
+                CELL_SIZE - (int)GRID_STATE, CELL_SIZE - (int)GRID_STATE);
+        }
+
+    }
+
 
     public void DisplayEnergy(Bitmap bitmap)
     {

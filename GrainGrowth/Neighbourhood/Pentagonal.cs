@@ -14,9 +14,11 @@ public class Pentagonal : NeighbourhoodAbstract
 
     public override List<string> Neighbours { get { return _Neighbours; } }
 
+    public override List<Grain> NeighboursGrains => throw new NotImplementedException();
+
     private List<string> _Neighbours;
 
-    public override void SetNeighbours(Grain[,] grains, int x, int y)
+    public override void GetNeighbours(Grain[,] grains, int x, int y)
     {
         _Neighbours = new List<string>();
 
@@ -116,5 +118,10 @@ public class Pentagonal : NeighbourhoodAbstract
             }
 
         }
+    }
+
+    public override void GetAllNeighbours(Grain[,] grains, int x, int y)
+    {
+        throw new NotImplementedException();
     }
 }

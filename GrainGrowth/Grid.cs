@@ -65,6 +65,31 @@ public class Grid
         }
     }
 
+    public void Draw(Graphics g, PictureBox pictureBox)
+    {
+
+        if (GRID_STATE == GridState.Enable)
+        {
+            int maxSizeX = pictureBox.Width / CELL_SIZE;
+            int maxSizeY = pictureBox.Height / CELL_SIZE;
+
+
+            g.FillRectangle(cellBrushClear, 0, 0, maxSizeX * CELL_SIZE + 1, maxSizeY * CELL_SIZE + 1);
+
+            for (int i = 0; i <= SIZE_Y; i++)
+            {
+                g.DrawLine(circuitPen, 0, i * CELL_SIZE, SIZE_X * CELL_SIZE, i * CELL_SIZE);
+
+            }
+
+            for (int j = 0; j <= SIZE_X; j++)
+            {
+                g.DrawLine(circuitPen, j * CELL_SIZE, 0, j * CELL_SIZE, SIZE_Y * CELL_SIZE);
+
+            }
+        }
+    }
+
     public bool ComputeBounds(PictureBox pPictureBox, PictureBox pictureBox,
         Simulation simulation)
     {
@@ -133,7 +158,7 @@ public class Grid
             }
         }
 
-        Draw(pictureBox);
+        // Draw(pictureBox);
 
         return true;
     }
@@ -213,7 +238,7 @@ public class Grid
 
         if (GRID_STATE == GridState.Enable)
         {
-            Draw(pictureBox);
+            Draw(g, pictureBox);
         }
 
         simulation.Display(bitmap);
