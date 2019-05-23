@@ -79,7 +79,8 @@ public class Simulation
         {
             for (int j = 0; j < SIZE_X; j++)
             {
-                tabTmp[i, j] = new Grain(j, i, 0);
+                tabTmp[i, j] = this.Tab[i, j].Copy();
+                tabTmp[i, j].State = 0;
             }
         }
 
@@ -109,7 +110,8 @@ public class Simulation
             {
                 for (int j = 0; j < SIZE_X; j++)
                 {
-                    tabTmp[i, j] = new Grain(j, i, 0);
+                    tabTmp[i, j] = this.Tab[i, j].Copy();
+                    tabTmp[i, j].State = 0;
                 }
             }
 
@@ -207,8 +209,19 @@ public class Simulation
 
         for (int i = 0; i < SIZE_Y; i++)
         {
+            if (BREAK_SIMULATION)
+            {
+                BREAK_SIMULATION = false;
+                break;
+            }
+
             for (int j = 0; j < SIZE_X; j++)
             {
+                if (BREAK_SIMULATION)
+                {
+                    break;
+                }
+
                 if (this.Tab[i, j].State == 0)
                     continue;
 

@@ -30,7 +30,7 @@ public class Grain
     public int X { get { return x; } }
     public int Y { get { return y; } }
     public int Q { get { return q; } set { q = value; } }
-    internal GrainEnergyCoords EnergyCoords { get { return energyCoords; } }
+    public GrainEnergyCoords EnergyCoords { get { return energyCoords; } set { energyCoords.X = value.X; energyCoords.Y = value.Y; } }
 
     public void Display(Bitmap bitmap)
     {
@@ -120,6 +120,13 @@ public class Grain
 
 
         g.FillEllipse(brush, this.EnergyCoords.X - RADIUS / 2.0f, this.EnergyCoords.Y - RADIUS / 2.0f, RADIUS, RADIUS);
+    }
+
+    public Grain Copy()
+    {
+        Grain grain = new Grain(this.x, this.y, this.state);
+        grain.EnergyCoords = this.energyCoords;
+        return grain;
     }
 
 }

@@ -198,7 +198,7 @@ namespace GrainGrowth
                 {
                     for (int j = 0; j < SIZE_X; j++)
                     {
-                        this.tab[i, j] = new Grain(j, i, 0);
+                        this.tab[i, j] = grainGrowth.Tab[i, j].Copy();
                     }
                 }
 
@@ -247,6 +247,7 @@ namespace GrainGrowth
         {
             isPlaying = false;
             flagStop = true;
+            BREAK_SIMULATION = true;
             backgroundWorker.CancelAsync();
 
             cellSizeTracBar.Enabled = true;
@@ -269,7 +270,6 @@ namespace GrainGrowth
                 backgroundWorker.CancelAsync();
 
             Bitmap bitmap = new Bitmap(SIZE_X * CELL_SIZE, SIZE_Y * CELL_SIZE);
-            pictureBox1.Refresh();
 
 
             flagStop = false;
@@ -277,7 +277,7 @@ namespace GrainGrowth
             start_button.Enabled = true;
             stop_button.Enabled = false;
             clear_button.Enabled = false;
-            grid.Draw(pictureBox1);
+            grid.Draw(Graphics.FromImage(bitmap), pictureBox1);
 
             for (int i = 0; i < SIZE_Y; i++)
             {
@@ -561,12 +561,7 @@ namespace GrainGrowth
             {
                 while (true)
                 {
-                    if (backgroundWorker.CancellationPending)
-                    {
-                        break;
-                    }
-
-
+                   
                     Bitmap bitmap = (Bitmap)pictureBox1.Image;
 
                     bitmap = await grainGrowth.Simulate(bitmap);
@@ -575,6 +570,11 @@ namespace GrainGrowth
                     {
                         pictureBox1.Image = bitmap;
                     });
+
+                    if (backgroundWorker.CancellationPending)
+                    {
+                        break;
+                    }
 
                     int time = 0;
 
@@ -764,10 +764,6 @@ namespace GrainGrowth
                 int iteartions = 0;
                 while(iteartions < monteCarloIterationsUpDown.Value)
                 {
-                    if (monteCarloWorker.CancellationPending)
-                    {
-                        break;
-                    }
 
                     Bitmap bitmap = (Bitmap)pictureBox1.Image;
 
@@ -777,6 +773,12 @@ namespace GrainGrowth
                     {
                         pictureBox1.Image = bitmap;
                     });
+
+                    if (monteCarloWorker.CancellationPending)
+                    {
+
+                        break;
+                    }
 
                     System.Threading.Thread.Sleep(SLEEP_TIME_MIN);
 
@@ -793,6 +795,8 @@ namespace GrainGrowth
 
         private void monteCarloStopButton_Click(object sender, EventArgs e)
         {
+            BREAK_SIMULATION = true;
+
             monteCarloWorker.CancelAsync();
 
             start_button.Enabled = true;

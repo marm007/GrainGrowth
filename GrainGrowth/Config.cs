@@ -26,6 +26,8 @@ public static class Config
 
     public static int SIZE_Y { get { return sIZE_Y; } }
 
+    public static bool BREAK_SIMULATION = false;
+
 
     public enum Neighbourhood { vonNeumann, Moore, Pentagonal, Hexagonal, Radial };
     public enum PentagonalNeighbourhood { Left, Right, Top, Bottom };

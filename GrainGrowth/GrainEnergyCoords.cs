@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static Config;
 
-struct GrainEnergyCoords
+public struct GrainEnergyCoords
 {
     private static Random random = new Random();
 
@@ -16,6 +16,12 @@ struct GrainEnergyCoords
     {
         x = (float) Math.Round(random.NextDouble() * (CELL_SIZE - RADIUS) + (x1 * CELL_SIZE), 1) + RADIUS / 2;
         y = (float) Math.Round(random.NextDouble() * (CELL_SIZE - RADIUS) + (y1 * CELL_SIZE), 1) + RADIUS / 2;
+    }
+
+    public GrainEnergyCoords(GrainEnergyCoords energyCoords)
+    {
+        x = energyCoords.X;
+        y = energyCoords.Y;
     }
 
     public float X { get => x; set => x = value; }

@@ -35,6 +35,12 @@ public class MonteCarlo
 
             while (all.Count > 0)
             {
+                if (BREAK_SIMULATION)
+                {
+                    BREAK_SIMULATION = false;
+                    break;
+                }
+
                 int index = random.Next(all.Count);
                 Grain grain = all.ElementAt(index);
                 all.RemoveAt(index);

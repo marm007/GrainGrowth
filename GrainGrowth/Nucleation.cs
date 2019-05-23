@@ -51,7 +51,8 @@ public class Nucleation
 
             for (int j = 0; j < SIZE_X; j++)
             {
-                tab[i, j] = new Grain(j, i, 0);
+                tab[i, j] = grainGrowth.Tab[i, j].Copy();
+                tab[i, j].State = 0;
             }
         }
 
@@ -132,7 +133,8 @@ public class Nucleation
 
             for (int j = 0; j < SIZE_X; j++)
             {
-                tab[i, j] = new Grain(j, i, 0);
+                tab[i, j] = grainGrowth.Tab[i, j].Copy();
+                tab[i, j].State = 0;
             }
         }
 
@@ -301,7 +303,8 @@ public class Nucleation
 
             for (int j = 0; j < SIZE_X; j++)
             {
-                tab[i, j] = new Grain(j, i, 0);
+                tab[i, j] = grainGrowth.Tab[i, j].Copy();
+                tab[i, j].State = 0;
             }
         }
 

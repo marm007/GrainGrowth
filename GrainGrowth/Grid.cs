@@ -140,6 +140,7 @@ public class Grid
         // --------
 
         simulation.Tab = new Grain[SIZE_Y, SIZE_X];
+
         for (int i = 0; i < SIZE_Y; i++)
         {
             for (int j = 0; j < SIZE_X; j++)
