@@ -616,7 +616,8 @@ namespace GrainGrowth
                         }
 
 
-                     
+                        System.Threading.Thread.Sleep(SLEEP_TIME_MIN);
+
                         SetBitmapOnUIThread(newBitmap);
 
 
