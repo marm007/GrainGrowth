@@ -99,12 +99,11 @@ public class Simulation
         this.Tab = tabTmp;
     }
 
-    public async Task<Bitmap> Simulate(Bitmap bitmap)
+    public  Bitmap Simulate(Bitmap bitmap)
     {
+        Console.WriteLine("DIP+");
         Graphics g = Graphics.FromImage(bitmap);
 
-        return await Task.Run(() =>
-        {
             Grain[,] tabTmp = new Grain[SIZE_Y, SIZE_X];
             for (int i = 0; i < SIZE_Y; i++)
             {
@@ -127,8 +126,8 @@ public class Simulation
             }
 
             this.Tab = tabTmp;
+            g.Dispose();
             return bitmap;
-        });
 
     }
 
@@ -220,6 +219,14 @@ public class Simulation
                 if (BREAK_SIMULATION)
                 {
                     break;
+                }
+
+
+                if (neighbourhood.GetType().Name != NEIGHBOURHOOD.ToString())
+                {
+                    Console.WriteLine("Change");
+                    neighbourhood = NeighbourhoodFactory.Create();
+
                 }
 
                 if (this.Tab[i, j].State == 0)

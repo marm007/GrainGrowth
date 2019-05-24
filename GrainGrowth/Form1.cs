@@ -18,7 +18,7 @@ namespace GrainGrowth
     {
 
         private static int SLEEP_TIME = 1;
-        private static int SLEEP_TIME_MIN = 10;
+        private static int SLEEP_TIME_MIN = 1;
 
         private System.Drawing.Pen circuitPen = new System.Drawing.Pen(Color.Black, 1);
         private System.Drawing.Pen circuitPenClear = new System.Drawing.Pen(SystemColors.Control, 1);
@@ -46,10 +46,13 @@ namespace GrainGrowth
         private MonteCarlo monteCarlo = null;
 
         private Bitmap previousBitmap = null;
+        private Thread myUIthred;
 
+        private int monteCarloIterations = 0;
 
         public Form1()
         {
+            myUIthred = Thread.CurrentThread;
             InitializeComponent();
 
             Colors.Initialize();
@@ -233,6 +236,10 @@ namespace GrainGrowth
             isPlaying = true;
 
             Simulate();
+
+            monteCarloEnergyButton.Enabled = false;
+            monteCarlo_Button.Enabled = false;
+            monteCarloStopButton.Enabled = false;
 
             cellSizeTracBar.Enabled = false;
             gridCheckBox.Enabled = false;
@@ -419,6 +426,13 @@ namespace GrainGrowth
             // --------
 
             grainGrowth.Tab = new Grain[SIZE_Y, SIZE_X];
+            for (int i = 0; i < SIZE_Y; i++)
+            {
+                for (int j = 0; j < SIZE_X; j++)
+                {
+                    grainGrowth.Tab[i, j] = new Grain(j, i, 0);
+                }
+            }
 
             int y = SIZE_Y < startSizeY ? SIZE_Y : startSizeY;
             int x = SIZE_X < startSizeX ? SIZE_X : startSizeX;
@@ -428,20 +442,20 @@ namespace GrainGrowth
             {
                 for (int j = 0; j < x; j++)
                 {
-                    grainGrowth.Tab[i, j] = tabTmp[i, j];
+                    grainGrowth.Tab[i, j] = tabTmp[i, j].Copy();
                 }
             }
+            Bitmap newBitmap = new Bitmap(SIZE_X * CELL_SIZE, SIZE_Y * CELL_SIZE);
 
-            Bitmap bitmap = (Bitmap)pictureBox1.Image;
 
             BackgroundWorker renderWroker = new BackgroundWorker();
 
             renderWroker.DoWork += new DoWorkEventHandler((state, args) =>
             {
-                grid.RenderGridAndRefresh(pictureBox1, bitmap);
-                grainGrowth.Display(bitmap);
+                grid.RenderGridAndRefresh(pictureBox1, newBitmap);
+                grainGrowth.Display(newBitmap);
 
-                pictureBox1.Image = bitmap;
+                pictureBox1.Image = newBitmap;
             });
 
             renderWroker.RunWorkerAsync();
@@ -455,10 +469,13 @@ namespace GrainGrowth
 
         private void cellSizeTracBar_Scroll(object sender, EventArgs e)
         {
-            CELL_SIZE = 2 * cellSizeTracBar.Value;
+            CELL_SIZE = 4 * cellSizeTracBar.Value;
 
+            int maxSizeX = pictureBox1.Width / CELL_SIZE ;
+            int maxSizeY = pictureBox1.Height / CELL_SIZE;
 
-            Bitmap bitmap = (Bitmap)pictureBox1.Image;
+            Bitmap bitmap = new Bitmap(maxSizeX * CELL_SIZE, maxSizeY * CELL_SIZE);
+
             grid.SetNewCellSizeAndDraw(pictureBox1, bitmap, grainGrowth);
             grainGrowth.DisplayEnergy(bitmap);
 
@@ -551,68 +568,75 @@ namespace GrainGrowth
 
         private void Simulate()
         {
-          
 
             backgroundWorker = new BackgroundWorker();
             backgroundWorker.WorkerSupportsCancellation = true;
-         
 
-            backgroundWorker.DoWork += new DoWorkEventHandler(async (state, args) =>
+            backgroundWorker.DoWork += new DoWorkEventHandler( (state, args) =>
             {
                 while (true)
                 {
-                   
-                    Bitmap bitmap = (Bitmap)pictureBox1.Image;
-
-                    bitmap = await grainGrowth.Simulate(bitmap);
-
-                    await Task.Run(() =>
+                    try
                     {
-                        pictureBox1.Image = bitmap;
-                    });
+                        Bitmap bitmap = (Bitmap)pictureBox1.Image;
+                        Bitmap newBitmap = grainGrowth.Simulate(bitmap);
 
-                    if (backgroundWorker.CancellationPending)
-                    {
-                        break;
-                    }
 
-                    int time = 0;
 
-                    while (time * SLEEP_TIME_MIN <= SLEEP_TIME)
-                    {
-                        if (clickedButton)
+                        if (backgroundWorker.CancellationPending)
                         {
-                            for (int i = 0; i < SIZE_Y; i++)
-                            {
-                                for (int j = 0; j < SIZE_X; j++)
-                                {
-                                    if (grainGrowth.Tab[i, j].State == 0 && this.tab[i, j].State != 0)
-                                    {
-                                        grainGrowth.Tab[i, j] = this.tab[i, j];
-                                        grainGrowth.Tab[i, j].Display(pictureBox1.CreateGraphics(), Graphics.FromImage(bitmap));
-                                    }
-                                }
-                            }
-
-
-                            clickedButton = false;
+                            break;
                         }
 
-                        time++;
+                        int time = 0;
 
-                        System.Threading.Thread.Sleep(SLEEP_TIME_MIN);
+                        while (time * SLEEP_TIME_MIN <= SLEEP_TIME)
+                        {
+                            if (clickedButton)
+                            {
+                                for (int i = 0; i < SIZE_Y; i++)
+                                {
+                                    for (int j = 0; j < SIZE_X; j++)
+                                    {
+                                        if (grainGrowth.Tab[i, j].State == 0 && this.tab[i, j].State != 0)
+                                        {
+                                            grainGrowth.Tab[i, j] = this.tab[i, j];
+                                            grainGrowth.Tab[i, j].Display(pictureBox1.CreateGraphics(), Graphics.FromImage(bitmap));
+                                        }
+                                    }
+                                }
+
+
+                                clickedButton = false;
+                            }
+
+                            time++;
+
+                            System.Threading.Thread.Sleep(SLEEP_TIME_MIN);
+                        }
+
+
+                     
+                        SetBitmapOnUIThread(newBitmap);
+
+
+
+
+                        if (grainGrowth.SimulationEnded())
+                        {
+                            SimulationEndedAction("finish");
+                            break;
+
+                        }
+
+
                     }
-
-                  
-
-
-                    if (grainGrowth.SimulationEnded())
+                    catch (InvalidOperationException invalidOperation)
                     {
-                        SimulationEndedAction("finish");
-                        break;
-
+                        Console.WriteLine(invalidOperation);
                     }
-
+                  
+                   
                 }
             });
 
@@ -756,36 +780,54 @@ namespace GrainGrowth
             monteCarloEnergyButton.Enabled = false;
             monteCarlo_Button.Enabled = false;
 
+            if (monteCarloIterationsUpDown.Value == monteCarloIterations)
+                monteCarloIterations = 0;
+
+            if (monteCarloIterations < monteCarloIterationsUpDown.Value)
+                iterationLabel.Text = (monteCarloIterations + 1) + " / " + monteCarloIterationsUpDown.Value + " iteration";
+            else
+                iterationLabel.Text = (monteCarloIterations) + " / " + monteCarloIterationsUpDown.Value + " iteration";
+
             monteCarloWorker = new BackgroundWorker();
             monteCarloWorker.WorkerSupportsCancellation = true;
 
-            monteCarloWorker.DoWork += new DoWorkEventHandler(async (state, args) =>
+            monteCarloWorker.DoWork += new DoWorkEventHandler( (state, args) =>
             {
-                int iteartions = 0;
-                while(iteartions < monteCarloIterationsUpDown.Value)
+
+               
+                while (monteCarloIterations < monteCarloIterationsUpDown.Value)
                 {
-
-                    Bitmap bitmap = (Bitmap)pictureBox1.Image;
-
-                    bitmap = await monteCarlo.Simulate(grainGrowth, bitmap, pictureBox1.CreateGraphics());
-
-                    await Task.Run(() =>
+                    try
                     {
-                        pictureBox1.Image = bitmap;
-                    });
+                        Bitmap bitmap = (Bitmap)pictureBox1.Image;
 
-                    if (monteCarloWorker.CancellationPending)
+                        Bitmap newBitmap =  monteCarlo.Simulate(grainGrowth, bitmap, pictureBox1.CreateGraphics());
+
+                        if (monteCarloWorker.CancellationPending)
+                        {
+
+                            break;
+                        }
+
+                        System.Threading.Thread.Sleep(SLEEP_TIME_MIN);
+
+                        SetBitmapOnUIThread(newBitmap);
+
+                    }
+                    catch (InvalidOperationException invalidOperation)
                     {
-
-                        break;
+                       
+                        Console.WriteLine(monteCarloIterations);
+                        Console.WriteLine(invalidOperation);
                     }
 
-                    System.Threading.Thread.Sleep(SLEEP_TIME_MIN);
+                    monteCarloIterations++;
+                    MonteCarloAction(monteCarloIterations.ToString());
 
-                    iteartions++;
                 }
 
-                MonteCarloEndedAction("finish");
+                MonteCarloAction("finish");
+
             });
 
             monteCarloWorker.RunWorkerAsync();
@@ -830,24 +872,36 @@ namespace GrainGrowth
 
         }
 
-        public void MonteCarloEndedAction(string value)
+        public void MonteCarloAction(string value)
         {
             if (InvokeRequired)
             {
-                this.Invoke(new Action<string>(MonteCarloEndedAction), new object[] { value });
+                this.Invoke(new Action<string>(MonteCarloAction), new object[] { value });
                 return;
             }
 
-            start_button.Enabled = true;
-            stop_button.Enabled = false;
-            clear_button.Enabled = true;
-            step_button.Enabled = true;
+            if (value == "finish")
+            {
+
+                start_button.Enabled = true;
+                stop_button.Enabled = false;
+                clear_button.Enabled = true;
+                step_button.Enabled = true;
 
 
-            monteCarloIterationsUpDown.Enabled = true;
-            monteCarloStopButton.Enabled = false;
-            monteCarloEnergyButton.Enabled = true;
-            monteCarlo_Button.Enabled = true;
+                monteCarloIterationsUpDown.Enabled = true;
+                monteCarloStopButton.Enabled = false;
+                monteCarloEnergyButton.Enabled = true;
+                monteCarlo_Button.Enabled = true;
+            }
+            else
+            {
+                if(int.Parse(value) < monteCarloIterationsUpDown.Value)
+                    iterationLabel.Text = (int.Parse(value) + 1) + " / " + monteCarloIterationsUpDown.Value + " iteration";
+                else
+                    iterationLabel.Text = (int.Parse(value)) + " / " + monteCarloIterationsUpDown.Value + " iteration";
+            }
+         
         }
 
         public void CheckEnergyButton()
@@ -859,6 +913,43 @@ namespace GrainGrowth
                 if (previousBitmap != null)
                     pictureBox1.Image = previousBitmap;
             }
+        }
+
+        public void SetBitmapOnUIThread(Bitmap bitmap)
+        {
+            if (Thread.CurrentThread != myUIthred) 
+            {
+                BeginInvoke(new Action<Bitmap>(SetBitmapOnUIThread), new object[] { bitmap });
+                return;
+            }
+
+            try
+            {
+                pictureBox1.Image = bitmap;
+            }
+            catch(InvalidOperationException invalidOperation)
+            {
+                Console.WriteLine(invalidOperation);
+            }
+        }
+
+        private void monteCarloIterationsUpDown_ValueChanged(object sender, EventArgs e)
+        {
+            monteCarloIterations = 0;
+
+            iterationLabel.Text = monteCarloIterations + " / " + monteCarloIterationsUpDown.Value + " iteration";
+
+        }
+
+        private void kTNumericUpDown_ValueChanged(object sender, EventArgs e)
+        {
+            monteCarlo.KT = (float) kTNumericUpDown.Value;
+
+        }
+
+        private void JNumericUpDown_ValueChanged(object sender, EventArgs e)
+        {
+            monteCarlo.JH = (float) JNumericUpDown.Value;
         }
     }
 

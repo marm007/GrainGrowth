@@ -92,6 +92,6 @@ public class Hexagonal : NeighbourhoodAbstract
 
     public override void GetAllNeighbours(Grain[,] grains, int x, int y)
     {
-        throw new NotImplementedException();
+        GetNeighbours(grains, x, y);
     }
 }

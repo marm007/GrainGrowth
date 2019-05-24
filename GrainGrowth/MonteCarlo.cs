@@ -12,7 +12,7 @@ public class MonteCarlo
     private static Random random = new Random();
 
     private float J = 1.0f;
-    private float kT = 6.0f;
+    private float kT = 0.1f;
 
     public float JH { get { return J; } set { J = value; } }
     public float KT { get { return kT; } set { kT = value; } }
@@ -22,82 +22,85 @@ public class MonteCarlo
 
     }
 
-    public async Task<Bitmap> Simulate(Simulation grainGrowth, Bitmap bitmap, Graphics g)
+    public Bitmap Simulate(Simulation grainGrowth, Bitmap bitmap, Graphics g)
     {
         Graphics gB = Graphics.FromImage(bitmap);
 
-        return await Task.Run(() =>
+        Grain[,] grains = grainGrowth.Tab;
+        NeighbourhoodAbstract neighbourhood = NeighbourhoodFactory.Create();
+        List<Grain> all = grains.OfType<Grain>().ToList();
+
+        while (all.Count > 0)
         {
-            Grain[,] grains = grainGrowth.Tab;
-            NeighbourhoodAbstract neighbourhood = NeighbourhoodFactory.Create();
-
-            List<Grain> all = grains.OfType<Grain>().ToList();
-
-            while (all.Count > 0)
+            if (BREAK_SIMULATION)
             {
-                if (BREAK_SIMULATION)
-                {
-                    BREAK_SIMULATION = false;
-                    break;
-                }
+                BREAK_SIMULATION = false;
+                break;
+            }
 
-                int index = random.Next(all.Count);
-                Grain grain = all.ElementAt(index);
-                all.RemoveAt(index);
+            if(neighbourhood.GetType().Name != NEIGHBOURHOOD.ToString())
+            {
+                Console.WriteLine("Change");
+                neighbourhood = NeighbourhoodFactory.Create();
 
-                if(NEIGHBOURHOOD == Neighbourhood.Radial)
-                {
-                    neighbourhood.GetAllNeighbours(grains, grain.X, grain.Y);
-                }
-                else
-                {
-                    neighbourhood.GetNeighbours(grains, grain.X, grain.Y);
-                }
+            }
 
-                int stateBefore = grain.State;
+            int index = random.Next(all.Count);
+            Grain grain = all.ElementAt(index);
+            all.RemoveAt(index);
 
-                List<int> neighbours = new List<int>();
+            if(NEIGHBOURHOOD == Neighbourhood.Radial)
+            {
+                neighbourhood.GetAllNeighbours(grains, grain.X, grain.Y);
+            }
+            else
+            {
+                neighbourhood.GetNeighbours(grains, grain.X, grain.Y);
+            }
 
-                foreach (string neighbour in neighbourhood.Neighbours)
-                {
-                    neighbours.Add(int.Parse(neighbour));
-                }
+            int stateBefore = grain.State;
 
-                int energyBefore = CalculateEnergy(neighbours, stateBefore);
+            List<int> neighbours = new List<int>();
 
-                grains[grain.Y, grain.X].Q = energyBefore;
+            foreach (string neighbour in neighbourhood.Neighbours)
+            {
+                neighbours.Add(int.Parse(neighbour));
+            }
 
-                int stateAfter = (neighbours.ElementAt(random.Next(neighbours.Count)));
+            int energyBefore = CalculateEnergy(neighbours, stateBefore);
 
-                int energyAfter = CalculateEnergy(neighbours, stateAfter);
+            grains[grain.Y, grain.X].Q = energyBefore;
 
-                int deltaEnergy = energyAfter - energyBefore;
-                if (deltaEnergy <= 0)
+            int stateAfter = (neighbours.ElementAt(random.Next(neighbours.Count)));
+
+            int energyAfter = CalculateEnergy(neighbours, stateAfter);
+
+            int deltaEnergy = energyAfter - energyBefore;
+            if (deltaEnergy <= 0)
+            {
+                grains[grain.Y, grain.X].State = stateAfter;
+                grain.Display(g, gB);
+                grains[grain.Y, grain.X].Q = energyAfter;
+
+            }
+            else
+            {
+                float probability = (float)Math.Exp(-(deltaEnergy / this.KT)) * 100;
+                float value = (float)random.NextDouble() * 100;
+
+                if (value <= probability)
                 {
                     grains[grain.Y, grain.X].State = stateAfter;
                     grain.Display(g, gB);
                     grains[grain.Y, grain.X].Q = energyAfter;
 
                 }
-                else
-                {
-                    float probability = (float)Math.Exp(-(deltaEnergy / this.KT)) * 100;
-                    float value = (float)random.NextDouble() * 100;
-
-                    if (value <= probability)
-                    {
-                        grains[grain.Y, grain.X].State = stateAfter;
-                        grain.Display(g, gB);
-                        grains[grain.Y, grain.X].Q = energyAfter;
-
-                    }
 
 
-                }
             }
+        }
 
-            return bitmap;
-        });
+        return bitmap;
     }
 
     private int CalculateEnergy(List<int> neighbours, int state)

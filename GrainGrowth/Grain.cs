@@ -75,6 +75,7 @@ public class Grain
                 CELL_SIZE - (int)GRID_STATE, CELL_SIZE - (int)GRID_STATE);
         }
 
+
     }
 
     public void Display(Graphics g, Graphics gB)

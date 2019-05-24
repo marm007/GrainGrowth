@@ -85,6 +85,11 @@
             this.label1 = new System.Windows.Forms.Label();
             this.monteCarloIterationsUpDown = new System.Windows.Forms.NumericUpDown();
             this.monteCarlo_Button = new System.Windows.Forms.Button();
+            this.iterationLabel = new System.Windows.Forms.Label();
+            this.kTNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.label11 = new System.Windows.Forms.Label();
+            this.JNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.label13 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -104,6 +109,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.cellSizeTracBar)).BeginInit();
             this.groupBox6.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.monteCarloIterationsUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.kTNumericUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.JNumericUpDown)).BeginInit();
             this.SuspendLayout();
             // 
             // pictureBox1
@@ -686,6 +693,11 @@
             // groupBox6
             // 
             this.groupBox6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.groupBox6.Controls.Add(this.label13);
+            this.groupBox6.Controls.Add(this.JNumericUpDown);
+            this.groupBox6.Controls.Add(this.label11);
+            this.groupBox6.Controls.Add(this.kTNumericUpDown);
+            this.groupBox6.Controls.Add(this.iterationLabel);
             this.groupBox6.Controls.Add(this.monteCarloStopButton);
             this.groupBox6.Controls.Add(this.monteCarloEnergyButton);
             this.groupBox6.Controls.Add(this.label1);
@@ -747,6 +759,7 @@
             0,
             0,
             0});
+            this.monteCarloIterationsUpDown.ValueChanged += new System.EventHandler(this.monteCarloIterationsUpDown_ValueChanged);
             // 
             // monteCarlo_Button
             // 
@@ -757,6 +770,93 @@
             this.monteCarlo_Button.Text = "MonteCarlo";
             this.monteCarlo_Button.UseVisualStyleBackColor = true;
             this.monteCarlo_Button.Click += new System.EventHandler(this.monteCarlo_Button_Click);
+            // 
+            // iterationLabel
+            // 
+            this.iterationLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.iterationLabel.AutoSize = true;
+            this.iterationLabel.Location = new System.Drawing.Point(165, 46);
+            this.iterationLabel.Name = "iterationLabel";
+            this.iterationLabel.Size = new System.Drawing.Size(70, 13);
+            this.iterationLabel.TabIndex = 7;
+            this.iterationLabel.Text = "0 / 2 iteration";
+            // 
+            // kTNumericUpDown
+            // 
+            this.kTNumericUpDown.DecimalPlaces = 1;
+            this.kTNumericUpDown.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.kTNumericUpDown.Location = new System.Drawing.Point(6, 71);
+            this.kTNumericUpDown.Maximum = new decimal(new int[] {
+            60,
+            0,
+            0,
+            65536});
+            this.kTNumericUpDown.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.kTNumericUpDown.Name = "kTNumericUpDown";
+            this.kTNumericUpDown.Size = new System.Drawing.Size(75, 20);
+            this.kTNumericUpDown.TabIndex = 8;
+            this.kTNumericUpDown.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.kTNumericUpDown.ValueChanged += new System.EventHandler(this.kTNumericUpDown_ValueChanged);
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(87, 73);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(20, 13);
+            this.label11.TabIndex = 9;
+            this.label11.Text = "kT";
+            // 
+            // JNumericUpDown
+            // 
+            this.JNumericUpDown.DecimalPlaces = 1;
+            this.JNumericUpDown.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.JNumericUpDown.Location = new System.Drawing.Point(168, 73);
+            this.JNumericUpDown.Maximum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.JNumericUpDown.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.JNumericUpDown.Name = "JNumericUpDown";
+            this.JNumericUpDown.Size = new System.Drawing.Size(75, 20);
+            this.JNumericUpDown.TabIndex = 10;
+            this.JNumericUpDown.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.JNumericUpDown.ValueChanged += new System.EventHandler(this.JNumericUpDown_ValueChanged);
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(249, 75);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(12, 13);
+            this.label13.TabIndex = 11;
+            this.label13.Text = "J";
             // 
             // Form1
             // 
@@ -796,6 +896,8 @@
             this.groupBox6.ResumeLayout(false);
             this.groupBox6.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.monteCarloIterationsUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.kTNumericUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.JNumericUpDown)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -858,6 +960,11 @@
         private System.Windows.Forms.Button monteCarlo_Button;
         private System.Windows.Forms.Button monteCarloStopButton;
         private System.Windows.Forms.Button monteCarloEnergyButton;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.NumericUpDown kTNumericUpDown;
+        private System.Windows.Forms.Label iterationLabel;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.NumericUpDown JNumericUpDown;
     }
 }
 
