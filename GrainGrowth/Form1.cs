@@ -469,7 +469,7 @@ namespace GrainGrowth
 
         private void cellSizeTracBar_Scroll(object sender, EventArgs e)
         {
-            CELL_SIZE = 4 * cellSizeTracBar.Value;
+            CELL_SIZE = 1 * cellSizeTracBar.Value;
 
             int maxSizeX = pictureBox1.Width / CELL_SIZE ;
             int maxSizeY = pictureBox1.Height / CELL_SIZE;

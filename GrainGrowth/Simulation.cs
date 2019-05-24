@@ -57,16 +57,11 @@ public class Simulation
             return;
 
 
-        Graphics g = Graphics.FromImage(bitmap);
-
-        System.Drawing.Pen pen = new System.Drawing.Pen(Color.Red, 1);
-        System.Drawing.SolidBrush brush = new System.Drawing.SolidBrush(Color.Red);
-
         for (int i = 0; i < SIZE_Y; i++)
         {
             for (int j = 0; j < SIZE_X; j++)
             {
-                g.FillEllipse(brush, this.tab[i, j].EnergyCoords.X - RADIUS / 2.0f, this.tab[i, j].EnergyCoords.Y - RADIUS / 2.0f, RADIUS, RADIUS);
+                this.tab[i, j].DisplayEnergy(bitmap);
             }
         }
     }

@@ -80,16 +80,16 @@
             this.label10 = new System.Windows.Forms.Label();
             this.hexagonalToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.label13 = new System.Windows.Forms.Label();
+            this.JNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.label11 = new System.Windows.Forms.Label();
+            this.kTNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.iterationLabel = new System.Windows.Forms.Label();
             this.monteCarloStopButton = new System.Windows.Forms.Button();
             this.monteCarloEnergyButton = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.monteCarloIterationsUpDown = new System.Windows.Forms.NumericUpDown();
             this.monteCarlo_Button = new System.Windows.Forms.Button();
-            this.iterationLabel = new System.Windows.Forms.Label();
-            this.kTNumericUpDown = new System.Windows.Forms.NumericUpDown();
-            this.label11 = new System.Windows.Forms.Label();
-            this.JNumericUpDown = new System.Windows.Forms.NumericUpDown();
-            this.label13 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -108,9 +108,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.speedTracBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.cellSizeTracBar)).BeginInit();
             this.groupBox6.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.monteCarloIterationsUpDown)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.kTNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.JNumericUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.kTNumericUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.monteCarloIterationsUpDown)).BeginInit();
             this.SuspendLayout();
             // 
             // pictureBox1
@@ -641,11 +641,12 @@
             // 
             this.cellSizeTracBar.LargeChange = 0;
             this.cellSizeTracBar.Location = new System.Drawing.Point(62, 118);
+            this.cellSizeTracBar.Maximum = 40;
             this.cellSizeTracBar.Minimum = 1;
             this.cellSizeTracBar.Name = "cellSizeTracBar";
             this.cellSizeTracBar.Size = new System.Drawing.Size(112, 45);
             this.cellSizeTracBar.TabIndex = 5;
-            this.cellSizeTracBar.Value = 5;
+            this.cellSizeTracBar.Value = 20;
             this.cellSizeTracBar.Scroll += new System.EventHandler(this.cellSizeTracBar_Scroll);
             // 
             // applySettings
@@ -709,6 +710,93 @@
             this.groupBox6.TabIndex = 7;
             this.groupBox6.TabStop = false;
             // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(249, 75);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(12, 13);
+            this.label13.TabIndex = 11;
+            this.label13.Text = "J";
+            // 
+            // JNumericUpDown
+            // 
+            this.JNumericUpDown.DecimalPlaces = 1;
+            this.JNumericUpDown.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.JNumericUpDown.Location = new System.Drawing.Point(168, 73);
+            this.JNumericUpDown.Maximum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.JNumericUpDown.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.JNumericUpDown.Name = "JNumericUpDown";
+            this.JNumericUpDown.Size = new System.Drawing.Size(75, 20);
+            this.JNumericUpDown.TabIndex = 10;
+            this.JNumericUpDown.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.JNumericUpDown.ValueChanged += new System.EventHandler(this.JNumericUpDown_ValueChanged);
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(87, 73);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(20, 13);
+            this.label11.TabIndex = 9;
+            this.label11.Text = "kT";
+            // 
+            // kTNumericUpDown
+            // 
+            this.kTNumericUpDown.DecimalPlaces = 1;
+            this.kTNumericUpDown.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.kTNumericUpDown.Location = new System.Drawing.Point(6, 71);
+            this.kTNumericUpDown.Maximum = new decimal(new int[] {
+            60,
+            0,
+            0,
+            65536});
+            this.kTNumericUpDown.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.kTNumericUpDown.Name = "kTNumericUpDown";
+            this.kTNumericUpDown.Size = new System.Drawing.Size(75, 20);
+            this.kTNumericUpDown.TabIndex = 8;
+            this.kTNumericUpDown.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.kTNumericUpDown.ValueChanged += new System.EventHandler(this.kTNumericUpDown_ValueChanged);
+            // 
+            // iterationLabel
+            // 
+            this.iterationLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.iterationLabel.AutoSize = true;
+            this.iterationLabel.Location = new System.Drawing.Point(165, 46);
+            this.iterationLabel.Name = "iterationLabel";
+            this.iterationLabel.Size = new System.Drawing.Size(70, 13);
+            this.iterationLabel.TabIndex = 7;
+            this.iterationLabel.Text = "0 / 2 iteration";
+            // 
             // monteCarloStopButton
             // 
             this.monteCarloStopButton.Location = new System.Drawing.Point(87, 12);
@@ -771,93 +859,6 @@
             this.monteCarlo_Button.UseVisualStyleBackColor = true;
             this.monteCarlo_Button.Click += new System.EventHandler(this.monteCarlo_Button_Click);
             // 
-            // iterationLabel
-            // 
-            this.iterationLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.iterationLabel.AutoSize = true;
-            this.iterationLabel.Location = new System.Drawing.Point(165, 46);
-            this.iterationLabel.Name = "iterationLabel";
-            this.iterationLabel.Size = new System.Drawing.Size(70, 13);
-            this.iterationLabel.TabIndex = 7;
-            this.iterationLabel.Text = "0 / 2 iteration";
-            // 
-            // kTNumericUpDown
-            // 
-            this.kTNumericUpDown.DecimalPlaces = 1;
-            this.kTNumericUpDown.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-            this.kTNumericUpDown.Location = new System.Drawing.Point(6, 71);
-            this.kTNumericUpDown.Maximum = new decimal(new int[] {
-            60,
-            0,
-            0,
-            65536});
-            this.kTNumericUpDown.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-            this.kTNumericUpDown.Name = "kTNumericUpDown";
-            this.kTNumericUpDown.Size = new System.Drawing.Size(75, 20);
-            this.kTNumericUpDown.TabIndex = 8;
-            this.kTNumericUpDown.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-            this.kTNumericUpDown.ValueChanged += new System.EventHandler(this.kTNumericUpDown_ValueChanged);
-            // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(87, 73);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(20, 13);
-            this.label11.TabIndex = 9;
-            this.label11.Text = "kT";
-            // 
-            // JNumericUpDown
-            // 
-            this.JNumericUpDown.DecimalPlaces = 1;
-            this.JNumericUpDown.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-            this.JNumericUpDown.Location = new System.Drawing.Point(168, 73);
-            this.JNumericUpDown.Maximum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.JNumericUpDown.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.JNumericUpDown.Name = "JNumericUpDown";
-            this.JNumericUpDown.Size = new System.Drawing.Size(75, 20);
-            this.JNumericUpDown.TabIndex = 10;
-            this.JNumericUpDown.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.JNumericUpDown.ValueChanged += new System.EventHandler(this.JNumericUpDown_ValueChanged);
-            // 
-            // label13
-            // 
-            this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(249, 75);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(12, 13);
-            this.label13.TabIndex = 11;
-            this.label13.Text = "J";
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -895,9 +896,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.cellSizeTracBar)).EndInit();
             this.groupBox6.ResumeLayout(false);
             this.groupBox6.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.monteCarloIterationsUpDown)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.kTNumericUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.JNumericUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.kTNumericUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.monteCarloIterationsUpDown)).EndInit();
             this.ResumeLayout(false);
 
         }

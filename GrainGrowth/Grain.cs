@@ -120,7 +120,7 @@ public class Grain
         System.Drawing.SolidBrush brush = new System.Drawing.SolidBrush(Color.Red);
 
 
-        g.FillEllipse(brush, this.EnergyCoords.X - RADIUS / 2.0f, this.EnergyCoords.Y - RADIUS / 2.0f, RADIUS, RADIUS);
+        g.FillEllipse(brush, this.EnergyCoords.X - ENERGY_RADIUS / 2.0f, this.EnergyCoords.Y - ENERGY_RADIUS / 2.0f, ENERGY_RADIUS, ENERGY_RADIUS);
     }
 
     public Grain Copy()
