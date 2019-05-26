@@ -31,6 +31,7 @@ public class Grain
     public int Y { get { return y; } }
     public int Q { get { return q; } set { q = value; } }
     public GrainEnergyCoords EnergyCoords { get { return energyCoords; } set { energyCoords.X = value.X; energyCoords.Y = value.Y; } }
+    public static int Counter = 0;
 
     public void Display(Bitmap bitmap)
     {
@@ -58,22 +59,25 @@ public class Grain
 
     public void Display(Graphics g)
     {
-
-        if (this.state == 0)
+        lock (locker)
         {
-            System.Drawing.SolidBrush cellBrushClear = new System.Drawing.SolidBrush(SystemColors.Control);
+            if (this.state == 0)
+            {
+                System.Drawing.SolidBrush cellBrushClear = new System.Drawing.SolidBrush(SystemColors.Control);
 
-            g.FillRectangle(cellBrushClear, (this.x) * CELL_SIZE + (int)GRID_STATE, (this.y) * CELL_SIZE + (int)GRID_STATE,
-                CELL_SIZE - (int)GRID_STATE, CELL_SIZE - (int)GRID_STATE);
+                g.FillRectangle(cellBrushClear, (this.x) * CELL_SIZE + (int)GRID_STATE, (this.y) * CELL_SIZE + (int)GRID_STATE,
+                    CELL_SIZE - (int)GRID_STATE, CELL_SIZE - (int)GRID_STATE);
 
+            }
+            else
+            {
+                System.Drawing.SolidBrush cellBrush = new System.Drawing.SolidBrush(Colors.colors[State]);
+
+                g.FillRectangle(cellBrush, (this.x) * CELL_SIZE + (int)GRID_STATE, (this.y) * CELL_SIZE + (int)GRID_STATE,
+                    CELL_SIZE - (int)GRID_STATE, CELL_SIZE - (int)GRID_STATE);
+            }
         }
-        else
-        {
-            System.Drawing.SolidBrush cellBrush = new System.Drawing.SolidBrush(Colors.colors[State]);
-
-            g.FillRectangle(cellBrush, (this.x) * CELL_SIZE + (int)GRID_STATE, (this.y) * CELL_SIZE + (int)GRID_STATE,
-                CELL_SIZE - (int)GRID_STATE, CELL_SIZE - (int)GRID_STATE);
-        }
+       
 
 
     }
@@ -106,15 +110,11 @@ public class Grain
     }
 
 
-    public void DisplayEnergy(Bitmap bitmap)
+    public void DisplayEnergy(Graphics g)
     {
-       
-
         if (ENERGY_STATE == EnergyState.Disable)
             return;
 
-
-        Graphics g = Graphics.FromImage(bitmap);
 
         System.Drawing.Pen pen = new System.Drawing.Pen(Color.Red, 1);
         System.Drawing.SolidBrush brush = new System.Drawing.SolidBrush(Color.Red);

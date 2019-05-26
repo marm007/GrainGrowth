@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using static Config;
@@ -19,25 +20,27 @@ public class Simulation
 
     internal Grain[,] Tab { get => tab; set => tab = value; }
 
+    private Grain[,] previousGrains;
+
 
     public Simulation()
 	{
         this.Tab = new Grain[SIZE_Y, SIZE_X];
+        this.previousGrains = new Grain[SIZE_Y, SIZE_X];
 
         for (int i = 0; i < SIZE_Y; i++)
         {
             for (int j = 0; j < SIZE_X; j++)
             {
                 this.Tab[i, j] = new Grain(j, i, 0);
+                this.previousGrains[i, j] = this.Tab[i, j].Copy();
             }
         }
     }
 
 
-    public void Display(Bitmap bitmap)
+    public void Display(Graphics g)
     {
-        Graphics g = Graphics.FromImage(bitmap);
-
         for (int i = 0; i < this.Tab.GetLength(0); i++)
         {
             for (int j = 0; j < this.Tab.GetLength(1); j++)
@@ -45,13 +48,13 @@ public class Simulation
 
                 if (this.Tab[i, j].State != 0)
                 {
-                    this.Tab[i, j].Display(bitmap);
+                    this.Tab[i, j].Display(g);
                 }
             }
         }
     }
 
-    public void DisplayEnergy(Bitmap bitmap)
+    public void DisplayEnergy(Graphics g)
     {
         if (ENERGY_STATE == EnergyState.Disable)
             return;
@@ -61,7 +64,7 @@ public class Simulation
         {
             for (int j = 0; j < SIZE_X; j++)
             {
-                this.tab[i, j].DisplayEnergy(bitmap);
+                this.tab[i, j].DisplayEnergy(g);
             }
         }
     }
@@ -69,180 +72,75 @@ public class Simulation
 
     public void Simulate(Graphics g)
     {
-        Grain[,] tabTmp = new Grain[SIZE_Y, SIZE_X];
-        for (int i = 0; i < SIZE_Y; i++)
-        {
-            for (int j = 0; j < SIZE_X; j++)
-            {
-                tabTmp[i, j] = this.Tab[i, j].Copy();
-                tabTmp[i, j].State = 0;
-            }
-        }
-
-
+      
         switch (NEIGHBOURHOOD)
         {
             case Neighbourhood.Radial:
-                tabTmp = ChangeStateRadial(g, tabTmp);
+                ChangeStateRadial(g);
                 break;
             default:
-                tabTmp = ChangeState(g, tabTmp);
+                ChangeState(g);
                 break;
         }
-       
-
-        this.Tab = tabTmp;
-    }
-
-    public  Bitmap Simulate(Bitmap bitmap)
-    {
-        Console.WriteLine("DIP+");
-        Graphics g = Graphics.FromImage(bitmap);
-
-            Grain[,] tabTmp = new Grain[SIZE_Y, SIZE_X];
-            for (int i = 0; i < SIZE_Y; i++)
-            {
-                for (int j = 0; j < SIZE_X; j++)
-                {
-                    tabTmp[i, j] = this.Tab[i, j].Copy();
-                    tabTmp[i, j].State = 0;
-                }
-            }
-
-
-            switch (NEIGHBOURHOOD)
-            {
-                case Neighbourhood.Radial:
-                    tabTmp = ChangeStateRadial(g, tabTmp);
-                    break;
-                default:
-                    tabTmp = ChangeState(g, tabTmp);
-                    break;
-            }
-
-            this.Tab = tabTmp;
-            g.Dispose();
-            return bitmap;
-
-    }
-
-
-    private Grain[,] ChangeState(Graphics g, Grain[,] tabTmp)
-    {
-        NeighbourhoodAbstract neighbourhood = NeighbourhoodFactory.Create();
 
         for (int i = 0; i < SIZE_Y; i++)
         {
             for (int j = 0; j < SIZE_X; j++)
             {
-                neighbourhood.GetNeighbours(this.Tab, j, i);
-
-                int cellBegin = this.Tab[i, j].State;
-                int cellEnd = this.Tab[i, j].State;
-
-              
-                var count = new Dictionary<string, int>();
-
-                foreach (string value in neighbourhood.Neighbours)
-                {
-                    if (value != DEAD.ToString())
-                    {
-                        if (count.ContainsKey(value))
-                        {
-                            count[value]++;
-                        }
-                        else
-                        {
-                            count.Add(value, 1);
-                        }
-                    }
-                }
-
-                int highestCount = 0;
-
-                List<string> mostCommon = new List<string>();
-
-                foreach (KeyValuePair<string, int> pair in count)
-                {
-                    if (pair.Value > highestCount)
-                    {
-                        mostCommon = new List<string>();
-                        mostCommon.Add(pair.Key);
-
-                        highestCount = pair.Value;
-                    }
-                    else if (pair.Value == highestCount)
-                    {
-                        mostCommon.Add(pair.Key);
-                    }
-                }
-
-                if (mostCommon.Count != 0 && cellBegin == DEAD)
-                {
-                    Random random = new Random();
-                    int index = random.Next(mostCommon.Count);
-
-                    cellEnd = int.Parse(mostCommon[index]);
-                }
-
-                tabTmp[i, j].State = cellEnd;
-
-                if (cellEnd != cellBegin)
-                {
-                    tabTmp[i, j].Display(g);
-                }
+                if(this.tab[i, j].State == DEAD && this.tab[i, j].State != previousGrains[i, j].State)
+                    this.tab[i, j].State = previousGrains[i, j].State;
             }
         }
 
-        return tabTmp;
     }
 
-    private Grain[,] ChangeStateRadial(Graphics g, Grain[,] tabTmp)
+
+    private void ChangeState(Graphics g)
     {
-        NeighbourhoodAbstract neighbourhood = NeighbourhoodFactory.Create();
+
+      for(int i = 0; i < SIZE_Y; i++)
+      {
+
+          for(int j = 0; j < SIZE_X; j++)
+          {
+              if (this.tab[i, j].State == 0)
+              {
+                  int cellBegin = this.tab[i, j].State;
+                  int cellEnd = this.tab[i, j].State;
+
+                  cellEnd = Neighbourss.GetNeighbours(this.tab, j, i);
+
+                  if (cellEnd != cellBegin)
+                  {
+                      previousGrains[i, j].State = cellEnd;
+                      previousGrains[i, j].Display(g);
+                  }
+              }
+          };
+      };
+    }
+
+
+    private void ChangeStateRadial(Graphics g)
+    {
 
         for (int i = 0; i < SIZE_Y; i++)
         {
-            if (BREAK_SIMULATION)
-            {
-                BREAK_SIMULATION = false;
-                break;
-            }
-
             for (int j = 0; j < SIZE_X; j++)
             {
-                if (BREAK_SIMULATION)
-                {
-                    break;
-                }
 
-
-                if (neighbourhood.GetType().Name != NEIGHBOURHOOD.ToString())
-                {
-                    Console.WriteLine("Change");
-                    neighbourhood = NeighbourhoodFactory.Create();
-
-                }
-
-                if (this.Tab[i, j].State == 0)
+                if (this.tab[i, j].State == 0)
                     continue;
 
-
-                tabTmp[i, j] = this.Tab[i, j];
-
-
-                neighbourhood.GetNeighbours(this.Tab, j, i);
-
-                foreach (Grain grain in neighbourhood.NeighboursGrains)
+                foreach (Grain grain in Neighbourss.GetRadialGrains(this.tab, j, i))
                 {
-                    tabTmp[grain.Y, grain.X].State = this.Tab[i, j].State;
+                    previousGrains[grain.Y, grain.X].State = this.Tab[i, j].State;
 
-                    tabTmp[grain.Y, grain.X].Display(g);
+                    previousGrains[grain.Y, grain.X].Display(g);
                 }
             }
         }
 
-        return tabTmp;
     }
 
 
@@ -269,5 +167,30 @@ public class Simulation
         return simulationEnded;
     }
 
+
+    public void Clear()
+    {
+        for (int i = 0; i < SIZE_Y; i++)
+        {
+            for (int j = 0; j < SIZE_X; j++)
+            {
+                this.tab[i, j].State = 0;
+                this.previousGrains[i, j].State = 0;
+            }
+        }
+    }
+
+    public void Resize()
+    {
+        this.previousGrains = new Grain[SIZE_Y, SIZE_X];
+
+        for (int i = 0; i < SIZE_Y; i++)
+        {
+            for (int j = 0; j < SIZE_X; j++)
+            {
+                this.previousGrains[i, j] = this.tab[i, j].Copy();
+            }
+        }
+    }
 
 }

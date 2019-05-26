@@ -59,12 +59,6 @@
     <Compile Include="GrainEnergyCoords.cs" />
     <Compile Include="MonteCarlo.cs" />
     <Compile Include="Neighbourhood\NeighbourhoodFactory.cs" />
-    <Compile Include="Neighbourhood\Hexagonal.cs" />
-    <Compile Include="Neighbourhood\Pentagonal.cs" />
-    <Compile Include="Neighbourhood\Radial.cs" />
-    <Compile Include="Neighbourhood\vonNeumann.cs" />
-    <Compile Include="Neighbourhood\Moore.cs" />
-    <Compile Include="Neighbourhood\NeighbourhoodAbstract.cs" />
     <Compile Include="Nucleation.cs" />
     <Compile Include="Simulation.cs" />
     <Compile Include="Grid.cs" />

@@ -22,12 +22,11 @@ public class MonteCarlo
 
     }
 
-    public Bitmap Simulate(Simulation grainGrowth, Bitmap bitmap, Graphics g)
+    public void Simulate(Simulation grainGrowth, Graphics gB, Graphics g)
     {
-        Graphics gB = Graphics.FromImage(bitmap);
 
         Grain[,] grains = grainGrowth.Tab;
-        NeighbourhoodAbstract neighbourhood = NeighbourhoodFactory.Create();
+
         List<Grain> all = grains.OfType<Grain>().ToList();
 
         while (all.Count > 0)
@@ -38,34 +37,15 @@ public class MonteCarlo
                 break;
             }
 
-            if(neighbourhood.GetType().Name != NEIGHBOURHOOD.ToString())
-            {
-                Console.WriteLine("Change");
-                neighbourhood = NeighbourhoodFactory.Create();
-
-            }
+        
 
             int index = random.Next(all.Count);
             Grain grain = all.ElementAt(index);
             all.RemoveAt(index);
 
-            if(NEIGHBOURHOOD == Neighbourhood.Radial)
-            {
-                neighbourhood.GetAllNeighbours(grains, grain.X, grain.Y);
-            }
-            else
-            {
-                neighbourhood.GetNeighbours(grains, grain.X, grain.Y);
-            }
-
             int stateBefore = grain.State;
 
-            List<int> neighbours = new List<int>();
-
-            foreach (string neighbour in neighbourhood.Neighbours)
-            {
-                neighbours.Add(int.Parse(neighbour));
-            }
+            List<int> neighbours = Neighbourss.GetNeighboursMonteCarlo(grains, grain.X, grain.Y);
 
             int energyBefore = CalculateEnergy(neighbours, stateBefore);
 
@@ -99,8 +79,6 @@ public class MonteCarlo
 
             }
         }
-
-        return bitmap;
     }
 
     private int CalculateEnergy(List<int> neighbours, int state)
@@ -110,30 +88,18 @@ public class MonteCarlo
 
     public void CalculateEnergy(Simulation grainGrowth)
     {
-        NeighbourhoodAbstract neighbourhood = NeighbourhoodFactory.Create();
 
         for (int y = 0; y < SIZE_Y; y++)
         {
             for (int x = 0; x < SIZE_X; x++)
             {
 
-                if (NEIGHBOURHOOD == Neighbourhood.Radial)
-                {
-                    neighbourhood.GetAllNeighbours(grainGrowth.Tab, x, y);
-                }
-                else
-                {
-                    neighbourhood.GetNeighbours(grainGrowth.Tab, x, y);
-                }
+          
 
                 int stateBefore = grainGrowth.Tab[y, x].State;
 
-                List<int> neighbours = new List<int>();
-                foreach (string neighbour in neighbourhood.Neighbours
-    )
-                {
-                    neighbours.Add(int.Parse(neighbour));
-                }
+                List<int> neighbours = Neighbourss.GetNeighboursMonteCarlo(grainGrowth.Tab, x, y);
+
 
                 int energyBefore = CalculateEnergy(neighbours, stateBefore);
 
@@ -142,13 +108,9 @@ public class MonteCarlo
         }
     }
 
-    public void DisplayEnergy(Grain[,] grains, PictureBox pictureBox)
+    public void DisplayEnergy(Grain[,] grains, Graphics g)
     {
         System.Drawing.SolidBrush cellBrushClear = new System.Drawing.SolidBrush(SystemColors.Control);
-
-
-        Bitmap bitmap = new Bitmap(SIZE_X * CELL_SIZE, SIZE_Y * CELL_SIZE);
-        Graphics g = Graphics.FromImage(bitmap);
 
         for (int y = 0; y < SIZE_Y; y++)
         {
@@ -164,7 +126,5 @@ public class MonteCarlo
              CELL_SIZE - (int)GRID_STATE, CELL_SIZE - (int)GRID_STATE);
             }
         }
-
-        pictureBox.Image = bitmap;
     }
 }

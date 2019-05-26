@@ -164,7 +164,7 @@ public class Grid
         return true;
     }
 
-    public void RenderGridAndRefresh(PictureBox pictureBox, Bitmap bitmap)
+    public void RenderGridAndRefresh(PictureBox pictureBox, Graphics g)
     {
 
         int maxSizeX = pictureBox.Width / CELL_SIZE;
@@ -173,8 +173,6 @@ public class Grid
 
         System.Drawing.Pen circuitPen = new System.Drawing.Pen(Color.Black, 1);
 
-
-        Graphics g = Graphics.FromImage(bitmap);
 
         g.FillRectangle(cellBrushClear, 0, 0, maxSizeX * CELL_SIZE + 1, maxSizeY * CELL_SIZE + 1 );
 
@@ -194,16 +192,22 @@ public class Grid
         }
     }
 
-    public void SetNewCellSizeAndDraw(PictureBox pictureBox, Bitmap bitmap, Simulation simulation)
+    public void SetNewCellSizeAndDraw(PictureBox pictureBox, Graphics g, Simulation simulation)
     {
-
-        Graphics g = Graphics.FromImage(bitmap);
 
         int maxSizeX = pictureBox.Width / CELL_SIZE + 1;
         int maxSizeY = pictureBox.Height / CELL_SIZE + 1;
         g.FillRectangle(cellBrushClear, 0, 0, maxSizeX * CELL_SIZE + 1, maxSizeY * CELL_SIZE + 1);
 
-        Grain[,] tabTmp = simulation.Tab;
+        Grain[,] tabTmp = new Grain[SIZE_Y, SIZE_X];
+
+        for (int i = 0; i < SIZE_Y; i++)
+        {
+            for (int j = 0; j < SIZE_X; j++)
+            {
+                tabTmp[i, j] = simulation.Tab[i, j].Copy();
+            }
+        }
 
         int startSizeX = SIZE_X;
         int startSizeY = SIZE_Y;
@@ -237,12 +241,17 @@ public class Grid
             }
         }
 
+        
+        // resizing previous grains
+
+        simulation.Resize();
+
         if (GRID_STATE == GridState.Enable)
         {
             Draw(g, pictureBox);
         }
 
-        simulation.Display(bitmap);
+        simulation.Display(g);
     }
 
 }
