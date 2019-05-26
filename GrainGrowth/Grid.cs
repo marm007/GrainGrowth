@@ -159,7 +159,7 @@ public class Grid
             }
         }
 
-        // Draw(pictureBox);
+        simulation.Resize();
 
         return true;
     }

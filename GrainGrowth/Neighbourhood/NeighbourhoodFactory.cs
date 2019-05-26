@@ -96,7 +96,7 @@ public static class NeighbourhoodFactory
             case Neighbourhood.Hexagonal:
                 return Hexagonal(grains, x, y);
             case Neighbourhood.Radial:
-                return RadialGrains(grains, x, y);
+                return RadialMoteCarlo(grains, x, y);
             default:
                 return null;
         }
@@ -453,7 +453,7 @@ public static class NeighbourhoodFactory
         return _Neighbours;
     }
 
-    public static List<int> RadialGrains(Grain[,] grains, int x1, int y1)
+    public static List<int> RadialMoteCarlo(Grain[,] grains, int x1, int y1)
     {
         List<int> _Neighbours = new List<int>();
 

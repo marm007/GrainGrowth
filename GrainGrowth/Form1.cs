@@ -14,15 +14,11 @@ using static Config;
 
 namespace GrainGrowth
 {
-    public partial class Form1 : Form 
+    public partial class Form1 : Form
     {
 
         private static int SLEEP_TIME = 1;
         private static int SLEEP_TIME_MIN = 1;
-
-        private System.Drawing.Pen circuitPen = new System.Drawing.Pen(Color.Black, 1);
-        private System.Drawing.Pen circuitPenClear = new System.Drawing.Pen(SystemColors.Control, 1);
-        private System.Drawing.SolidBrush cellBrushClear = new System.Drawing.SolidBrush(SystemColors.Control);
 
         bool flagStop = false;
         bool flagResize = false;
@@ -31,27 +27,24 @@ namespace GrainGrowth
         bool clickedButton = false;
 
         private Grain[,] tab = null;
+        private Grid grid = null;
+        private Simulation grainGrowth = null;
+        private MonteCarlo monteCarlo = null;
 
-        Grid grid = null;
-
-        Simulation grainGrowth = null;
-
-        PictureBox pPictureBox = null;
+        private PictureBox pPictureBox = null;
 
         private BackgroundWorker backgroundWorker = null;
         private BackgroundWorker monteCarloWorker = null;
 
         Random rnd = new Random();
 
-        private MonteCarlo monteCarlo = null;
-
+        private Bitmap simulationBitmap = null;
         private Bitmap previousBitmap = null;
+        private Graphics g = null;
+
         private Thread myUIthred;
 
         private int monteCarloIterations = 0;
-
-        private Bitmap simulationBitmap = null;
-        private Graphics g = null;
 
         public Form1()
         {
@@ -64,7 +57,7 @@ namespace GrainGrowth
             start_button.Enabled = true;
             stop_button.Enabled = false;
             clear_button.Enabled = false;
-            
+
             monteCarloEnergyButton.Enabled = false;
             monteCarlo_Button.Enabled = false;
             monteCarloStopButton.Enabled = false;
@@ -81,12 +74,8 @@ namespace GrainGrowth
             hexagonalComboBox.Items.Add(HexagonalNeighbourhood.Random);
 
             hexagonalComboBox.SelectedItem = HexagonalNeighbourhood.Left;
-            System.Windows.Forms.Form.CheckForIllegalCrossThreadCalls = false;
-
-
+            // System.Windows.Forms.Form.CheckForIllegalCrossThreadCalls = false;
         }
-
-        System.Windows.Forms.Timer timer1;
 
 
         private void Form1_Load(object sender, EventArgs e)
@@ -110,11 +99,6 @@ namespace GrainGrowth
 
             widthBox.Text = SIZE_X.ToString();
             heightBox.Text = SIZE_Y.ToString();
-
-
-            timer1 = new System.Windows.Forms.Timer();
-            timer1.Tick += new EventHandler(timer1_Tick);
-            timer1.Interval = 1;
 
             List<int> _Neighbours = new List<int>();
             _Neighbours.Add(3);
@@ -142,10 +126,14 @@ namespace GrainGrowth
 
                 return;
             }
+
             simulationBitmap = new Bitmap(SIZE_X * CELL_SIZE, SIZE_Y * CELL_SIZE);
             g = Graphics.FromImage(simulationBitmap);
 
+            grid.Draw(g);
             grainGrowth.Display(g);
+            grainGrowth.DisplayEnergy(g);
+
             pictureBox1.Image = simulationBitmap;
 
             widthBox.Text = SIZE_X.ToString();
@@ -155,10 +143,10 @@ namespace GrainGrowth
             {
                 flagResize = false;
 
-                if(isPlaying)
+                if (isPlaying)
                     Simulate();
             }
-          
+
         }
 
         private void Form1_ResizeBegin(object sender, EventArgs e)
@@ -184,7 +172,7 @@ namespace GrainGrowth
                 monteCarloWorker.CancelAsync();
         }
 
-     
+
 
         private void pictureBox1_Click(object sender, EventArgs e)
         {
@@ -196,7 +184,7 @@ namespace GrainGrowth
             if (x >= SIZE_X || y >= SIZE_Y)
                 return;
 
-           
+
 
             if (!isPlaying)
             {
@@ -240,35 +228,34 @@ namespace GrainGrowth
             grainGrowth.Tab[y, x].DisplayEnergy(g);
 
             pictureBox1.Image = simulationBitmap;
-          
+
         }
 
 
         private void start_button_Click(object sender, EventArgs e)
         {
-             CheckEnergyButton();
+            CheckEnergyButton();
 
-             if (flagStop)
-             {
-                 flagStop = false;
-             }
+            if (flagStop)
+            {
+                flagStop = false;
+            }
 
-             isPlaying = true;
+            isPlaying = true;
 
-             Simulate();
+            Simulate();
 
-             monteCarloEnergyButton.Enabled = false;
-             monteCarlo_Button.Enabled = false;
-             monteCarloStopButton.Enabled = false;
+            monteCarloEnergyButton.Enabled = false;
+            monteCarlo_Button.Enabled = false;
+            monteCarloStopButton.Enabled = false;
 
-             cellSizeTracBar.Enabled = false;
-             gridCheckBox.Enabled = false;
+            cellSizeTracBar.Enabled = false;
+            gridCheckBox.Enabled = false;
 
-             start_button.Enabled = false;
-             stop_button.Enabled = true;
-             clear_button.Enabled = false;
-             step_button.Enabled = false;
-            //timer1.Start();
+            start_button.Enabled = false;
+            stop_button.Enabled = true;
+            clear_button.Enabled = false;
+            step_button.Enabled = false;
         }
 
         private void stop_button_Click(object sender, EventArgs e)
@@ -303,13 +290,14 @@ namespace GrainGrowth
             stop_button.Enabled = false;
             clear_button.Enabled = false;
 
-            grid.Draw(g, pictureBox1);
 
             grainGrowth.Clear();
 
-            grainGrowth.DisplayEnergy(g);
             simulationBitmap = new Bitmap(SIZE_X * CELL_SIZE, SIZE_Y * CELL_SIZE);
             g = Graphics.FromImage(simulationBitmap);
+
+            grainGrowth.DisplayEnergy(g);
+            grid.Draw(g, pictureBox1);
 
             pictureBox1.Image = simulationBitmap;
 
@@ -318,10 +306,7 @@ namespace GrainGrowth
 
         private void step_button_Click(object sender, EventArgs e)
         {
-           //CheckEnergyButton();
-
-            //Bitmap bitmap = (Bitmap)pictureBox1.Image;
-            //Graphics g = Graphics.FromImage(bitmap);
+            CheckEnergyButton();
 
             grainGrowth.Simulate(g);
 
@@ -329,58 +314,20 @@ namespace GrainGrowth
             clear_button.Enabled = true;
         }
 
-        private void neumann_button_CheckedChanged(object sender, EventArgs e)
-        {
-            if (neumann_button.Checked)
-                NEIGHBOURHOOD = Neighbourhood.vonNeumann;
-        }
-
-        private void moore_button_CheckedChanged(object sender, EventArgs e)
-        {
-            if (moore_button.Checked)
-                NEIGHBOURHOOD = Neighbourhood.Moore;
-        }
 
 
-        private void pentagonalRadioButton_CheckedChanged(object sender, EventArgs e)
-        {
-            if (pentagonalRadioButton.Checked)
-            {
-                pentagonalLabel.Visible = true;
-            }
-            else
-            {
-                pentagonalLabel.Text = "";
-                pentagonalLabel.Visible = false;
-            }
 
-        }
-
-        private void hexagonalRadioButton_CheckedChanged(object sender, EventArgs e)
-        {
-            if (hexagonalRadioButton.Checked)
-            {
-                hexagonalComboBox.Enabled = true;
-
-                HEXAGONAL_NEIGHBOURHOOD = (HexagonalNeighbourhood) hexagonalComboBox.SelectedItem;
-                NEIGHBOURHOOD = Neighbourhood.Hexagonal;
-            }
-        }
-
-        private void probability_up_down_ValueChanged(object sender, EventArgs e)
-        {
-        }
 
         private void nonperiodic_button_CheckedChanged(object sender, EventArgs e)
         {
-            if(nonperiodic_button.Checked)
+            if (nonperiodic_button.Checked)
                 BOUNDARY_CONDITION = BoundaryCondition.Nonperiodic;
 
         }
 
         private void periodic_button_CheckedChanged(object sender, EventArgs e)
         {
-            if(periodic_button.Checked)
+            if (periodic_button.Checked)
                 BOUNDARY_CONDITION = BoundaryCondition.Periodic;
         }
 
@@ -488,7 +435,7 @@ namespace GrainGrowth
         {
             CELL_SIZE = 1 * cellSizeTracBar.Value;
 
-            int maxSizeX = pictureBox1.Width / CELL_SIZE ;
+            int maxSizeX = pictureBox1.Width / CELL_SIZE;
             int maxSizeY = pictureBox1.Height / CELL_SIZE;
 
             simulationBitmap = new Bitmap(maxSizeX * CELL_SIZE, maxSizeY * CELL_SIZE);
@@ -577,7 +524,7 @@ namespace GrainGrowth
 
                 clickedButton = true;
             }
-                   
+
         }
 
 
@@ -587,7 +534,7 @@ namespace GrainGrowth
 
             backgroundWorker = new BackgroundWorker();
             backgroundWorker.WorkerSupportsCancellation = true;
-            
+
             backgroundWorker.DoWork += new DoWorkEventHandler((state, args) =>
             {
                 stopwatch.Start();
@@ -652,8 +599,8 @@ namespace GrainGrowth
                     {
                         Console.WriteLine(invalidOperation);
                     }
-                  
-                   
+
+
                 }
             });
 
@@ -759,20 +706,7 @@ namespace GrainGrowth
             renderWroker.RunWorkerAsync();
         }
 
-        private void radialNeighbourhood_RadioButton_CheckedChanged(object sender, EventArgs e)
-        {
-            if (radialNeighbourhood_RadioButton.Checked)
-            {
-                NEIGHBOURHOOD = Neighbourhood.Radial;
-                radialNeighbourhood_UpDown.Enabled = true;
-                RADIUS = (float) radialNeighbourhood_UpDown.Value;
 
-            }
-            else
-            {
-                radialNeighbourhood_UpDown.Enabled = false;
-            }
-        }
 
         private void radialNegihbourhoodUpDown_ValueChanged(object sender, EventArgs e)
         {
@@ -804,47 +738,47 @@ namespace GrainGrowth
             monteCarloWorker = new BackgroundWorker();
             monteCarloWorker.WorkerSupportsCancellation = true;
 
-            monteCarloWorker.DoWork += new DoWorkEventHandler( (state, args) =>
-            {
+            monteCarloWorker.DoWork += new DoWorkEventHandler((state, args) =>
+           {
 
-               
-                while (monteCarloIterations < monteCarloIterationsUpDown.Value)
-                {
-                    try
-                    {
 
-                        monteCarlo.Simulate(grainGrowth, g, pictureBox1.CreateGraphics());
+               while (monteCarloIterations < monteCarloIterationsUpDown.Value)
+               {
+                   try
+                   {
 
-                        if (monteCarloWorker.CancellationPending)
-                        {
+                       monteCarlo.Simulate(grainGrowth, g, pictureBox1.CreateGraphics());
 
-                            break;
-                        }
+                       if (monteCarloWorker.CancellationPending)
+                       {
 
-                        System.Threading.Thread.Sleep(SLEEP_TIME_MIN);
+                           break;
+                       }
 
-                        SetBitmapOnUIThread(null);
+                       System.Threading.Thread.Sleep(SLEEP_TIME_MIN);
 
-                    }
-                    catch (InvalidOperationException invalidOperation)
-                    {
-                       
-                        Console.WriteLine(monteCarloIterations);
-                        Console.WriteLine(invalidOperation);
-                    }
+                       SetBitmapOnUIThread(null);
 
-                    monteCarloIterations++;
-                    MonteCarloAction(monteCarloIterations.ToString());
+                   }
+                   catch (InvalidOperationException invalidOperation)
+                   {
 
-                }
+                       Console.WriteLine(monteCarloIterations);
+                       Console.WriteLine(invalidOperation);
+                   }
 
-                MonteCarloAction("finish");
+                   monteCarloIterations++;
+                   MonteCarloAction(monteCarloIterations.ToString());
 
-            });
+               }
+
+               MonteCarloAction("finish");
+
+           });
 
             monteCarloWorker.RunWorkerAsync();
 
-         
+
         }
 
         private void monteCarloStopButton_Click(object sender, EventArgs e)
@@ -866,7 +800,7 @@ namespace GrainGrowth
 
         private void monteCarloEnergyButton_Click(object sender, EventArgs e)
         {
-            if(monteCarloEnergyButton.Text == "Energy / ON")
+            if (monteCarloEnergyButton.Text == "Energy / ON")
             {
                 monteCarloEnergyButton.Text = "Energy / OFF";
                 monteCarlo.CalculateEnergy(grainGrowth);
@@ -909,12 +843,12 @@ namespace GrainGrowth
             }
             else
             {
-                if(int.Parse(value) < monteCarloIterationsUpDown.Value)
+                if (int.Parse(value) < monteCarloIterationsUpDown.Value)
                     iterationLabel.Text = (int.Parse(value) + 1) + " / " + monteCarloIterationsUpDown.Value + " iteration";
                 else
                     iterationLabel.Text = (int.Parse(value)) + " / " + monteCarloIterationsUpDown.Value + " iteration";
             }
-         
+
         }
 
         public void CheckEnergyButton()
@@ -931,7 +865,7 @@ namespace GrainGrowth
 
         public void SetBitmapOnUIThread(Bitmap bitmap)
         {
-            if (Thread.CurrentThread != myUIthred) 
+            if (Thread.CurrentThread != myUIthred)
             {
                 BeginInvoke(new Action<Bitmap>(SetBitmapOnUIThread), new object[] { bitmap });
                 return;
@@ -941,7 +875,7 @@ namespace GrainGrowth
             {
                 pictureBox1.Image = simulationBitmap;
             }
-            catch(InvalidOperationException invalidOperation)
+            catch (InvalidOperationException invalidOperation)
             {
                 Console.WriteLine(invalidOperation);
             }
@@ -957,20 +891,61 @@ namespace GrainGrowth
 
         private void kTNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
-            monteCarlo.KT = (float) kTNumericUpDown.Value;
+            monteCarlo.KT = (float)kTNumericUpDown.Value;
 
         }
 
         private void JNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
-            monteCarlo.JH = (float) JNumericUpDown.Value;
+            monteCarlo.JH = (float)JNumericUpDown.Value;
         }
-        private void timer1_Tick(object sender, EventArgs e)
+
+
+
+        private void neighbourhoodGropuBox_CheckedChange(object sender, EventArgs e)
         {
-            grainGrowth.Simulate(g);
-            pictureBox1.Image = simulationBitmap;
+            RadioButton neighbourhoodRadioButton = (RadioButton)sender;
+
+            if (neighbourhoodRadioButton.Checked)
+            {
+                switch (neighbourhoodRadioButton.Name)
+                {
+                    case "neumann_button":
+                        NEIGHBOURHOOD = Neighbourhood.vonNeumann;
+                        break;
+                    case "moore_button":
+                        NEIGHBOURHOOD = Neighbourhood.Moore;
+                        break;
+                    case "pentagonalRadioButton":
+                        pentagonalLabel.Visible = true;
+                        break;
+                    case "hexagonalRadioButton":
+                        hexagonalComboBox.Enabled = true;
+
+                        HEXAGONAL_NEIGHBOURHOOD = (HexagonalNeighbourhood)hexagonalComboBox.SelectedItem;
+                        NEIGHBOURHOOD = Neighbourhood.Hexagonal;
+                        break;
+                    case "radialNeighbourhood_RadioButton":
+                                NEIGHBOURHOOD = Neighbourhood.Radial;
+                                radialNeighbourhood_UpDown.Enabled = true;
+                                RADIUS = (float)radialNeighbourhood_UpDown.Value;                 
+                        break;
+                }
+            }
+            else
+            {
+                switch (neighbourhoodRadioButton.Name)
+                {
+                    case "pentagonalRadioButton":
+                        pentagonalLabel.Text = "";
+                        pentagonalLabel.Visible = false;
+                        break;
+                    case "radialNeighbourhood_RadioButton":
+                        radialNeighbourhood_UpDown.Enabled = false;
+                        break;
+                }
+            }
         }
     }
 
- 
 }

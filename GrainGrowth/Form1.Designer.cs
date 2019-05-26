@@ -228,7 +228,7 @@
             this.radialNeighbourhood_RadioButton.TabStop = true;
             this.radialNeighbourhood_RadioButton.Text = "Radial";
             this.radialNeighbourhood_RadioButton.UseVisualStyleBackColor = true;
-            this.radialNeighbourhood_RadioButton.CheckedChanged += new System.EventHandler(this.radialNeighbourhood_RadioButton_CheckedChanged);
+            this.radialNeighbourhood_RadioButton.CheckedChanged += new System.EventHandler(this.neighbourhoodGropuBox_CheckedChange);
             // 
             // pentagonalLabel
             // 
@@ -259,7 +259,7 @@
             this.pentagonalRadioButton.TabIndex = 5;
             this.pentagonalRadioButton.Text = "Pentagonal";
             this.pentagonalRadioButton.UseVisualStyleBackColor = true;
-            this.pentagonalRadioButton.CheckedChanged += new System.EventHandler(this.pentagonalRadioButton_CheckedChanged);
+            this.pentagonalRadioButton.CheckedChanged += new System.EventHandler(this.neighbourhoodGropuBox_CheckedChange);
             this.pentagonalRadioButton.MouseClick += new System.Windows.Forms.MouseEventHandler(this.pentagonalRadioButton_Click);
             // 
             // hexagonalRadioButton
@@ -272,7 +272,7 @@
             this.hexagonalRadioButton.TabStop = true;
             this.hexagonalRadioButton.Text = "Hexagonal";
             this.hexagonalRadioButton.UseVisualStyleBackColor = true;
-            this.hexagonalRadioButton.CheckedChanged += new System.EventHandler(this.hexagonalRadioButton_CheckedChanged);
+            this.hexagonalRadioButton.CheckedChanged += new System.EventHandler(this.neighbourhoodGropuBox_CheckedChange);
             // 
             // moore_button
             // 
@@ -284,7 +284,7 @@
             this.moore_button.TabStop = true;
             this.moore_button.Text = "Moore";
             this.moore_button.UseVisualStyleBackColor = true;
-            this.moore_button.CheckedChanged += new System.EventHandler(this.moore_button_CheckedChanged);
+            this.moore_button.CheckedChanged += new System.EventHandler(this.neighbourhoodGropuBox_CheckedChange);
             // 
             // neumann_button
             // 
@@ -297,7 +297,7 @@
             this.neumann_button.TabStop = true;
             this.neumann_button.Text = "von Neumann";
             this.neumann_button.UseVisualStyleBackColor = true;
-            this.neumann_button.CheckedChanged += new System.EventHandler(this.neumann_button_CheckedChanged);
+            this.neumann_button.CheckedChanged += new System.EventHandler(this.neighbourhoodGropuBox_CheckedChange);
             // 
             // groupBox3
             // 

@@ -33,29 +33,6 @@ public class Grain
     public GrainEnergyCoords EnergyCoords { get { return energyCoords; } set { energyCoords.X = value.X; energyCoords.Y = value.Y; } }
     public static int Counter = 0;
 
-    public void Display(Bitmap bitmap)
-    {
-       
-            Graphics g = Graphics.FromImage(bitmap);
-
-            if (this.state == 0)
-            {
-                System.Drawing.SolidBrush cellBrushClear = new System.Drawing.SolidBrush(SystemColors.Control);
-
-                g.FillRectangle(cellBrushClear, (this.x) * CELL_SIZE + (int)GRID_STATE, (this.y) * CELL_SIZE + (int)GRID_STATE,
-                    CELL_SIZE - (int)GRID_STATE, CELL_SIZE - (int)GRID_STATE);
-
-            }
-            else
-            {
-                System.Drawing.SolidBrush cellBrush = new System.Drawing.SolidBrush(Colors.colors[State]);
-
-                g.FillRectangle(cellBrush, (this.x) * CELL_SIZE + (int)GRID_STATE, (this.y) * CELL_SIZE + (int)GRID_STATE,
-                    CELL_SIZE - (int)GRID_STATE, CELL_SIZE - (int)GRID_STATE);
-            }
-
-        
-    }
 
     public void Display(Graphics g)
     {
