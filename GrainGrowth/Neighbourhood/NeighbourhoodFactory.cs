@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static Config;
 
-public static class Neighbourss
+public static class NeighbourhoodFactory
 {
     private static int ERROR = -1;
     private static Random random = new Random();

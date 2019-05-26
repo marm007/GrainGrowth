@@ -108,7 +108,7 @@ public class Simulation
                   int cellBegin = this.tab[i, j].State;
                   int cellEnd = this.tab[i, j].State;
 
-                  cellEnd = Neighbourss.GetNeighbours(this.tab, j, i);
+                  cellEnd = NeighbourhoodFactory.GetNeighbours(this.tab, j, i);
 
                   if (cellEnd != cellBegin)
                   {
@@ -132,7 +132,7 @@ public class Simulation
                 if (this.tab[i, j].State == 0)
                     continue;
 
-                foreach (Grain grain in Neighbourss.GetRadialGrains(this.tab, j, i))
+                foreach (Grain grain in NeighbourhoodFactory.GetRadialGrains(this.tab, j, i))
                 {
                     previousGrains[grain.Y, grain.X].State = this.Tab[i, j].State;
 

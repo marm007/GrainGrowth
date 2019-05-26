@@ -45,7 +45,7 @@ public class MonteCarlo
 
             int stateBefore = grain.State;
 
-            List<int> neighbours = Neighbourss.GetNeighboursMonteCarlo(grains, grain.X, grain.Y);
+            List<int> neighbours = NeighbourhoodFactory.GetNeighboursMonteCarlo(grains, grain.X, grain.Y);
 
             int energyBefore = CalculateEnergy(neighbours, stateBefore);
 
@@ -98,7 +98,7 @@ public class MonteCarlo
 
                 int stateBefore = grainGrowth.Tab[y, x].State;
 
-                List<int> neighbours = Neighbourss.GetNeighboursMonteCarlo(grainGrowth.Tab, x, y);
+                List<int> neighbours = NeighbourhoodFactory.GetNeighboursMonteCarlo(grainGrowth.Tab, x, y);
 
 
                 int energyBefore = CalculateEnergy(neighbours, stateBefore);
