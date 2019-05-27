@@ -14,8 +14,9 @@ public struct GrainEnergyCoords
 
     public GrainEnergyCoords(int x1, int y1)
     {
-        x = (float) Math.Round(random.NextDouble() * (CELL_SIZE - RADIUS) + (x1 * CELL_SIZE), 1) + RADIUS / 2;
-        y = (float) Math.Round(random.NextDouble() * (CELL_SIZE - RADIUS) + (y1 * CELL_SIZE), 1) + RADIUS / 2;
+        x = (float) Math.Round(random.NextDouble() * (((float)CELL_SIZE) - ENERGY_RADIUS * 2) + (float)(x1 * CELL_SIZE), 1) + ENERGY_RADIUS ;
+        y = (float) Math.Round(random.NextDouble() * (((float)CELL_SIZE) - ENERGY_RADIUS * 2) + (float)(y1 * CELL_SIZE), 1) + ENERGY_RADIUS ;
+        // Console.WriteLine("x = " + x + " y = " + y);
     }
 
     public GrainEnergyCoords(GrainEnergyCoords energyCoords)

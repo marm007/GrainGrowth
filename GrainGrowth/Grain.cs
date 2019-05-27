@@ -97,7 +97,9 @@ public class Grain
         System.Drawing.SolidBrush brush = new System.Drawing.SolidBrush(Color.Red);
 
 
-        g.FillEllipse(brush, this.EnergyCoords.X - ENERGY_RADIUS / 2.0f, this.EnergyCoords.Y - ENERGY_RADIUS / 2.0f, ENERGY_RADIUS, ENERGY_RADIUS);
+        g.DrawEllipse(pen, this.EnergyCoords.X - ENERGY_RADIUS , this.EnergyCoords.Y - ENERGY_RADIUS, ENERGY_RADIUS * 2, ENERGY_RADIUS * 2);
+        // Console.WriteLine("one = " + (this.EnergyCoords.X - ENERGY_RADIUS / 2.0f) +
+        //   " two = " + (this.EnergyCoords.Y - ENERGY_RADIUS / 2.0f) + " three = " + ENERGY_RADIUS);
     }
 
     public Grain Copy()
