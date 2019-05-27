@@ -535,14 +535,12 @@ namespace GrainGrowth
                 {
                     try
                     {
-                        SetBitmapOnUIThread(null);
 
                         grainGrowth.Simulate(g);
 
                         if (backgroundWorker.CancellationPending)
                         {
                             SetBitmapOnUIThread(null);
-
                             break;
                         }
 
@@ -574,6 +572,8 @@ namespace GrainGrowth
                         }
 
                         SetBitmapOnUIThread(null);
+
+                        System.Threading.Thread.Sleep(1);
 
 
                         if (grainGrowth.SimulationEnded())
@@ -674,10 +674,12 @@ namespace GrainGrowth
 
         private void pentagonalRadioButton_Click(object sender, MouseEventArgs e)
         {
-            Array values = Enum.GetValues(typeof(PentagonalNeighbourhood));
-            PENTAGONAL_NEIGHBOURHOOD = (PentagonalNeighbourhood)values.GetValue(rnd.Next(values.Length));
-            pentagonalLabel.Text = PENTAGONAL_NEIGHBOURHOOD.ToString();
-            NEIGHBOURHOOD = Neighbourhood.Pentagonal;
+            /*
+                Array values = Enum.GetValues(typeof(PentagonalNeighbourhood));
+                PENTAGONAL_NEIGHBOURHOOD = (PentagonalNeighbourhood)values.GetValue(rnd.Next(values.Length));
+                pentagonalLabel.Text = PENTAGONAL_NEIGHBOURHOOD.ToString();
+                NEIGHBOURHOOD = Neighbourhood.Pentagonal;
+            */
         }
 
         private void energyCheckBox_CheckedChanged(object sender, EventArgs e)
@@ -912,7 +914,8 @@ namespace GrainGrowth
                         NEIGHBOURHOOD = Neighbourhood.Moore;
                         break;
                     case "pentagonalRadioButton":
-                        pentagonalLabel.Visible = true;
+                        // pentagonalLabel.Visible = true;
+                        NEIGHBOURHOOD = Neighbourhood.Pentagonal;
                         break;
                     case "hexagonalRadioButton":
                         hexagonalComboBox.Enabled = true;
@@ -932,8 +935,8 @@ namespace GrainGrowth
                 switch (neighbourhoodRadioButton.Name)
                 {
                     case "pentagonalRadioButton":
-                        pentagonalLabel.Text = "";
-                        pentagonalLabel.Visible = false;
+                        // pentagonalLabel.Text = "";
+                        // pentagonalLabel.Visible = false;
                         break;
                     case "radialNeighbourhood_RadioButton":
                         radialNeighbourhood_UpDown.Enabled = false;

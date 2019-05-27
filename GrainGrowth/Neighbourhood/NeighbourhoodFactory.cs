@@ -9,12 +9,12 @@ public static class NeighbourhoodFactory
 {
     private static int ERROR = -1;
     private static Random random = new Random();
-
+    private static Array pentagonalNeighbourhoods = Enum.GetValues(typeof(PentagonalNeighbourhood));
+    private static HexagonalNeighbourhood[] hexagonalNeighbourhoods = new HexagonalNeighbourhood[2] { HexagonalNeighbourhood.Left, HexagonalNeighbourhood.Right };
 
     public static int GetNeighbours(Grain[,] grains, int x, int y)
     {
         List<int> _Neighbours = null;
-
         switch (NEIGHBOURHOOD)
         {
             case Neighbourhood.vonNeumann:
@@ -183,6 +183,8 @@ public static class NeighbourhoodFactory
     {
         List<int> _Neighbours = new List<int>();
 
+        PentagonalNeighbourhood pentagonalNeighbourhood = (PentagonalNeighbourhood)pentagonalNeighbourhoods.GetValue(SIMULATION_RANDOM.Next(pentagonalNeighbourhoods.Length));
+
         if (BOUNDARY_CONDITION == BoundaryCondition.Periodic)
         {
             int x_l = x - 1 < 0 ? SIZE_X - 1 : x - 1;
@@ -190,7 +192,7 @@ public static class NeighbourhoodFactory
             int y_d = y + 1 >= SIZE_Y ? 0 : y + 1;
             int y_g = y - 1 < 0 ? SIZE_Y - 1 : y - 1;
 
-            switch (PENTAGONAL_NEIGHBOURHOOD)
+            switch (pentagonalNeighbourhood)
             {
                 case PentagonalNeighbourhood.Top:
                     _Neighbours.Add(grains[y, x_l].State); // s_l
@@ -238,7 +240,7 @@ public static class NeighbourhoodFactory
             int y_d = y + 1 >= SIZE_Y ? y : y + 1;
             int y_g = y - 1 < 0 ? y : y - 1;
 
-            switch (PENTAGONAL_NEIGHBOURHOOD)
+            switch (pentagonalNeighbourhood)
             {
                 case PentagonalNeighbourhood.Top:
                     _Neighbours.Add(grains[y, x_l].State); // s_l
@@ -289,6 +291,13 @@ public static class NeighbourhoodFactory
     {
         List<int> _Neighbours = new List<int>();
 
+        HexagonalNeighbourhood hexagonalNeighbourhood = HEXAGONAL_NEIGHBOURHOOD;
+
+        if(hexagonalNeighbourhood == HexagonalNeighbourhood.Random)
+        {
+            hexagonalNeighbourhood = (HexagonalNeighbourhood)hexagonalNeighbourhoods.GetValue(SIMULATION_RANDOM.Next(hexagonalNeighbourhoods.Length));
+        }
+
         if (BOUNDARY_CONDITION == BoundaryCondition.Periodic)
         {
             int x_l = x - 1 < 0 ? SIZE_X - 1 : x - 1;
@@ -296,7 +305,7 @@ public static class NeighbourhoodFactory
             int y_d = y + 1 >= SIZE_Y ? 0 : y + 1;
             int y_g = y - 1 < 0 ? SIZE_Y - 1 : y - 1;
 
-            switch (HEXAGONAL_NEIGHBOURHOOD)
+            switch (hexagonalNeighbourhood)
             {
                 case HexagonalNeighbourhood.Left:
                     _Neighbours.Add(grains[y, x_l].State); // s_l
@@ -319,6 +328,7 @@ public static class NeighbourhoodFactory
 
                     _Neighbours.Add(grains[y_g, x_p].State); // s_g_p
                     break;
+                
             }
 
         }
@@ -329,7 +339,7 @@ public static class NeighbourhoodFactory
             int y_d = y + 1 >= SIZE_Y ? y : y + 1;
             int y_g = y - 1 < 0 ? y : y - 1;
 
-            switch (HEXAGONAL_NEIGHBOURHOOD)
+            switch (hexagonalNeighbourhood)
             {
                 case HexagonalNeighbourhood.Left:
                     _Neighbours.Add(grains[y, x_l].State); // s_l

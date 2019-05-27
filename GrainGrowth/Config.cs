@@ -9,6 +9,7 @@ public static class Config
     public static int CELL_SIZE = 20;
     public static float RADIUS = 2.0f;
     public static float ENERGY_RADIUS = 2.0f;
+    public static Random SIMULATION_RANDOM = new Random();
 
     private static int sIZE_X = 0;
     private static int sIZE_Y = 0;

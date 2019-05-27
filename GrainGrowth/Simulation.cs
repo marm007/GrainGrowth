@@ -78,6 +78,12 @@ public class Simulation
             case Neighbourhood.Radial:
                 ChangeStateRadial(g);
                 break;
+                case Neighbourhood.Hexagonal when (HEXAGONAL_NEIGHBOURHOOD == HexagonalNeighbourhood.Random):
+                case Neighbourhood.Pentagonal:
+                SIMULATION_RANDOM = new Random();
+                ChangeState(g);
+
+                break;
             default:
                 ChangeState(g);
                 break;
