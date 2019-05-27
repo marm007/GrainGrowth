@@ -100,14 +100,6 @@ namespace GrainGrowth
             widthBox.Text = SIZE_X.ToString();
             heightBox.Text = SIZE_Y.ToString();
 
-            List<int> _Neighbours = new List<int>();
-            _Neighbours.Add(3);
-            _Neighbours.Add(2);
-            _Neighbours.Add(1);
-            _Neighbours.Add(2);
-            _Neighbours.Add(1);
-            int maxCount = _Neighbours.Max(n => n);
-            Console.WriteLine(maxCount);
         }
 
         private void Form1_ResizeEnd(object sender, System.EventArgs e)
@@ -543,11 +535,14 @@ namespace GrainGrowth
                 {
                     try
                     {
+                        SetBitmapOnUIThread(null);
 
                         grainGrowth.Simulate(g);
 
                         if (backgroundWorker.CancellationPending)
                         {
+                            SetBitmapOnUIThread(null);
+
                             break;
                         }
 

@@ -98,7 +98,7 @@ public class Simulation
     private void ChangeState(Graphics g)
     {
 
-      for(int i = 0; i < SIZE_Y; i++)
+      Parallel.For(0, SIZE_Y, i =>
       {
 
           for(int j = 0; j < SIZE_X; j++)
@@ -117,7 +117,7 @@ public class Simulation
                   }
               }
           };
-      };
+      });
     }
 
 
