@@ -944,6 +944,13 @@ namespace GrainGrowth
                 }
             }
         }
+
+        private void recrystallizationButton_Click(object sender, EventArgs e)
+        {
+            Recrystallization recrystallization = new Recrystallization();
+
+            recrystallization.DislocationsPartition();
+        }
     }
 
 }

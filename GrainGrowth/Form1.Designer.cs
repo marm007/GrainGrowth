@@ -90,6 +90,8 @@
             this.label1 = new System.Windows.Forms.Label();
             this.monteCarloIterationsUpDown = new System.Windows.Forms.NumericUpDown();
             this.monteCarlo_Button = new System.Windows.Forms.Button();
+            this.groupBox7 = new System.Windows.Forms.GroupBox();
+            this.recrystallizationButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -111,6 +113,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.JNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.kTNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.monteCarloIterationsUpDown)).BeginInit();
+            this.groupBox7.SuspendLayout();
             this.SuspendLayout();
             // 
             // pictureBox1
@@ -859,11 +862,31 @@
             this.monteCarlo_Button.UseVisualStyleBackColor = true;
             this.monteCarlo_Button.Click += new System.EventHandler(this.monteCarlo_Button_Click);
             // 
+            // groupBox7
+            // 
+            this.groupBox7.Controls.Add(this.recrystallizationButton);
+            this.groupBox7.Location = new System.Drawing.Point(282, 500);
+            this.groupBox7.Name = "groupBox7";
+            this.groupBox7.Size = new System.Drawing.Size(450, 100);
+            this.groupBox7.TabIndex = 8;
+            this.groupBox7.TabStop = false;
+            // 
+            // recrystallizationButton
+            // 
+            this.recrystallizationButton.Location = new System.Drawing.Point(7, 11);
+            this.recrystallizationButton.Name = "recrystallizationButton";
+            this.recrystallizationButton.Size = new System.Drawing.Size(75, 23);
+            this.recrystallizationButton.TabIndex = 0;
+            this.recrystallizationButton.Text = "Recrystallization";
+            this.recrystallizationButton.UseVisualStyleBackColor = true;
+            this.recrystallizationButton.Click += new System.EventHandler(this.recrystallizationButton_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(950, 611);
+            this.Controls.Add(this.groupBox7);
             this.Controls.Add(this.groupBox6);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.pictureBox1);
@@ -899,6 +922,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.JNumericUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.kTNumericUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.monteCarloIterationsUpDown)).EndInit();
+            this.groupBox7.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -966,6 +990,8 @@
         private System.Windows.Forms.Label iterationLabel;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.NumericUpDown JNumericUpDown;
+        private System.Windows.Forms.GroupBox groupBox7;
+        private System.Windows.Forms.Button recrystallizationButton;
     }
 }
 
