@@ -17,10 +17,6 @@ public class Grain
 
     private int q;
 
-    private double density;
-    private bool recrystallized;
-    
-
     private static Object locker = new Object();
     public Grain(int x, int y, int state)
     {
@@ -35,10 +31,6 @@ public class Grain
     public int Y { get { return y; } }
     public int Q { get { return q; } set { q = value; } }
     public GrainEnergyCoords EnergyCoords { get { return energyCoords; } set { energyCoords.X = value.X; energyCoords.Y = value.Y; } }
-
-    public double Density { get { return density; } set { density = value; } }
-    public bool Recrystallized { get { return recrystallized; } set { recrystallized = value; } } 
-
     public static int Counter = 0;
 
 
