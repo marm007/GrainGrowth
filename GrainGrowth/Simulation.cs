@@ -18,7 +18,7 @@ public class Simulation
     
     private Grain[,] tab;
 
-    internal Grain[,] Tab { get => tab; set => tab = value; }
+    internal Grain[,] Tab { get { return tab; } set { tab = value; } }
 
     private Grain[,] previousGrains;
 
@@ -78,11 +78,22 @@ public class Simulation
             case Neighbourhood.Radial:
                 ChangeStateRadial(g);
                 break;
-                case Neighbourhood.Hexagonal when (HEXAGONAL_NEIGHBOURHOOD == HexagonalNeighbourhood.Random):
-                case Neighbourhood.Pentagonal:
+            case Neighbourhood.Pentagonal:
                 SIMULATION_RANDOM = new Random();
                 ChangeState(g);
 
+                break;
+            case Neighbourhood.Hexagonal:
+                switch (HEXAGONAL_NEIGHBOURHOOD)
+                {
+                    case HexagonalNeighbourhood.Random:
+                        SIMULATION_RANDOM = new Random();
+                        ChangeState(g);
+                        break;
+                    default:
+                        ChangeState(g);
+                        break;
+                }
                 break;
             default:
                 ChangeState(g);

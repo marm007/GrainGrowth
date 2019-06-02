@@ -102,6 +102,24 @@ public static class NeighbourhoodFactory
         }
     }
 
+    public static List<Grain> GetNeighboursGrains(Grain[,] grains, int x, int y)
+    {
+        switch (NEIGHBOURHOOD)
+        {
+            case Neighbourhood.vonNeumann:
+                return vonNeumannGrains(grains, x, y);
+            case Neighbourhood.Moore:
+                return MooreGrains(grains, x, y);
+            case Neighbourhood.Pentagonal:
+                return PentagonalGrains(grains, x, y);
+            case Neighbourhood.Hexagonal:
+                return HexagonalGrains(grains, x, y);
+            case Neighbourhood.Radial:
+                return GetRadialGrains(grains, x, y);
+            default:
+                return null;
+        }
+    }
 
     public static List<int> vonNeumann(Grain[,] grains, int x, int y)
     {
@@ -552,6 +570,8 @@ public static class NeighbourhoodFactory
         return _Neighbours;
     }
 
+
+
     public static List<Grain> GetRadialGrains(Grain[,] grains, int x1, int y1)
     {
         List<Grain> _Neighbours = new List<Grain>();
@@ -646,5 +666,273 @@ public static class NeighbourhoodFactory
 
         return _Neighbours;
     }
+
+    public static List<Grain> vonNeumannGrains(Grain[,] grains, int x, int y)
+    {
+        List<Grain> _Neighbours = new List<Grain>();
+
+        int x_l = -200;
+        int x_p = -200;
+        int y_d = -200;
+        int y_g = -200;
+
+        if (BOUNDARY_CONDITION == BoundaryCondition.Periodic)
+        {
+            x_l = x - 1 < 0 ? SIZE_X - 1 : x - 1;
+            x_p = x + 1 >= SIZE_X ? 0 : x + 1;
+            y_d = y + 1 >= SIZE_Y ? 0 : y + 1;
+            y_g = y - 1 < 0 ? SIZE_Y - 1 : y - 1;
+
+        }
+        else
+        {
+            x_l = x - 1 < 0 ? x : x - 1;
+            x_p = x + 1 >= SIZE_X ? x : x + 1;
+            y_d = y + 1 >= SIZE_Y ? y : y + 1;
+            y_g = y - 1 < 0 ? y : y - 1;
+        }
+
+        _Neighbours.Add(grains[y, x_l]); // s_l
+        _Neighbours.Add(grains[y, x_p]); // s_p
+        _Neighbours.Add(grains[y_d, x]); // s_d
+        _Neighbours.Add(grains[y_g, x]); // s_g
+
+
+        return _Neighbours;
+
+    }
+
+    public static List<Grain> MooreGrains(Grain[,] grains, int x, int y)
+    {
+        List<Grain> _Neighbours = new List<Grain>();
+
+        int x_l = -200;
+        int x_p = -200;
+        int y_d = -200;
+        int y_g = -200;
+
+
+
+        if (BOUNDARY_CONDITION == BoundaryCondition.Periodic)
+        {
+            x_l = x - 1 < 0 ? SIZE_X - 1 : x - 1;
+            x_p = x + 1 >= SIZE_X ? 0 : x + 1;
+            y_d = y + 1 >= SIZE_Y ? 0 : y + 1;
+            y_g = y - 1 < 0 ? SIZE_Y - 1 : y - 1;
+
+        }
+        else
+        {
+            x_l = x - 1 < 0 ? x : x - 1;
+            x_p = x + 1 >= SIZE_X ? x : x + 1;
+            y_d = y + 1 >= SIZE_Y ? y : y + 1;
+            y_g = y - 1 < 0 ? y : y - 1;
+        }
+
+        _Neighbours.Add(grains[y, x_l]); // s_l
+        _Neighbours.Add(grains[y, x_p]); // s_p
+        _Neighbours.Add(grains[y_d, x]); // s_d
+        _Neighbours.Add(grains[y_g, x]); // s_g
+
+        _Neighbours.Add(grains[y_d, x_l]); // s_d_l
+        _Neighbours.Add(grains[y_d, x_p]); // s_d_p
+
+        _Neighbours.Add(grains[y_g, x_l]); // s_g_l
+        _Neighbours.Add(grains[y_g, x_p]); // s_g_p
+
+        return _Neighbours;
+    }
+
+    public static List<Grain> PentagonalGrains(Grain[,] grains, int x, int y)
+    {
+        List<Grain> _Neighbours = new List<Grain>();
+
+        PentagonalNeighbourhood pentagonalNeighbourhood = (PentagonalNeighbourhood)pentagonalNeighbourhoods.GetValue(SIMULATION_RANDOM.Next(pentagonalNeighbourhoods.Length));
+
+        if (BOUNDARY_CONDITION == BoundaryCondition.Periodic)
+        {
+            int x_l = x - 1 < 0 ? SIZE_X - 1 : x - 1;
+            int x_p = x + 1 >= SIZE_X ? 0 : x + 1;
+            int y_d = y + 1 >= SIZE_Y ? 0 : y + 1;
+            int y_g = y - 1 < 0 ? SIZE_Y - 1 : y - 1;
+
+            switch (pentagonalNeighbourhood)
+            {
+                case PentagonalNeighbourhood.Top:
+                    _Neighbours.Add(grains[y, x_l]); // s_l
+                    _Neighbours.Add(grains[y, x_p]); // s_p
+                    _Neighbours.Add(grains[y_d, x]); // s_d
+
+                    _Neighbours.Add(grains[y_d, x_l]); // s_d_l
+                    _Neighbours.Add(grains[y_d, x_p]); // s_d_p
+
+                    break;
+                case PentagonalNeighbourhood.Right:
+                    _Neighbours.Add(grains[y, x_l]); // s_l
+                    _Neighbours.Add(grains[y_d, x]); // s_d
+                    _Neighbours.Add(grains[y_g, x]); // s_g
+
+                    _Neighbours.Add(grains[y_d, x_l]); // s_d_l
+
+                    _Neighbours.Add(grains[y_g, x_l]); // s_g_l
+                    break;
+                case PentagonalNeighbourhood.Bottom:
+                    _Neighbours.Add(grains[y, x_l]); // s_l
+                    _Neighbours.Add(grains[y, x_p]); // s_p
+                    _Neighbours.Add(grains[y_g, x]); // s_g
+
+                    _Neighbours.Add(grains[y_g, x_l]); // s_g_l
+                    _Neighbours.Add(grains[y_g, x_p]); // s_g_p
+                    break;
+                case PentagonalNeighbourhood.Left:
+                    _Neighbours.Add(grains[y, x_p]); // s_p
+                    _Neighbours.Add(grains[y_d, x]); // s_d
+                    _Neighbours.Add(grains[y_g, x]); // s_g
+
+                    _Neighbours.Add(grains[y_d, x_p]); // s_d_p
+
+                    _Neighbours.Add(grains[y_g, x_p]); // s_g_p
+                    break;
+
+            }
+
+        }
+        else
+        {
+            int x_l = x - 1 < 0 ? x : x - 1;
+            int x_p = x + 1 >= SIZE_X ? x : x + 1;
+            int y_d = y + 1 >= SIZE_Y ? y : y + 1;
+            int y_g = y - 1 < 0 ? y : y - 1;
+
+            switch (pentagonalNeighbourhood)
+            {
+                case PentagonalNeighbourhood.Top:
+                    _Neighbours.Add(grains[y, x_l]); // s_l
+                    _Neighbours.Add(grains[y, x_p]); // s_p
+                    _Neighbours.Add(grains[y_d, x]); // s_d
+
+                    _Neighbours.Add(grains[y_d, x_l]); // s_d_l
+                    _Neighbours.Add(grains[y_d, x_p]); // s_d_p
+
+                    break;
+                case PentagonalNeighbourhood.Right:
+                    _Neighbours.Add(grains[y, x_l]); // s_l
+                    _Neighbours.Add(grains[y_d, x]); // s_d
+                    _Neighbours.Add(grains[y_g, x]); // s_g
+
+                    _Neighbours.Add(grains[y_d, x_l]); // s_d_l
+
+                    _Neighbours.Add(grains[y_g, x_l]); // s_g_l
+                    break;
+                case PentagonalNeighbourhood.Bottom:
+                    _Neighbours.Add(grains[y, x_l]); // s_l
+                    _Neighbours.Add(grains[y, x_p]); // s_p
+                    _Neighbours.Add(grains[y_g, x]); // s_g
+
+                    _Neighbours.Add(grains[y_g, x_l]); // s_g_l
+                    _Neighbours.Add(grains[y_g, x_p]); // s_g_p
+                    break;
+                case PentagonalNeighbourhood.Left:
+                    _Neighbours.Add(grains[y, x_p]); // s_p
+                    _Neighbours.Add(grains[y_d, x]); // s_d
+                    _Neighbours.Add(grains[y_g, x]); // s_g
+
+                    _Neighbours.Add(grains[y_d, x_p]); // s_d_p
+
+                    _Neighbours.Add(grains[y_g, x_p]); // s_g_p
+                    break;
+
+            }
+
+
+        }
+
+        return _Neighbours;
+
+    }
+
+    public static List<Grain> HexagonalGrains(Grain[,] grains, int x, int y)
+    {
+        List<Grain> _Neighbours = new List<Grain>();
+
+        HexagonalNeighbourhood hexagonalNeighbourhood = HEXAGONAL_NEIGHBOURHOOD;
+
+        if (hexagonalNeighbourhood == HexagonalNeighbourhood.Random)
+        {
+            hexagonalNeighbourhood = (HexagonalNeighbourhood)hexagonalNeighbourhoods.GetValue(SIMULATION_RANDOM.Next(hexagonalNeighbourhoods.Length));
+        }
+
+        if (BOUNDARY_CONDITION == BoundaryCondition.Periodic)
+        {
+            int x_l = x - 1 < 0 ? SIZE_X - 1 : x - 1;
+            int x_p = x + 1 >= SIZE_X ? 0 : x + 1;
+            int y_d = y + 1 >= SIZE_Y ? 0 : y + 1;
+            int y_g = y - 1 < 0 ? SIZE_Y - 1 : y - 1;
+
+            switch (hexagonalNeighbourhood)
+            {
+                case HexagonalNeighbourhood.Left:
+                    _Neighbours.Add(grains[y, x_l]); // s_l
+                    _Neighbours.Add(grains[y, x_p]); // s_p
+                    _Neighbours.Add(grains[y_d, x]); // s_d
+                    _Neighbours.Add(grains[y_g, x]); // s_g
+
+                    _Neighbours.Add(grains[y_d, x_p]); // s_d_p
+
+                    _Neighbours.Add(grains[y_g, x_l]); // s_g_l
+                    break;
+
+                case HexagonalNeighbourhood.Right:
+                    _Neighbours.Add(grains[y, x_l]); // s_l
+                    _Neighbours.Add(grains[y, x_p]); // s_p
+                    _Neighbours.Add(grains[y_d, x]); // s_d
+                    _Neighbours.Add(grains[y_g, x]); // s_g
+
+                    _Neighbours.Add(grains[y_d, x_l]); // s_d_l
+
+                    _Neighbours.Add(grains[y_g, x_p]); // s_g_p
+                    break;
+
+            }
+
+        }
+        else
+        {
+            int x_l = x - 1 < 0 ? x : x - 1;
+            int x_p = x + 1 >= SIZE_X ? x : x + 1;
+            int y_d = y + 1 >= SIZE_Y ? y : y + 1;
+            int y_g = y - 1 < 0 ? y : y - 1;
+
+            switch (hexagonalNeighbourhood)
+            {
+                case HexagonalNeighbourhood.Left:
+                    _Neighbours.Add(grains[y, x_l]); // s_l
+                    _Neighbours.Add(grains[y, x_p]); // s_p
+                    _Neighbours.Add(grains[y_d, x]); // s_d
+                    _Neighbours.Add(grains[y_g, x]); // s_g
+
+                    _Neighbours.Add(grains[y_d, x_p]); // s_d_p
+
+                    _Neighbours.Add(grains[y_g, x_l]); // s_g_l
+                    break;
+
+                case HexagonalNeighbourhood.Right:
+                    _Neighbours.Add(grains[y, x_l]); // s_l
+                    _Neighbours.Add(grains[y, x_p]); // s_p
+                    _Neighbours.Add(grains[y_d, x]); // s_d
+                    _Neighbours.Add(grains[y_g, x]); // s_g
+
+                    _Neighbours.Add(grains[y_d, x_l]); // s_d_l
+
+                    _Neighbours.Add(grains[y_g, x_p]); // s_g_p
+                    break;
+            }
+        }
+
+        return _Neighbours;
+    }
+
+
+
 
 }

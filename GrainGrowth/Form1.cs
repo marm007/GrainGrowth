@@ -5,6 +5,7 @@ using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -943,6 +944,50 @@ namespace GrainGrowth
                         break;
                 }
             }
+        }
+        Recrystallization recrystallization = null;
+
+        private void recrystallizationButton_Click(object sender, EventArgs e)
+        {
+            recrystallization = new Recrystallization(grainGrowth.Tab);
+
+            BackgroundWorker worker = new BackgroundWorker();
+
+            worker.DoWork += new DoWorkEventHandler((senders, args) =>
+            {
+                for (double i = 0; i <= recrystallization.MaxTime; i += recrystallization.DeltaTime)
+                {
+                    recrystallization.DislocationsPartition(grainGrowth.Tab, g);
+                    SetBitmapOnUIThread(null);
+
+                }
+
+               
+
+                recrystallization.SaveToFile();
+            });
+
+            worker.RunWorkerAsync();
+
+        }
+
+        private void growthButton_Click(object sender, EventArgs e)
+        {
+            BackgroundWorker worker = new BackgroundWorker();
+
+            worker.DoWork += new DoWorkEventHandler((senders, args) =>
+            {
+                for (int i = 0; i <= 1000; i ++)
+                {
+                    recrystallization.Simulation(grainGrowth.Tab, g);
+                    pictureBox1.Image = simulationBitmap;
+
+
+                }
+            });
+
+            recrystallization.Simulation(grainGrowth.Tab, g);
+            pictureBox1.Image = simulationBitmap;
         }
     }
 

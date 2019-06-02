@@ -17,6 +17,10 @@ public class Grain
 
     private int q;
 
+    private double density;
+    private bool recrystallized;
+    private bool onBorder;
+
     private static Object locker = new Object();
     public Grain(int x, int y, int state)
     {
@@ -24,6 +28,10 @@ public class Grain
         this.state = state;
         this.x = x;
         this.y = y;
+
+        this.density = 0;
+        this.recrystallized = false;
+        this.onBorder = false;
     }
 
     public int State { get { return state; } set {  state = value; } }
@@ -33,6 +41,9 @@ public class Grain
     public GrainEnergyCoords EnergyCoords { get { return energyCoords; } set { energyCoords.X = value.X; energyCoords.Y = value.Y; } }
     public static int Counter = 0;
 
+    public double Density { get { return density; } set { density = value; } }
+    public bool Recrystallized { get { return recrystallized; } set { recrystallized = value; } }
+    public bool OnBorder { get { return onBorder; } set { onBorder = value; } }
 
     public void Display(Graphics g)
     {
@@ -55,6 +66,30 @@ public class Grain
             }
         }
        
+
+
+    }
+
+    public void DisplayRecrystallized(Graphics g)
+    {
+        lock (locker)
+        {
+            if (this.state == 0)
+            {
+                System.Drawing.SolidBrush cellBrushClear = new System.Drawing.SolidBrush(SystemColors.Control);
+
+                g.FillRectangle(cellBrushClear, (this.x) * CELL_SIZE + (int)GRID_STATE, (this.y) * CELL_SIZE + (int)GRID_STATE,
+                    CELL_SIZE - (int)GRID_STATE, CELL_SIZE - (int)GRID_STATE);
+
+            }
+            else
+            {
+                System.Drawing.SolidBrush cellBrush = new System.Drawing.SolidBrush(Color.Red);
+                g.FillRectangle(cellBrush, (this.x) * CELL_SIZE + (int)GRID_STATE, (this.y) * CELL_SIZE + (int)GRID_STATE,
+                    CELL_SIZE - (int)GRID_STATE, CELL_SIZE - (int)GRID_STATE);
+            }
+        }
+
 
 
     }

@@ -25,6 +25,7 @@ public struct GrainEnergyCoords
         y = energyCoords.Y;
     }
 
-    public float X { get => x; set => x = value; }
-    public float Y { get => y; set => y = value; }
+     public float X { get { return x; } set { x = value; } } 
+     public float Y { get { return y; } set { y = value; } }
+ 
 }

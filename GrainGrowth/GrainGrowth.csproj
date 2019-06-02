@@ -60,6 +60,7 @@
     <Compile Include="MonteCarlo.cs" />
     <Compile Include="Neighbourhood\NeighbourhoodFactory.cs" />
     <Compile Include="Nucleation.cs" />
+    <Compile Include="Recrystallization.cs" />
     <Compile Include="Simulation.cs" />
     <Compile Include="Grid.cs" />
     <Compile Include="Program.cs" />
