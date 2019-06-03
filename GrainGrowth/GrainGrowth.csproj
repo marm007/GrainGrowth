@@ -48,6 +48,7 @@
   <ItemGroup>
     <Compile Include="Colors.cs" />
     <Compile Include="Config.cs" />
+    <Compile Include="DensityColors.cs" />
     <Compile Include="EnergyColors.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>

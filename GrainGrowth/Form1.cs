@@ -20,6 +20,7 @@ namespace GrainGrowth
 
         private static int SLEEP_TIME = 1;
         private static int SLEEP_TIME_MIN = 1;
+        private static int SLEEP_TIME_RECRYSTALLIZAITON = 100;
 
         bool flagStop = false;
         bool flagResize = false;
@@ -41,6 +42,8 @@ namespace GrainGrowth
 
         private Bitmap simulationBitmap = null;
         private Bitmap previousBitmap = null;
+        private Bitmap recrystalizationBitmap = null;
+
         private Graphics g = null;
 
         private Thread myUIthred;
@@ -63,6 +66,8 @@ namespace GrainGrowth
             monteCarlo_Button.Enabled = false;
             monteCarloStopButton.Enabled = false;
 
+            densityButton.Enabled = false;
+            recrystallizationButton.Enabled = false;
 
             toolTip1.SetToolTip(rowUpDown, "Set number of rows");
             toolTip1.SetToolTip(colUpDown, "Set number of columns");
@@ -249,6 +254,8 @@ namespace GrainGrowth
             stop_button.Enabled = true;
             clear_button.Enabled = false;
             step_button.Enabled = false;
+            recrystallizaitonProgressBar.Value = 0;
+
         }
 
         private void stop_button_Click(object sender, EventArgs e)
@@ -270,6 +277,10 @@ namespace GrainGrowth
             monteCarlo_Button.Enabled = true;
             monteCarloStopButton.Enabled = false;
 
+            monteCarlo_Button.Enabled = true;
+            recrystallizationButton.Enabled = true;
+
+
         }
 
         private void clear_button_Click(object sender, EventArgs e)
@@ -278,11 +289,20 @@ namespace GrainGrowth
                 backgroundWorker.CancelAsync();
 
             flagStop = false;
+            densityButton.Text = "Density / ON";
 
             start_button.Enabled = true;
             stop_button.Enabled = false;
             clear_button.Enabled = false;
+            monteCarloEnergyButton.Enabled = false;
+            densityButton.Enabled = false;
 
+            monteCarlo_Button.Enabled = false;
+            recrystallizationButton.Enabled = false;
+            
+            recrystalizationBitmap = null;
+            previousBitmap = null;
+            recrystallizaitonProgressBar.Value = 0;
 
             grainGrowth.Clear();
 
@@ -305,6 +325,13 @@ namespace GrainGrowth
 
             pictureBox1.Image = simulationBitmap;
             clear_button.Enabled = true;
+
+            monteCarloEnergyButton.Enabled = true;
+            monteCarlo_Button.Enabled = true;
+            monteCarloStopButton.Enabled = false;
+
+            monteCarlo_Button.Enabled = true;
+            recrystallizationButton.Enabled = true;
         }
 
 
@@ -662,6 +689,9 @@ namespace GrainGrowth
             monteCarloStopButton.Enabled = false;
             monteCarloEnergyButton.Enabled = true;
             monteCarlo_Button.Enabled = true;
+            
+            monteCarlo_Button.Enabled = true;
+            recrystallizationButton.Enabled = true;
         }
 
         private void hexagonalComboBox_SelectedItemChanged(object sender, EventArgs e)
@@ -871,7 +901,10 @@ namespace GrainGrowth
 
             try
             {
-                pictureBox1.Image = simulationBitmap;
+                if(bitmap != null)
+                    pictureBox1.Image = bitmap;
+                 else
+                    pictureBox1.Image = simulationBitmap;
             }
             catch (InvalidOperationException invalidOperation)
             {
@@ -949,7 +982,28 @@ namespace GrainGrowth
 
         private void recrystallizationButton_Click(object sender, EventArgs e)
         {
+            if (grainGrowth.Tab[0, 0] == null)
+                return;
+
             recrystallization = new Recrystallization(grainGrowth.Tab);
+            recrystallizaitonProgressBar.Value = 0;
+
+            start_button.Enabled = false;
+            stop_button.Enabled = false;
+            clear_button.Enabled = false;
+            step_button.Enabled = false;
+
+
+            monteCarloIterationsUpDown.Enabled = false;
+            monteCarloStopButton.Enabled = false;
+            monteCarloEnergyButton.Enabled = false;
+            monteCarlo_Button.Enabled = false;
+
+            recrystallizationButton.Enabled = false;
+            densityButton.Enabled = false;
+
+            recrystalizationBitmap = (Bitmap)pictureBox1.Image.Clone();
+            Graphics grpahics = Graphics.FromImage(recrystalizationBitmap);
 
             BackgroundWorker worker = new BackgroundWorker();
 
@@ -957,37 +1011,110 @@ namespace GrainGrowth
             {
                 for (double i = 0; i <= recrystallization.MaxTime; i += recrystallization.DeltaTime)
                 {
-                    recrystallization.DislocationsPartition(grainGrowth.Tab, g);
-                    SetBitmapOnUIThread(null);
-
+                    grainGrowth.Tab = recrystallization.DislocationsPartition(grainGrowth.Tab, grpahics);
+                    SetBitmapOnUIThread(recrystalizationBitmap);
+                    PerformStep(null);
+                    System.Threading.Thread.Sleep(SLEEP_TIME_RECRYSTALLIZAITON);
                 }
 
-               
+                RecrystallizationAction("finish");
 
-                recrystallization.SaveToFile();
+               recrystallization.SaveToFile();
             });
 
             worker.RunWorkerAsync();
 
         }
 
-        private void growthButton_Click(object sender, EventArgs e)
+        public void RecrystallizationAction(string value)
         {
-            BackgroundWorker worker = new BackgroundWorker();
-
-            worker.DoWork += new DoWorkEventHandler((senders, args) =>
+            if (InvokeRequired)
             {
-                for (int i = 0; i <= 1000; i ++)
-                {
-                    recrystallization.Simulation(grainGrowth.Tab, g);
+                this.Invoke(new Action<string>(RecrystallizationAction), new object[] { value });
+                return;
+            }
+
+            if (value == "finish")
+            {
+
+                start_button.Enabled = true;
+                stop_button.Enabled = false;
+                clear_button.Enabled = true;
+                step_button.Enabled = true;
+
+
+                monteCarloIterationsUpDown.Enabled = true;
+                monteCarloStopButton.Enabled = false;
+                monteCarloEnergyButton.Enabled = true;
+                monteCarlo_Button.Enabled = true;
+
+                recrystallizationButton.Enabled = true;
+                densityButton.Enabled = true;
+            }
+           
+
+        }
+
+        private void recrystallizationTrackBar_Scroll(object sender, EventArgs e)
+        {
+            SLEEP_TIME_RECRYSTALLIZAITON *= recrystallizationTrackBar.Value;
+        }
+
+
+        public void PerformStep(string step)
+        {
+            if (Thread.CurrentThread != myUIthred)
+            {
+                BeginInvoke(new Action<string>(PerformStep), new object[] {step});
+                return;
+            }
+
+            try
+            {
+                recrystallizaitonProgressBar.PerformStep();
+            }
+            catch (InvalidOperationException invalidOperation)
+            {
+                Console.WriteLine(invalidOperation);
+            }
+        }
+
+        private void densityButton_Click(object sender, EventArgs e)
+        {
+            if (grainGrowth.Tab[0, 0] == null)
+                return;
+
+            if (densityButton.Text == "Density / OFF")
+            {
+                densityButton.Text = "Density / ON";
+
+                if (recrystalizationBitmap != null)
+                    pictureBox1.Image = recrystalizationBitmap;
+                else
                     pictureBox1.Image = simulationBitmap;
 
+            }
+            else
+            {
 
-                }
-            });
+                densityButton.Text = "Density / OFF";
 
-            recrystallization.Simulation(grainGrowth.Tab, g);
-            pictureBox1.Image = simulationBitmap;
+                previousBitmap = (Bitmap)pictureBox1.Image.Clone();
+
+                BackgroundWorker backgroundWorker = new BackgroundWorker();
+                backgroundWorker.DoWork += new DoWorkEventHandler((senderWork, args) =>
+                {
+                    Cursor.Current = Cursors.WaitCursor;
+                    recrystallization.DisplayDensity(grainGrowth.Tab, Graphics.FromImage(previousBitmap));
+                    Cursor.Current = Cursors.Arrow;
+                    SetBitmapOnUIThread(previousBitmap);
+                });
+
+                backgroundWorker.RunWorkerAsync();
+            }
+           
+
+           
         }
     }
 

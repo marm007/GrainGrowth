@@ -70,7 +70,7 @@ public class Grain
 
     }
 
-    public void DisplayRecrystallized(Graphics g)
+    public void DisplayRecrystallized(Graphics g, Color color)
     {
         lock (locker)
         {
@@ -84,7 +84,7 @@ public class Grain
             }
             else
             {
-                System.Drawing.SolidBrush cellBrush = new System.Drawing.SolidBrush(Color.Red);
+                System.Drawing.SolidBrush cellBrush = new System.Drawing.SolidBrush(color);
                 g.FillRectangle(cellBrush, (this.x) * CELL_SIZE + (int)GRID_STATE, (this.y) * CELL_SIZE + (int)GRID_STATE,
                     CELL_SIZE - (int)GRID_STATE, CELL_SIZE - (int)GRID_STATE);
             }

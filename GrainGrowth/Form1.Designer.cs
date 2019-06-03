@@ -91,9 +91,12 @@
             this.monteCarloIterationsUpDown = new System.Windows.Forms.NumericUpDown();
             this.monteCarlo_Button = new System.Windows.Forms.Button();
             this.groupBox7 = new System.Windows.Forms.GroupBox();
+            this.label12 = new System.Windows.Forms.Label();
+            this.recrystallizationTrackBar = new System.Windows.Forms.TrackBar();
+            this.recrystallizaitonProgressBar = new System.Windows.Forms.ProgressBar();
             this.recrystallizationButton = new System.Windows.Forms.Button();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
-            this.growthButton = new System.Windows.Forms.Button();
+            this.densityButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -116,6 +119,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.kTNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.monteCarloIterationsUpDown)).BeginInit();
             this.groupBox7.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.recrystallizationTrackBar)).BeginInit();
             this.SuspendLayout();
             // 
             // pictureBox1
@@ -869,13 +873,44 @@
             this.groupBox7.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox7.Controls.Add(this.growthButton);
+            this.groupBox7.Controls.Add(this.densityButton);
+            this.groupBox7.Controls.Add(this.label12);
+            this.groupBox7.Controls.Add(this.recrystallizationTrackBar);
+            this.groupBox7.Controls.Add(this.recrystallizaitonProgressBar);
             this.groupBox7.Controls.Add(this.recrystallizationButton);
             this.groupBox7.Location = new System.Drawing.Point(281, 499);
             this.groupBox7.Name = "groupBox7";
             this.groupBox7.Size = new System.Drawing.Size(451, 100);
             this.groupBox7.TabIndex = 8;
             this.groupBox7.TabStop = false;
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(6, 48);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(87, 13);
+            this.label12.TabIndex = 10;
+            this.label12.Text = "Simulation speed";
+            // 
+            // recrystallizationTrackBar
+            // 
+            this.recrystallizationTrackBar.LargeChange = 1;
+            this.recrystallizationTrackBar.Location = new System.Drawing.Point(108, 48);
+            this.recrystallizationTrackBar.Name = "recrystallizationTrackBar";
+            this.recrystallizationTrackBar.Size = new System.Drawing.Size(112, 45);
+            this.recrystallizationTrackBar.TabIndex = 9;
+            this.recrystallizationTrackBar.Value = 3;
+            this.recrystallizationTrackBar.Scroll += new System.EventHandler(this.recrystallizationTrackBar_Scroll);
+            // 
+            // recrystallizaitonProgressBar
+            // 
+            this.recrystallizaitonProgressBar.Location = new System.Drawing.Point(108, 13);
+            this.recrystallizaitonProgressBar.Maximum = 200;
+            this.recrystallizaitonProgressBar.Name = "recrystallizaitonProgressBar";
+            this.recrystallizaitonProgressBar.Size = new System.Drawing.Size(337, 23);
+            this.recrystallizaitonProgressBar.Step = 1;
+            this.recrystallizaitonProgressBar.TabIndex = 2;
             // 
             // recrystallizationButton
             // 
@@ -887,15 +922,15 @@
             this.recrystallizationButton.UseVisualStyleBackColor = true;
             this.recrystallizationButton.Click += new System.EventHandler(this.recrystallizationButton_Click);
             // 
-            // growthButton
+            // densityButton
             // 
-            this.growthButton.Location = new System.Drawing.Point(109, 12);
-            this.growthButton.Name = "growthButton";
-            this.growthButton.Size = new System.Drawing.Size(75, 23);
-            this.growthButton.TabIndex = 1;
-            this.growthButton.Text = "Growth";
-            this.growthButton.UseVisualStyleBackColor = true;
-            this.growthButton.Click += new System.EventHandler(this.growthButton_Click);
+            this.densityButton.Location = new System.Drawing.Point(226, 48);
+            this.densityButton.Name = "densityButton";
+            this.densityButton.Size = new System.Drawing.Size(86, 23);
+            this.densityButton.TabIndex = 11;
+            this.densityButton.Text = "Density / ON";
+            this.densityButton.UseVisualStyleBackColor = true;
+            this.densityButton.Click += new System.EventHandler(this.densityButton_Click);
             // 
             // Form1
             // 
@@ -939,6 +974,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.kTNumericUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.monteCarloIterationsUpDown)).EndInit();
             this.groupBox7.ResumeLayout(false);
+            this.groupBox7.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.recrystallizationTrackBar)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -1009,7 +1046,10 @@
         private System.Windows.Forms.GroupBox groupBox7;
         private System.Windows.Forms.Button recrystallizationButton;
         private System.Windows.Forms.SaveFileDialog saveFileDialog1;
-        private System.Windows.Forms.Button growthButton;
+        private System.Windows.Forms.ProgressBar recrystallizaitonProgressBar;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.TrackBar recrystallizationTrackBar;
+        private System.Windows.Forms.Button densityButton;
     }
 }
 
