@@ -193,6 +193,15 @@ public class Simulation
             {
                 this.tab[i, j].State = 0;
                 this.previousGrains[i, j].State = 0;
+
+                this.tab[i, j].Density = 0;
+                this.previousGrains[i, j].Density = 0;
+
+                this.tab[i, j].Recrystallized = false;
+                this.previousGrains[i, j].Recrystallized = false;
+
+                this.tab[i, j].OnBorder = false;
+                this.previousGrains[i, j].OnBorder = false;
             }
         }
     }
