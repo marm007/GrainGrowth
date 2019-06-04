@@ -38,9 +38,9 @@ public class Recrystallization
 
     private bool[,] tmpGrains = null;
 
-    public  double MaxTime => maxTime;
+    public double MaxTime { get { return maxTime; } }
 
-    public  double DeltaTime => deltaTime;
+    public double DeltaTime { get { return deltaTime; } }
 
 
     public Recrystallization(Grain[,] grains)
@@ -241,7 +241,7 @@ public class Recrystallization
 
                         foreach (Grain neighbour1 in neighbours)
                         {
-                            if (neighbour1.Density >= grains[y, x].Density )
+                            if (!neighbour1.Recrystallized && neighbour1.Density >= grains[y, x].Density )
                             {
                                 rescrystallize = false;
                                 break;

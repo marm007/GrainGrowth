@@ -91,12 +91,12 @@
             this.monteCarloIterationsUpDown = new System.Windows.Forms.NumericUpDown();
             this.monteCarlo_Button = new System.Windows.Forms.Button();
             this.groupBox7 = new System.Windows.Forms.GroupBox();
+            this.densityButton = new System.Windows.Forms.Button();
             this.label12 = new System.Windows.Forms.Label();
             this.recrystallizationTrackBar = new System.Windows.Forms.TrackBar();
             this.recrystallizaitonProgressBar = new System.Windows.Forms.ProgressBar();
             this.recrystallizationButton = new System.Windows.Forms.Button();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
-            this.densityButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -870,8 +870,7 @@
             // 
             // groupBox7
             // 
-            this.groupBox7.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.groupBox7.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox7.Controls.Add(this.densityButton);
             this.groupBox7.Controls.Add(this.label12);
@@ -883,6 +882,16 @@
             this.groupBox7.Size = new System.Drawing.Size(451, 100);
             this.groupBox7.TabIndex = 8;
             this.groupBox7.TabStop = false;
+            // 
+            // densityButton
+            // 
+            this.densityButton.Location = new System.Drawing.Point(226, 48);
+            this.densityButton.Name = "densityButton";
+            this.densityButton.Size = new System.Drawing.Size(86, 23);
+            this.densityButton.TabIndex = 11;
+            this.densityButton.Text = "Density / ON";
+            this.densityButton.UseVisualStyleBackColor = true;
+            this.densityButton.Click += new System.EventHandler(this.densityButton_Click);
             // 
             // label12
             // 
@@ -921,16 +930,6 @@
             this.recrystallizationButton.Text = "Recrystallization";
             this.recrystallizationButton.UseVisualStyleBackColor = true;
             this.recrystallizationButton.Click += new System.EventHandler(this.recrystallizationButton_Click);
-            // 
-            // densityButton
-            // 
-            this.densityButton.Location = new System.Drawing.Point(226, 48);
-            this.densityButton.Name = "densityButton";
-            this.densityButton.Size = new System.Drawing.Size(86, 23);
-            this.densityButton.TabIndex = 11;
-            this.densityButton.Text = "Density / ON";
-            this.densityButton.UseVisualStyleBackColor = true;
-            this.densityButton.Click += new System.EventHandler(this.densityButton_Click);
             // 
             // Form1
             // 
