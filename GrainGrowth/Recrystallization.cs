@@ -36,7 +36,8 @@ public class Recrystallization
     private List<double> checkedRo = null;
     private List<double> checkedRoFromGrians = null;
 
-    private bool[,] tmpGrains = null;
+    private bool[,] currentlyRecrystalized = null;
+    private bool[,] lastRecrystalized = null;
 
     public double MaxTime { get { return maxTime; } }
 
@@ -63,7 +64,8 @@ public class Recrystallization
         checkedRo = new List<double>();
         checkedRoFromGrians = new List<double>();
 
-        tmpGrains = new bool[SIZE_Y, SIZE_X];
+        currentlyRecrystalized = new bool[SIZE_Y, SIZE_X];
+        lastRecrystalized = new bool[SIZE_Y, SIZE_X];
 
         time = 0;
 
@@ -84,7 +86,8 @@ public class Recrystallization
         {
             for(int j = 0; j < SIZE_X; j++)
             {
-                tmpGrains[i, j] = false;
+                currentlyRecrystalized[i, j] = false;
+                lastRecrystalized[i, j] = false;
 
                 List<int> neighbours = NeighbourhoodFactory.GetNeighboursMonteCarlo(grains, j, i);
 
@@ -110,6 +113,14 @@ public class Recrystallization
 
             
         time += deltaTime;
+
+        for (int y = 0; y < SIZE_Y; y++)
+        {
+            for (int x = 0; x < SIZE_X; x++)
+            {
+                currentlyRecrystalized[y, x] = false;
+            }
+        }
         Console.WriteLine(time);
 
         double _ro = (A / B) + (1 - (A / B)) * (Math.Exp(-B * time));
@@ -186,6 +197,15 @@ public class Recrystallization
         grains = Inclusion(grains, g);
         grains = Simulation(grains, g);
 
+        for (int y = 0; y < SIZE_Y; y++)
+        {
+            for (int x = 0; x < SIZE_X; x++)
+            {
+                grains[y, x].Recrystallized = currentlyRecrystalized[y, x] ? true : grains[y, x].Recrystallized;
+                lastRecrystalized[y, x] = currentlyRecrystalized[y, x];
+            }
+        }
+
         return grains;
     }
 
@@ -199,14 +219,14 @@ public class Recrystallization
         {
             if (grain.Density > criticallRo && !grain.Recrystallized )
             {
-                tmpGrains[grain.Y, grain.X] = true;
+                currentlyRecrystalized[grain.Y, grain.X] = true;
                 grains[grain.Y, grain.X].Density = criticallRo;
-                grains[grain.Y, grain.X].Recrystallized = true;
+                // grains[grain.Y, grain.X].Recrystallized = true;
                 grains[grain.Y, grain.X].DisplayRecrystallized(g, Colors.GetRecrystallizationColor());
             }
             else if(grain.Density > criticallRo && grain.Recrystallized)
             {
-                tmpGrains[grain.Y, grain.X] = true;
+                currentlyRecrystalized[grain.Y, grain.X] = true;
                 grains[grain.Y, grain.X].Density = criticallRo;
             }
         }
@@ -235,7 +255,7 @@ public class Recrystallization
 
                 foreach (Grain neighbour in neighbours)
                 {
-                    if (tmpGrains[neighbour.Y, neighbour.X])
+                    if (lastRecrystalized[neighbour.Y, neighbour.X])
                     {
                         bool rescrystallize = true;
 
@@ -252,7 +272,7 @@ public class Recrystallization
                         {
                             recrystalized[y, x] = true;
                             grains[y, x].Density = 0;
-                            grains[y, x].Recrystallized = true;
+                            // grains[y, x].Recrystallized = true;
                             grains[y, x].DisplayRecrystallized(g, Colors.GetRecrystallizationColor());
                         }
 
@@ -267,7 +287,7 @@ public class Recrystallization
         {
             for (int x = 0; x < SIZE_X; x++)
             {
-                tmpGrains[y, x] = recrystalized[y, x];
+                currentlyRecrystalized[y, x] = recrystalized[y, x] ? true: currentlyRecrystalized[y, x];
             }
         }
 
